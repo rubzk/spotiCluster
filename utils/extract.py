@@ -1,10 +1,9 @@
-import pandas
+import pandas as pd
 import requests
-import numpy
+import numpy as np
 import base64
+from utils.code_tools import transform_to_64, split_list
 
-def transform_to_64(code):
-    return base64.urlsafe_b64encode(bytes(code, 'utf-8')).decode('utf-8')
 
 def authenticate(auth_code, client_id, client_secret, redirect_uri):
 
@@ -43,6 +42,8 @@ def extract_all_tracks(auth_token, playlists):
                'Content-Type': 'application/json',
                'Authorization': 'Bearer {}'.format(auth_token)}
 
+    tracks_info = pd.DataFrame([], columns=['id','name','artist'])
+
     
     tracks = []
 
@@ -58,15 +59,39 @@ def extract_all_tracks(auth_token, playlists):
             repeat = (response['total'] // limit ) + 1
 
         for r in range(repeat):
-            d = requests.get('https://api.spotify.com/v1/playlists/{}/tracks?fields=items(track(id))&limit={}&offset={}'.format(playlist,limit,r*limit), headers=headers).json()
+            d = requests.get('https://api.spotify.com/v1/playlists/{}/tracks?fields=items(track(id,name,artists))&limit={}&offset={}'.format(playlist,limit,r*limit), headers=headers).json()
             for track in d['items']:
-                tracks.append(track['track']['id'])
+                d_tracks = {'id': track['track']['id'], 'name': track['track']['name'], 'artist': track['track']['artists'][0]['name']}
+                tracks_info = tracks_info.append(d_tracks, ignore_index=True)
 
-    return tracks
+    tracks_info = tracks_info.dropna(how='any', subset=['id'])
+
+    return tracks_info
 
 
+def get_audio_features(auth_token, df_tracks):
+
+    df_audio_ft = pd.DataFrame([], columns=['danceability','energy','key','loudness','mode','speechiness','acousticness','instrumentalness','liveness',
+                                   'valence','tempo','type','id','uri','track_href','analysis_url','duration_ms','time_signature'])
+
+    headers = {'Authorization': "Bearer {}".format(auth_token)}
+
+    tracks_ids = df_tracks['id'].to_list()
+
+    if len(tracks_ids) > 100:
+        list_of_ids = split_list(tracks_ids, round(len(tracks_ids)/100)+1)
+    else:
+        list_of_ids = split_list(tracks_ids,1)
+
+    for tracks in list_of_ids:
+
+        response = requests.get('https://api.spotify.com/v1/audio-features?ids={}'.format(str(tracks)[1:-1].replace("'","").replace(", ",",")), headers=headers).json()['audio_features']
+        df_audio_ft = df_audio_ft.append(response, ignore_index=True)
     
-    
+    return df_audio_ft
+
+
+
 
 
     

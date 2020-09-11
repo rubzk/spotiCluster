@@ -1,7 +1,7 @@
 import json
 from flask import Flask, render_template, redirect, url_for, request
 import requests 
-from utils.extract import authenticate, transform_to_64, extract_all_playlist, extract_all_tracks
+from utils.extract import authenticate, extract_all_playlist, extract_all_tracks, get_audio_features
 import credentials
 
 app = Flask(__name__)
@@ -22,7 +22,9 @@ def auth_ok():
 
     tracks = extract_all_tracks(auth_token, playlists)
 
-    return '{}'.format(tracks)
+    audio_ft = get_audio_features(auth_token, tracks)
+
+    return '{}'.format(audio_ft)
 
 
 if __name__ == '__main__':
