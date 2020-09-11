@@ -1,17 +1,10 @@
 import json
 from flask import Flask, render_template, redirect, url_for, request
 import requests 
-from utils.extract import authenticate, transform_to_64
+from utils.extract import authenticate, transform_to_64, extract_all_playlist, extract_all_tracks
 import credentials
 
 app = Flask(__name__)
-
-"""client_id = 'dc0ae7e239524e8e9c42ebaaec57d5fc'
-client_secret = '56ad76b0390e482e8c0327945ba4ac0b'
-redirect_uri = 'http://localhost:5000/auth_ok'
-"""
-
-#auth_url = 'https://accounts.spotify.com/authorize?'+'client_id='+credentials.client_id+'&response_type=code'+'&redirect_uri='+credentials.redirect_uri+'&scope=user-read-private'
 
 
 @app.route('/')
@@ -23,8 +16,13 @@ def index():
 def auth_ok():
     auth_code = request.args.get('code')
     auth_token, user_id = authenticate(auth_code, credentials.client_id, credentials.client_secret,credentials.redirect_uri)
-    return '{} ,{}'.format(auth_token, user_id)
 
+
+    playlists = extract_all_playlist(auth_token, limit=50, offset=0)
+
+    tracks = extract_all_tracks(auth_token, playlists)
+
+    return '{}'.format(tracks)
 
 
 if __name__ == '__main__':
