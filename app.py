@@ -16,12 +16,8 @@ def index():
 def auth_ok():
     auth_code = request.args.get('code')
     auth_token, user_id = authenticate(auth_code, credentials.client_id, credentials.client_secret,credentials.redirect_uri)
-
-
     playlists = extract_all_playlist(auth_token, limit=50, offset=0)
-
     tracks = extract_all_tracks(auth_token, playlists)
-
     audio_ft = get_audio_features(auth_token, tracks)
 
     return '{}'.format(audio_ft)

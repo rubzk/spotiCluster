@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<body>
-    <h1>Spotify Library Analysis</h1> 
+{% extends "base.html" %}
+{% block content %}
+   <h1>Spotify Library Analysis</h1> 
     <button onclick="window.open('{{auth_url}}','_blank')">
         Click Here To Authorize
       </button>
     <p>{{auth_code}}</p>
-</body>
-
+{% endblock %}
