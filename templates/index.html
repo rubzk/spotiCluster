@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-   <h1>Spotify Library Analysis</h1> 
-    <button onclick="window.open('{{auth_url}}','_blank')">
-        Click Here To Authorize
-      </button>
-    <p>{{auth_code}}</p>
+   <h1 class="text-center">Spotify Library Analysis</h1> 
+   <div class='text-center'>
+    <button type="button" class="btn btn-dark" onclick="window.open('{{auth_url}}','_blank')">Click Here To Authorize</button>
+   </div>
+       
 {% endblock %}
