@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request
 import requests 
 from utils.extract import authenticate, extract_all_playlist, extract_all_tracks, get_audio_features
 import credentials
-
+from utils.transform import concat_data
 app = Flask(__name__)
 
 
@@ -19,10 +19,13 @@ def auth_ok():
     playlists = extract_all_playlist(auth_token, limit=50, offset=0)
     tracks = extract_all_tracks(auth_token, playlists)
     audio_ft = get_audio_features(auth_token, tracks)
+    data = concat_data(tracks,audio_ft)
 
-    return '{}'.format(audio_ft)
+    return '{}'.format(data)
 
-
+    
 if __name__ == '__main__':
     app.run(debug=True)
+
+
 

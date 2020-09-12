@@ -66,6 +66,8 @@ def extract_all_tracks(auth_token, playlists):
 
     tracks_info = tracks_info.dropna(how='any', subset=['id'])
 
+    tracks_info = tracks_info.drop_duplicates(subset=['id'], keep='first')
+
     return tracks_info
 
 
