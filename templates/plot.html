@@ -1,0 +1,18 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="chart" id="scatterChart">
+    <script>
+        var graphs = {{plot | safe}};
+        var layout = {margin: {
+            l:0,
+            r:0,
+            b:0,
+            t:0
+        }}
+        console.log(graphs)
+        Plotly.newPlot('scatterChart', graphs, layout);
+    </script>
+</div>
+
+{% endblock %}
