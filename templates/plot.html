@@ -4,12 +4,9 @@
 <div class="chart" id="scatterChart">
     <script>
         var graphs = {{plot | safe}};
-        var layout = {margin: {
-            l:0,
-            r:0,
-            b:0,
-            t:0
-        }}
+        
+        var layout = {{layout_3d | safe}};
+
         console.log(graphs)
         Plotly.newPlot('scatterChart', graphs, layout, {responsive:true});
     </script>

@@ -46,25 +46,6 @@ def clustering(df_scaled, clusters, features):
     return df_scaled
 
 
-def pca_decomposition(df_scaled)
-
-def plot3d(df_scaled):
-
-
-    fig = make_subplots(rows=2, cols=2, specs=[[{'type': 'scatter'}, {'type': 'scatter'}],
-                                                [{'type': 'scatter'},{'type': 'scatter'}]])
-
-    fig.add_trace()
-
-
-    data = [ go.Scatter3d(x=df_scaled['valence'], y=df_scaled['energy'], z=df_scaled['danceability'])
-    ]
-
-    graphJSON = json.dumps(data, cls=PlotlyJSONEncoder)
-
-
-
-    return graphJSON
 
 
 
