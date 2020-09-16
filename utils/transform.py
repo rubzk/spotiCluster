@@ -12,10 +12,11 @@ class TransformDataFrame:
         self.concat_df = self.concat_data()
         self.n_clusters = self.get_cluster_number()
         self.audio_ft = ['danceability', 'energy', 'loudness', 'speechiness','acousticness','instrumentalness','liveness','valence','tempo']
+        self.fit_features = ['danceability','energy','tempo','valence']
         self.concat_df[self.audio_ft] = self.scale_features()
         self.final_df = self.clustering()
         self.cluster_stats = self.get_cluster_stats()
-
+        
 
     def concat_data(self):
 
@@ -45,9 +46,9 @@ class TransformDataFrame:
     
     def clustering(self):
 
-        kmeans = KMeans(n_clusters=self.n_clusters).fit(self.concat_df[self.audio_ft])
+        kmeans = KMeans(n_clusters=self.n_clusters).fit(self.concat_df[self.fit_features])
 
-        y_kmeans = kmeans.predict(self.concat_df[self.audio_ft])
+        y_kmeans = kmeans.predict(self.concat_df[self.fit_features])
 
         self.concat_df['cluster'] = y_kmeans
 
