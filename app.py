@@ -20,7 +20,8 @@ def auth_ok():
     tracks = extract_all_tracks(auth_token, playlists)
     audio_ft = get_audio_features(auth_token, tracks)
     data = concat_data(tracks,audio_ft)
-    scaled = scale_data(data, ['valence','energy','danceability'])
+    
+
     scaled_cluster = clustering(scaled, 4)
     scatter = plot3d(scaled_cluster)
 

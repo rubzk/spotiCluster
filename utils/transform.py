@@ -6,6 +6,7 @@ from sklearn.decomposition import PCA
 import plotly.graph_objects as go 
 import json
 from plotly.utils import PlotlyJSONEncoder
+from plotly.subplots import make_subplots
 
 def concat_data(df_info_tracks, df_audio_ft):
 
@@ -14,20 +15,12 @@ def concat_data(df_info_tracks, df_audio_ft):
 
     df_join = pd.concat([df_info_tracks, df_audio_ft], axis =1)
 
-    df_join.to_csv('output.csv')
+    df_join['song_name'] = df_join['name'] + ' - ' + df_join['artist']
+
+    #df_join.to_csv('output.csv')
 
     return df_join
 
-
-def scale_data(df, features):
-
-    scaler = MinMaxScaler()
-
-    scaled_df = pd.DataFrame(scaler.fit_transform(df[features]))
-
-    scaled_df.columns = features
-
-    return scaled_df
 
 
 def get_cluster_number(df_scaled):
@@ -42,25 +35,34 @@ def get_cluster_number(df_scaled):
     return 4
 
 
-def clustering(df_scaled, clusters):
+def clustering(df_scaled, clusters, features):
 
-    kmeans = KMeans(n_clusters=clusters).fit(df_scaled)
+    kmeans = KMeans(n_clusters=clusters).fit(df_scaled[features])
 
-    y_kmeans = kmeans.predict(df_scaled)
-
+    y_kmeans = kmeans.predict(df_scaled[features])
 
     df_scaled['cluster'] = y_kmeans
 
     return df_scaled
 
 
+def pca_decomposition(df_scaled)
+
 def plot3d(df_scaled):
 
-    data = [ go.Scatter3d(x=df_scaled['valence'], y=df_scaled['energy'], z=df_scaled['danceability'],
-    marker=dict(color=df_scaled['cluster'])
-    )]
+
+    fig = make_subplots(rows=2, cols=2, specs=[[{'type': 'scatter'}, {'type': 'scatter'}],
+                                                [{'type': 'scatter'},{'type': 'scatter'}]])
+
+    fig.add_trace()
+
+
+    data = [ go.Scatter3d(x=df_scaled['valence'], y=df_scaled['energy'], z=df_scaled['danceability'])
+    ]
 
     graphJSON = json.dumps(data, cls=PlotlyJSONEncoder)
+
+
 
     return graphJSON
 
