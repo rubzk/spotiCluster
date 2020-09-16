@@ -2,48 +2,70 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-import plotly.graph_objects as go 
-import json
-from plotly.utils import PlotlyJSONEncoder
-from plotly.subplots import make_subplots
-
-def concat_data(df_info_tracks, df_audio_ft):
-
-    df_info_tracks.reset_index(drop=True, inplace=True)
-    df_audio_ft.reset_index(drop=True, inplace=True)
-
-    df_join = pd.concat([df_info_tracks, df_audio_ft], axis =1)
-
-    df_join['song_name'] = df_join['name'] + ' - ' + df_join['artist']
-
-    #df_join.to_csv('output.csv')
-
-    return df_join
 
 
+class TransformDataFrame:
 
-def get_cluster_number(df_scaled):
+    def __init__(self, df_tracks, df_audio_ft):
+        self.df_tracks = df_tracks
+        self.df_audio_ft = df_audio_ft
+        self.concat_df = self.concat_data()
+        self.n_clusters = self.get_cluster_number()
+        self.audio_ft = ['danceability', 'energy', 'loudness', 'speechiness','acousticness','instrumentalness','liveness','valence','tempo']
+        self.concat_df[self.audio_ft] = self.scale_features()
+        self.final_df = self.clustering()
+        self.cluster_stats = self.get_cluster_stats()
+
+
+    def concat_data(self):
+
+        self.df_tracks.reset_index(drop=True, inplace=True)
+        self.df_audio_ft.reset_index(drop=True, inplace=True)
+
+        df_join = pd.concat([self.df_tracks, self.df_audio_ft], axis=1)
+
+        df_join['song_name'] = df_join['name'] + ' - ' + df_join['artist']
+
+        return df_join
+
+    def scale_features(self):
+
+        scaler = MinMaxScaler()
+
+        return scaler.fit_transform(self.concat_df[self.audio_ft])
+
     
-    df = pd.DataFrame([], columns=['SSD', 'n_clusters'])
 
-    for n  in range(1,15):
-        kmeans = KMeans(n_clusters=n)
-        kmeans.fit(X=df_scaled)
-        df = df.append({'SSD': kmeans.inertia_, 'n_clusters': n}, ignore_index=True)
+    def get_cluster_number(self):
 
-    return 4
+        ### WIP WIP WIP
+
+    
+        return 4
+    
+    def clustering(self):
+
+        kmeans = KMeans(n_clusters=self.n_clusters).fit(self.concat_df[self.audio_ft])
+
+        y_kmeans = kmeans.predict(self.concat_df[self.audio_ft])
+
+        self.concat_df['cluster'] = y_kmeans
+
+        #self.concat_df['cluster'] = self.concat_df['cluster'].astype('str')
+
+        return self.concat_df
+
+    def get_cluster_stats(self):
+
+        cluster_stats = pd.DataFrame(columns=self.audio_ft)
+
+        for n in self.final_df['cluster'].value_counts().index.to_list():
+            cluster_stats = cluster_stats.append(self.final_df[self.final_df['cluster'] == n][self.audio_ft].mean(), ignore_index=True)
+
+        return cluster_stats
 
 
-def clustering(df_scaled, clusters, features):
 
-    kmeans = KMeans(n_clusters=clusters).fit(df_scaled[features])
-
-    y_kmeans = kmeans.predict(df_scaled[features])
-
-    df_scaled['cluster'] = y_kmeans
-
-    return df_scaled
 
 
 

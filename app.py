@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request
 import requests 
 from utils.extract import authenticate, extract_all_playlist, extract_all_tracks, get_audio_features
 import credentials
-from utils.transform import concat_data, clustering
+from utils.transform import TransformDataFrame
 from src.plot import Plot3D
 
 
@@ -22,10 +22,12 @@ def auth_ok():
     playlists = extract_all_playlist(auth_token, limit=50, offset=0)
     tracks = extract_all_tracks(auth_token, playlists)
     audio_ft = get_audio_features(auth_token, tracks)
-    data = concat_data(tracks,audio_ft)
-    df_cluster = clustering(data, 4, ['danceability', 'valence', 'energy'])
 
-    test = Plot3D(df_cluster, 4)
+    transform = TransformDataFrame(tracks, audio_ft)
+
+    #data = concat_data(tracks,audio_ft)
+    #df_cluster = clustering(data, 4, ['danceability', 'valence', 'energy'])
+    test = Plot3D(transform.final_df, transform.n_clusters)
 
     scatter, layout = test.scatter3d('danceability', 'valence', 'energy')
 
