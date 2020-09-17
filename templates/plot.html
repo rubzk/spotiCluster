@@ -7,9 +7,36 @@
         
         var layout = {{layout_3d | safe}};
 
-        console.log(graphs)
         Plotly.newPlot('scatterChart', graphs, layout, {responsive:true});
     </script>
+</div>
+
+<div class="chart" id="radarCharts">
+    <script>
+
+        //var layout_radar = {{layout_r | safe}};
+
+        var layout = {
+            polar: {
+                radialaxis: {
+                    visible: true,
+                    range: [0,1]
+                }
+            }
+        }
+
+        var trace1 = [{{trace1| safe}}];
+        var trace2 = [{{trace1| safe}}];
+        var trace3 = [{{trace1| safe}}];
+        var trace4 = [{{trace1| safe}}];
+
+        var data = [trace1,trace2,trace3,trace4];
+
+        Plotly.newPlot('radarCharts', data, layout);
+
+
+    </script>
+
 </div>
 
 {% endblock %}
