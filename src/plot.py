@@ -56,8 +56,6 @@ class Plot3D:
             'grid': {'rows': 1, 'columns': 4, 'pattern': 'independent'}
         }
 
-        data = json.dumps(data)
-
 
         return data[0],data[1],data[2],data[3]
         
