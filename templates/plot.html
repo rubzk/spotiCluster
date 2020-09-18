@@ -1,42 +1,42 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="chart" id="scatterChart">
-    <script>
-        var graphs = {{plot | safe}};
-        
-        var layout = {{layout_3d | safe}};
+<style>
 
-        Plotly.newPlot('scatterChart', graphs, layout, {responsive:true});
-    </script>
-</div>
+.container-1 {
+    display:flex;
+    justify-content: center;
+}
 
-<div class="chart" id="radarCharts">
-    <script>
+.title-container{
+    display:flex;
+    justify-content: center;
+}
 
-        //var layout_radar = {{layout_r | safe}};
+</style>
+<div class="title-container">
 
-        var layout = {
-            polar: {
-                radialaxis: {
-                    visible: true,
-                    range: [0,1]
-                }
-            }
-        }
-
-        var trace_1 = [{{trace1| safe}}];
-        var trace_2 = [{{trace2| safe}}];
-        var trace_3 = [{{trace3| safe}}];
-        var trace_4 = [{{trace4| safe}}];
-
-        var data = [trace_1[0][0],trace_2[0][0],trace_3[0][0],trace_4[0][0]];
-
-        Plotly.newPlot('radarCharts', data, layout);
-
-
-    </script>
+    <h1>Overview of your data</h1>
 
 </div>
 
+<div class="container-1">
+
+    <div class="chart" id="scatterChart">
+        <script>
+            var graphs = {{plot | safe}};
+            layout = {}
+            Plotly.newPlot('scatterChart', graphs, layout, {responsive:true});
+        </script>
+    </div>
+
+    <div class="chart" id="radarCharts">
+        <script>
+            var layout = {}
+            var data = {{radar | safe}};
+            Plotly.newPlot('radarCharts', data, layout);
+        </script>
+
+    </div>
+</div>
 {% endblock %}

@@ -27,6 +27,9 @@ class TransformDataFrame:
 
         df_join['song_name'] = df_join['name'] + ' - ' + df_join['artist']
 
+
+        df_join.to_csv('output.csv')
+
         return df_join
 
     def scale_features(self):
@@ -52,7 +55,7 @@ class TransformDataFrame:
 
         self.concat_df['cluster'] = y_kmeans
 
-        #self.concat_df['cluster'] = self.concat_df['cluster'].astype('str')
+        self.concat_df['cluster'] = self.concat_df['cluster'].astype('str')
 
         return self.concat_df
 

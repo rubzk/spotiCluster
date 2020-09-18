@@ -3,6 +3,9 @@ import numpy as np
 import plotly.graph_objects as go 
 import json
 from plotly.utils import PlotlyJSONEncoder
+import plotly.io as io
+import plotly.express as px
+
 
 
 class Plot3D:
@@ -11,53 +14,45 @@ class Plot3D:
         self.n_clusters = n_clusters
         self.cluster_stats = cluster_stats
 
-    def scatter3d(self, x_ax,y_ax,z_ax):
+    def scatter_3d(self, x_ax, y_ax, z_ax):
 
-        data = [go.Scatter3d(x=self.df[x_ax], y=self.df[y_ax], z=self.df[z_ax],
-                             mode='markers',
-                             customdata=self.df['song_name'],
-                             hovertemplate= "{x_ax}: %{x} <br> {y_ax}: %{y} </br> {z_ax}: %{z} <br> song: %{customdata}",
-                             marker=dict(
-                                 size=12,
-                                 color=self.df['cluster'],
-                                 colorscale='Viridis'
-                             ))]
+        fig = px.scatter_3d(self.df, x=x_ax, y=y_ax, z=z_ax, color='cluster', hover_data=['song_name'], width=700, height=700)
 
-        layout = {'scene': {'xaxis' : {'title': x_ax},
-            'yaxis' : {'title': y_ax},
-            'zaxis' : {'title' :z_ax}},
-            'widht': 700,
-            'height': 700}
+        test = io.to_json(fig, validate=True)
 
-        plot_3d = json.dumps(data, cls=PlotlyJSONEncoder)
+        return test
 
-        layout = json.dumps(layout)
+    def radar_chart(self):
 
-        return plot_3d, layout
+        categories = self.cluster_stats.loc[:,self.cluster_stats.columns != 'cluster'].columns
 
-    def radar_subplot(self):
-
-        categories = self.cluster_stats.loc[:, self.cluster_stats.columns != 'cluster'].columns
-
-        data = []
+        fig = go.Figure()
 
         for i in range(0,self.n_clusters):
-            trace = [go.Scatterpolar(
+
+            fig.add_trace(go.Scatterpolar(
                 r=[self.cluster_stats.loc[i]['danceability'], self.cluster_stats.loc[i]['energy'], self.cluster_stats.loc[i]['loudness'],
                 self.cluster_stats.loc[i]['speechiness'], self.cluster_stats.loc[i]['acousticness'], self.cluster_stats.loc[i]['instrumentalness'],
                 self.cluster_stats.loc[i]['liveness'], self.cluster_stats.loc[i]['valence'], self.cluster_stats.loc[i]['tempo']],
                 theta=categories,
                 fill='toself',
                 name=f'Cluster {i}'
-            )]
-            data.append(json.dumps(trace, cls=PlotlyJSONEncoder))
+            ))
+        
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0,1]
+                )
+            ),
+            showlegend=True
+        )
 
-        layout = {
-            'grid': {'rows': 1, 'columns': 4, 'pattern': 'independent'}
-        }
+        return io.to_json(fig, validate=True)
 
 
-        return data[0],data[1],data[2],data[3]
+
         
 
 

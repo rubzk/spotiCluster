@@ -22,14 +22,14 @@ def auth_ok():
 
     transform = TransformDataFrame(extractor.df_tracks_info, extractor.df_audio_ft)
 
-    test = Plot3D(transform.final_df, transform.n_clusters, transform.cluster_stats)
-
-    scatter, layout = test.scatter3d('danceability', 'valence', 'energy')
-
-    trace1, trace2,trace3,trace4 = test.radar_subplot()
+    plotter = Plot3D(transform.final_df, transform.n_clusters, transform.cluster_stats)
 
 
-    return render_template('plot.html', plot=scatter , layout_3d=layout, trace1=trace1,trace2=trace2, trace3=trace3,trace4=trace4)
+    new = plotter.scatter_3d('danceability', 'valence', 'energy')
+
+    polar= plotter.radar_chart()
+
+    return render_template('plot.html', plot=new , radar=polar)
 
 if __name__ == '__main__':
     app.run(debug=True)
