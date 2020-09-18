@@ -25,11 +25,18 @@ def auth_ok():
     plotter = Plot3D(transform.final_df, transform.n_clusters, transform.cluster_stats)
 
 
-    new = plotter.scatter_3d('danceability', 'valence', 'energy')
+    plot3d_one = plotter.scatter_3d('danceability', 'valence', 'energy')
+
+    plot3d_two = plotter.scatter_3d('loudness', 'tempo', 'acousticness')
+
+    plot3d_three = plotter.scatter_3d('speechiness', 'acousticness', 'instrumentalness')
+
+    plot3d_four = plotter.scatter_3d('tempo', 'energy', 'loudness')
+
 
     polar= plotter.radar_chart()
 
-    return render_template('plot.html', plot=new , radar=polar)
+    return render_template('plot.html', plot1=plot3d_one, plot2=plot3d_two,plot3=plot3d_three, plot4=plot3d_four, radar=polar)
 
 if __name__ == '__main__':
     app.run(debug=True)

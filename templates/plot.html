@@ -8,6 +8,16 @@
     justify-content: center;
 }
 
+.container-2 {
+    display:flex;
+    justify-content: center;
+}
+
+.container-3{
+    display:flex;
+    justify-content: center;
+}
+
 .title-container{
     display:flex;
     justify-content: center;
@@ -20,15 +30,47 @@
 
 </div>
 
+
 <div class="container-1">
 
-    <div class="chart" id="scatterChart">
+    <div class="chart" id="3d-scatterOne">
         <script>
-            var graphs = {{plot | safe}};
+            var graphs = {{plot1 | safe}};
             layout = {}
-            Plotly.newPlot('scatterChart', graphs, layout, {responsive:true});
+            Plotly.newPlot('3d-scatterOne', graphs, layout, {responsive:true});
         </script>
     </div>
+
+    <div class="chart" id="3d-scatterTwo">
+        <script>
+            var graphs = {{plot2 | safe}};
+            layout = {}
+            Plotly.newPlot('3d-scatterTwo', graphs, layout, {responsive:true});
+        </script>
+    </div>
+
+</div>
+
+<div class="container-2">
+    <div class="chart" id="3d-scatterThree">
+        <script>
+            var graphs = {{plot3 | safe}};
+            layout = {}
+            Plotly.newPlot('3d-scatterThree', graphs, layout, {responsive:true});
+        </script>
+    </div>
+
+    <div class="chart" id="3d-scatterFour">
+        <script>
+            var graphs = {{plot4 | safe}};
+            layout = {}
+            Plotly.newPlot('3d-scatterFour', graphs, layout, {responsive:true});
+        </script>
+    </div>
+
+</div>
+
+<div class="container-3">
 
     <div class="chart" id="radarCharts">
         <script>
@@ -36,7 +78,7 @@
             var data = {{radar | safe}};
             Plotly.newPlot('radarCharts', data, layout);
         </script>
-
     </div>
+
 </div>
 {% endblock %}

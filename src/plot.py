@@ -11,12 +11,13 @@ import plotly.express as px
 class Plot3D:
     def __init__(self,audio_df,n_clusters, cluster_stats):
         self.df = audio_df
+        self.df['size'] = 3
         self.n_clusters = n_clusters
         self.cluster_stats = cluster_stats
 
     def scatter_3d(self, x_ax, y_ax, z_ax):
 
-        fig = px.scatter_3d(self.df, x=x_ax, y=y_ax, z=z_ax, color='cluster', hover_data=['song_name'], width=700, height=700)
+        fig = px.scatter_3d(self.df, x=x_ax, y=y_ax, z=z_ax, color='cluster', hover_data=['song_name'], width=800, height=800, size='size')
 
         test = io.to_json(fig, validate=True)
 
