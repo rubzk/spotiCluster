@@ -66,7 +66,8 @@ def auth_ok():
                                                     'title': 'Cluster Classes',
                                                     'xaxis': 'Count',
                                                     'yaxis': 'Cluster number'
-                                                }})}
+                                                }}),
+                 'n_tracks': transform.n_tracks}
 
     return render_template('plot.html', form=json.dumps(form_data, cls=PlotlyJSONEncoder))
 

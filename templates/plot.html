@@ -35,16 +35,27 @@
     display: flex;
     justify-content: center;
 }
+
+.h1-data {
+    font-family: 'Heebo', sans-serif;
+    display: flex;
+    flex-direction: column;
+}
 </style>
+<script>
+    var data = {{form | safe}}
+    console.log(data)
+</script>
+<div class="h1-data">
+    <h1>We analyzed <var>data['n_tracks']</var>songs in your library</h1>
+    <h2>Here you have the results</h2> 
+</div>
 <div class="title-container">
 
     <h1>3D Overview of your data</h1>
 
 </div>
-<script>
-    var data = {{form | safe}}
-    console.log(data)
-</script>
+
 <div class="container-bar">
     <div class="chart" id="bar_key">
         <script>

@@ -19,6 +19,8 @@ class Plot3D:
 
         fig = px.scatter_3d(self.df, x=x_ax, y=y_ax, z=z_ax, color='cluster', hover_data=['song_name'], width=800, height=800, size='size')
 
+        self.df.to_csv('output.csv')
+
         return fig
 
     def radar_chart(self):
@@ -60,6 +62,12 @@ class Plot3D:
                           xaxis=dict(title=data['layout']['title']),
                           yaxis=dict(title=data['layout']['title']))
         
+        return fig
+
+    def scatter_matrix(self, data:
+
+        fig = px.scatter_matrix(data=self.df, dimensions=data['dimensions'], color=data['color'])
+
         return fig
 
 
