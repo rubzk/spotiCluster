@@ -54,7 +54,7 @@ class Plot3D:
 
     def bar_chart(self, data):
 
-        fig = px.bar(x=data['x'], y=data['y'], orientation=data['orientation'], color=data['color'])
+        fig = px.bar(x=data['x'], y=data['y'], orientation=data['orientation'], color=data['color'], width=data['width'], height=data['height'])
 
         fig.update_layout(title=data['layout']['title'],
                           xaxis=dict(title=data['layout']['title']),

@@ -11,12 +11,11 @@ class TransformDataFrame:
         self.df_audio_ft = df_audio_ft
         self.concat_df = self.concat_data()
         self.n_clusters = self.get_cluster_number()
-        
         self.audio_ft = ['danceability', 'energy', 'loudness', 'speechiness','acousticness','instrumentalness','liveness','valence','tempo']
         self.fit_features = ['danceability','energy','tempo','valence']
         self.concat_df[self.audio_ft] = self.scale_features()
         self.final_df = self.clustering()
-        self.final_df['key'], self.final_df['mode'], self.final_df['cluster_name'] = self.normalization()
+        self.final_df['key'], self.final_df['mode'] = self.normalization()
         self.cluster_stats = self.get_cluster_stats()
         self.n_tracks = self.final_df.shape[0]
 
@@ -60,6 +59,13 @@ class TransformDataFrame:
         self.concat_df['cluster'] = y_kmeans
 
         self.concat_df['cluster'] = self.concat_df['cluster'].astype('str')
+        
+        cluster_names = {}
+
+        for cluster in range(0,self.n_clusters):
+            cluster_names.update({str(cluster): f'Cluster {cluster}'})
+
+        self.concat_df['cluster_name'] = self.concat_df['cluster'].map(cluster_names)
 
         return self.concat_df
 
@@ -70,18 +76,13 @@ class TransformDataFrame:
 
         self.final_df['mode'] = self.final_df['mode'].map({1: 'Major', 0: 'Minor'})
 
-        cluster_names = {}
 
-        for cluster in range(self.n_clusters):
-            cluster_names.update({cluster: f'Cluster {cluster}'})
-
-        self.final_df['cluster_name'] = self.final_df['cluster'].map(cluster_names)
-
-        return self.final_df['key'], self.final_df['mode'], self.final_df['cluster_name']
+        return self.final_df['key'], self.final_df['mode']
 
     def get_cluster_stats(self):
 
         cluster_stats = pd.DataFrame(columns=self.audio_ft)
+
 
         for n in self.final_df['cluster'].value_counts().index.to_list():
             cluster_stats = cluster_stats.append(self.final_df[self.final_df['cluster'] == n][self.audio_ft].mean(), ignore_index=True)

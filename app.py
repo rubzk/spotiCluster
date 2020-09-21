@@ -38,6 +38,8 @@ def auth_ok():
                                                 'y': plotter.df['key'].value_counts().index.to_list(),
                                                 'color': plotter.df['key'].value_counts().index.to_list(),
                                                 'orientation': 'h',
+                                                'width': 450,
+                                                'height': 450,
                                                 'layout': {
                                                     'title': 'Key Appearence',
                                                     'xaxis': 'Number of keys',
@@ -47,15 +49,19 @@ def auth_ok():
                                                 'y': plotter.df['mode'].value_counts().values,
                                                 'color': plotter.df['mode'].value_counts().index.to_list(),
                                                 'orientation': 'v',
+                                                'width': 450,
+                                                'height': 450,
                                                 'layout': {
                                                     'title': 'Mode of songs',
                                                     'xaxis': 'Mode type ',
                                                     'yaxis': 'Count'
                                                 }}),
-                 'cluster_bar': plotter.bar_chart({'x':plotter.df['cluster'].value_counts().values ,
-                                                'y': plotter.df['cluster'].value_counts().index.to_list(),
-                                                'color': plotter.df['cluster'].value_counts().index.to_list(),
+                 'cluster_bar': plotter.bar_chart({'x':plotter.df['cluster_name'].value_counts().values ,
+                                                'y': plotter.df['cluster_name'].value_counts().index.to_list(),
+                                                'color': plotter.df['cluster_name'].value_counts().index.to_list(),
                                                 'orientation': 'h',
+                                                'width': 450,
+                                                'height': 450,
                                                 'layout': {
                                                     'title': 'Cluster Classes',
                                                     'xaxis': 'Count',
