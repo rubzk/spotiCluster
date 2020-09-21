@@ -10,12 +10,15 @@ class TransformDataFrame:
         self.df_tracks = df_tracks
         self.df_audio_ft = df_audio_ft
         self.concat_df = self.concat_data()
+        self.concat_df['key'] = self.key_normalization()
         self.n_clusters = self.get_cluster_number()
         self.audio_ft = ['danceability', 'energy', 'loudness', 'speechiness','acousticness','instrumentalness','liveness','valence','tempo']
         self.fit_features = ['danceability','energy','tempo','valence']
         self.concat_df[self.audio_ft] = self.scale_features()
         self.final_df = self.clustering()
         self.cluster_stats = self.get_cluster_stats()
+        self.n_tracks = self.final_df.shape[0]
+
         
 
     def concat_data(self):
@@ -44,8 +47,21 @@ class TransformDataFrame:
 
         ### WIP WIP WIP
 
-    
         return 4
+
+    def key_normalization(self):
+
+        self.concat_df['key'] = self.concat_df['key'].map({0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'A#', 11: 'B'})
+
+        return self.concat_df['key']
+
+    def mode_normalization(self):
+
+        self.concat_df['mode'] = self.concat_df['mode'].map({1: 'Major', 0: 'Minor'})
+
+        return self.concat_df['mode']
+
+
     
     def clustering(self):
 

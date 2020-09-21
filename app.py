@@ -1,10 +1,12 @@
 import json
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 import requests 
 from utils.extract import DataExtractor
 import credentials
 from utils.transform import TransformDataFrame
 from src.plot import Plot3D
+from plotly.utils import PlotlyJSONEncoder
+
 
 
 app = Flask(__name__)
@@ -33,10 +35,17 @@ def auth_ok():
 
     plot3d_four = plotter.scatter_3d('tempo', 'energy', 'loudness')
 
-
     polar= plotter.radar_chart()
 
-    return render_template('plot.html', plot1=plot3d_one, plot2=plot3d_two,plot3=plot3d_three, plot4=plot3d_four, radar=polar)
+    form_data = {'polar': polar,
+                 'scatter3d': {
+                     1: plot3d_one,
+                     2: plot3d_two,
+                     3: plot3d_three,
+                     4: plot3d_four
+                 }}
+
+    return render_template('plot.html', form=json.dumps(form_data, cls=PlotlyJSONEncoder))
 
 if __name__ == '__main__':
     app.run(debug=True)

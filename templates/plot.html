@@ -1,6 +1,7 @@
 
 {% extends "base.html" %}
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@600&display=swap" rel="stylesheet">
 <style>
 
 .container-1 {
@@ -19,33 +20,42 @@
 }
 
 .title-container{
+    font-family: 'Heebo', sans-serif;
     display:flex;
     justify-content: center;
 }
 
+.sub-title-container {
+    font-family: 'Heebo', sans-serif;
+    display: flex;
+    justify-content: center;
+}
 </style>
 <div class="title-container">
 
-    <h1>Overview of your data</h1>
+    <h1>3D Overview of your data</h1>
 
 </div>
-
+<script>
+    var data = {{form | safe}}
+    console.log(data)
+</script>
 
 <div class="container-1">
 
     <div class="chart" id="3d-scatterOne">
         <script>
-            var graphs = {{plot1 | safe}};
+            //var graphs = {{plot1 | safe}};
             layout = {}
-            Plotly.newPlot('3d-scatterOne', graphs, layout, {responsive:true});
+            Plotly.newPlot('3d-scatterOne', data['scatter3d'][1], layout, {responsive:true});
         </script>
     </div>
 
     <div class="chart" id="3d-scatterTwo">
         <script>
-            var graphs = {{plot2 | safe}};
+            //var graphs = {{plot2 | safe}};
             layout = {}
-            Plotly.newPlot('3d-scatterTwo', graphs, layout, {responsive:true});
+            Plotly.newPlot('3d-scatterTwo', data['scatter3d'][2], layout, {responsive:true});
         </script>
     </div>
 
@@ -54,20 +64,23 @@
 <div class="container-2">
     <div class="chart" id="3d-scatterThree">
         <script>
-            var graphs = {{plot3 | safe}};
+            //var graphs = {{plot3 | safe}};
             layout = {}
-            Plotly.newPlot('3d-scatterThree', graphs, layout, {responsive:true});
+            Plotly.newPlot('3d-scatterThree', data['scatter3d'][3], layout, {responsive:true});
         </script>
     </div>
 
     <div class="chart" id="3d-scatterFour">
         <script>
-            var graphs = {{plot4 | safe}};
+            //var graphs = {{plot4 | safe}};
             layout = {}
-            Plotly.newPlot('3d-scatterFour', graphs, layout, {responsive:true});
+            Plotly.newPlot('3d-scatterFour', data['scatter3d'][4], layout, {responsive:true});
         </script>
     </div>
 
+</div>
+<div class="sub-title-container">
+    <h2>Radar Chart of your Clusters</h2>
 </div>
 
 <div class="container-3">
@@ -75,8 +88,8 @@
     <div class="chart" id="radarCharts">
         <script>
             var layout = {}
-            var data = {{radar | safe}};
-            Plotly.newPlot('radarCharts', data, layout);
+            //var data = {{radar | safe}};
+            Plotly.newPlot('radarCharts', data['polar'], layout);
         </script>
     </div>
 

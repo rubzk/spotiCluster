@@ -19,9 +19,7 @@ class Plot3D:
 
         fig = px.scatter_3d(self.df, x=x_ax, y=y_ax, z=z_ax, color='cluster', hover_data=['song_name'], width=800, height=800, size='size')
 
-        test = io.to_json(fig, validate=True)
-
-        return test
+        return fig
 
     def radar_chart(self):
 
@@ -47,10 +45,12 @@ class Plot3D:
                     range=[0,1]
                 )
             ),
-            showlegend=True
+            showlegend=True,
+            width=600,
+            height=600
         )
 
-        return io.to_json(fig, validate=True)
+        return fig
 
 
 
