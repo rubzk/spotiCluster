@@ -27,23 +27,40 @@ def auth_ok():
     plotter = Plot3D(transform.final_df, transform.n_clusters, transform.cluster_stats)
 
 
-    plot3d_one = plotter.scatter_3d('danceability', 'valence', 'energy')
-
-    plot3d_two = plotter.scatter_3d('loudness', 'tempo', 'acousticness')
-
-    plot3d_three = plotter.scatter_3d('speechiness', 'acousticness', 'instrumentalness')
-
-    plot3d_four = plotter.scatter_3d('tempo', 'energy', 'loudness')
-
-    polar= plotter.radar_chart()
-
-    form_data = {'polar': polar,
+    form_data = {'polar': plotter.radar_chart(),
                  'scatter3d': {
-                     1: plot3d_one,
-                     2: plot3d_two,
-                     3: plot3d_three,
-                     4: plot3d_four
-                 }}
+                     1: plotter.scatter_3d('danceability', 'valence', 'energy'),
+                     2: plotter.scatter_3d('loudness', 'tempo', 'acousticness'),
+                     3: plotter.scatter_3d('speechiness', 'acousticness', 'instrumentalness'),
+                     4: plotter.scatter_3d('tempo', 'energy', 'loudness')
+                 },
+                 'keys_bar': plotter.bar_chart({'x':plotter.df['key'].value_counts().values ,
+                                                'y': plotter.df['key'].value_counts().index.to_list(),
+                                                'color': plotter.df['key'].value_counts().index.to_list(),
+                                                'orientation': 'h',
+                                                'layout': {
+                                                    'title': 'Key Appearence',
+                                                    'xaxis': 'Number of keys',
+                                                    'yaxis': 'Keys'
+                                                }}),
+                 'mode_bar': plotter.bar_chart({'x':plotter.df['mode'].value_counts().index.to_list() ,
+                                                'y': plotter.df['mode'].value_counts().values,
+                                                'color': plotter.df['mode'].value_counts().index.to_list(),
+                                                'orientation': 'v',
+                                                'layout': {
+                                                    'title': 'Mode of songs',
+                                                    'xaxis': 'Mode type ',
+                                                    'yaxis': 'Count'
+                                                }}),
+                 'cluster_bar': plotter.bar_chart({'x':plotter.df['cluster'].value_counts().values ,
+                                                'y': plotter.df['cluster'].value_counts().index.to_list(),
+                                                'color': plotter.df['cluster'].value_counts().index.to_list(),
+                                                'orientation': 'h',
+                                                'layout': {
+                                                    'title': 'Cluster Classes',
+                                                    'xaxis': 'Count',
+                                                    'yaxis': 'Cluster number'
+                                                }})}
 
     return render_template('plot.html', form=json.dumps(form_data, cls=PlotlyJSONEncoder))
 
