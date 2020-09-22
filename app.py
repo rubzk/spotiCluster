@@ -67,8 +67,10 @@ def auth_ok():
                                                     'xaxis': 'Count',
                                                     'yaxis': 'Cluster number'
                                                 }}),
-                 'n_tracks': transform.n_tracks}
-
+                 'n_tracks': transform.n_tracks,
+                 'scatter_matrix': plotter.scatter_matrix({'dimensions': ['danceability', 'valence','tempo','energy'],
+                                                           'color': 'cluster'})}
+                                                           
     return render_template('plot.html', form=json.dumps(form_data, cls=PlotlyJSONEncoder))
 
 if __name__ == '__main__':

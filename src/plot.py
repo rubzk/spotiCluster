@@ -64,9 +64,9 @@ class Plot3D:
         
         return fig
 
-    def scatter_matrix(self, data:
+    def scatter_matrix(self, form):
 
-        fig = px.scatter_matrix(data=self.df, dimensions=data['dimensions'], color=data['color'])
+        fig = px.scatter_matrix(self.df, dimensions=form['dimensions'], color=form['color'])
 
         return fig
 
