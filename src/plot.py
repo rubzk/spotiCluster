@@ -17,7 +17,7 @@ class Plot3D:
 
     def scatter_3d(self, x_ax, y_ax, z_ax):
 
-        fig = px.scatter_3d(self.df, x=x_ax, y=y_ax, z=z_ax, color='cluster', hover_data=['song_name'], width=800, height=800, size='size')
+        fig = px.scatter_3d(self.df, x=x_ax, y=y_ax, z=z_ax, color='cluster', hover_data=['song_name'], width=600, height=600, size='size')
 
         self.df.to_csv('output.csv')
 
@@ -66,7 +66,7 @@ class Plot3D:
 
     def scatter_matrix(self, form):
 
-        fig = px.scatter_matrix(self.df, dimensions=form['dimensions'], color=form['color'])
+        fig = px.scatter_matrix(self.df, dimensions=form['dimensions'], color=form['color'], width=1400, height=800)
 
         return fig
 
