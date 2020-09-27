@@ -1,21 +1,28 @@
 import json
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+import os
+from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 import requests 
-from utils.extract import DataExtractor
+from src.extract import DataExtractor
 import credentials
-from utils.transform import TransformDataFrame
+from src.transform import TransformDataFrame
 from src.plot import Plot3D
 from plotly.utils import PlotlyJSONEncoder
-
-
+from celery import Celery
+from utils.flask_celery import make_celery
 
 app = Flask(__name__)
+app.config['CELERY_BROKER_URL'] = os.environ['CELERY_BROKER_URL']
+app.config['CELERY_BACKEND'] = os.environ['CELERY_BACKEND']
 
+celery = make_celery(app)
 
 @app.route('/')
 def index():
     return render_template('index.html', auth_url=credentials.auth_url)
 
+@celery.task(name='app.reverse')
+def reverse(string):
+    return string[::-1]
 
 @app.route('/auth_ok/', methods=['GET', 'POST'])
 def auth_ok():

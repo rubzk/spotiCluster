@@ -1,8 +1,44 @@
 version: '3'
 services:
     web-app:
-        image: spoticluster
+        build:
+            context: "."
         ports:
             - "5000:5000"
+        environment: 
+            CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
+            CELERY_BACKEND: "${CELERY_BACKEND}"
         volumes:
             - .:/usr/app/
+        depends_on: 
+            - redis
+            - postgres
+        env_file:
+            - ".env"
+    
+    redis:
+        image: redis:5
+        ports:
+            - "6379:6379"
+    
+    postgres:
+        image: postgres:10.14
+        restart: always
+        ports:
+            - "5432:5432"
+        environment: 
+            POSTGRES_DB: "${POSTGRES_DB}"
+            POSTGRES_USER: "${POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+        env_file: 
+            - ".env"
+
+    worker:
+        build: 
+            context: "."
+        command: celery -A app.celery worker --loglevel=INFO
+        depends_on: 
+            - redis
+            - postgres
+        env_file: 
+            - ".env"
