@@ -20,6 +20,13 @@ celery = make_celery(app)
 def index():
     return render_template('index.html', auth_url=credentials.auth_url)
 
+@app.route('/process/<name>')
+def process(name):
+
+    reverse.delay(name)
+
+    return 'I sent an async request'
+
 @celery.task(name='app.reverse')
 def reverse(string):
     return string[::-1]
