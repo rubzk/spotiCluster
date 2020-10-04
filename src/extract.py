@@ -10,12 +10,12 @@ import json
 
 class DataExtractor:
 
-    def __init__(self, client_id, client_secret, redirect_uri, limit):
+    def __init__(self, client_id, client_secret, redirect_uri, limit, auth_code):
         self.limit = limit
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
-        self.auth_code = request.args.get('code')
+        self.auth_code = auth_code
         self.auth_token = self.get_auth_token()
         self.user_id = self.get_user_id()
         self.playlists_id = self.get_all_playlists()
