@@ -29,7 +29,7 @@ def auth():
     return render_template('index.html'), 202, {'Location': url_for('taskstatus', task_id=task.id)}
 
 
-@app.route('/status/<task_id>', methods=['POST'])
+@app.route('/status/<task_id>', methods=['GET'])
 def taskstatus(task_id):
     task = tarea.AsyncResult(task_id)
     if task.state == 'PENDING':
