@@ -48,8 +48,25 @@
 }
 </style>
 <script>
-    var data = {{form | safe}}
-    console.log(data)
+    //var data = {{form | safe}}
+
+    var taskId = '{{task_id | safe}}'
+
+
+    var getStuff = async() => {
+        while(true){
+            var res = await fetch('/status/'+taskId);
+
+            if (!res.ok) break;
+
+            var data = await res.text();
+        };
+        console.log('While done')
+    }; 
+
+    // finish function that checks wether the task finished or not
+
+
 </script>
 <div class="h1-data">
     <h1>We analyzed <var>data['n_tracks']</var>songs in your library</h1>

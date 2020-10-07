@@ -26,7 +26,7 @@ def auth():
     app.logger.info(f'auth_code{auth_code}')
     task = tarea.delay(auth_code)
 
-    return render_template('plot.html'), 202, {'Location': url_for('taskstatus', task_id=task.id)}
+    return render_template('plot.html', task_id=task.id), 202, {'Location': url_for('taskstatus', task_id=task.id)}
 
 
 @app.route('/status/<task_id>', methods=['GET'])
