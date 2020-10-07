@@ -26,7 +26,7 @@ def auth():
     app.logger.info(f'auth_code{auth_code}')
     task = tarea.delay(auth_code)
 
-    return render_template('index.html'), 202, {'Location': url_for('taskstatus', task_id=task.id)}
+    return render_template('plot.html'), 202, {'Location': url_for('taskstatus', task_id=task.id)}
 
 
 @app.route('/status/<task_id>', methods=['GET'])
@@ -46,8 +46,8 @@ def taskstatus(task_id):
             'total': task.info.get('total', 1),
             'status': task.info.get('status', '')
         }
-        if 'result' in task.info:
-            response['result'] = task.info['result']
+        if 'plots' in task.info:
+            response['plots'] = task.info['plots']
     else:
         response = {
             'state': task.state,
