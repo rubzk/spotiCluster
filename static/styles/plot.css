@@ -4,6 +4,10 @@
     justify-content: center;
 }
 
+.container-plots {
+    display: none;
+}
+
 .container-1 {
     display:flex;
     justify-content: center;

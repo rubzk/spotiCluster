@@ -4,119 +4,126 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href='/static/plot.css' />
 
-<script>
-    //var data = {{form | safe}}
 
-    var taskId = '{{task_id | safe}}'
-
-
-    var getStuff = async() => {
-        while(true){
-            var res = await fetch('/status/'+taskId);
-
-            if (!res.ok) break;
-
-            var data = await res.text();
-        };
-        console.log('While done')
-    }; 
-
-    // finish function that checks wether the task finished or not
-
-
-</script>
-<div class="h1-data">
-    <h1>We analyzed <var>data['n_tracks']</var>songs in your library</h1>
-    <h2>Here you have the results</h2> 
-</div>
 <div class="title-container">
 
     <h1>3D Overview of your data</h1>
 
 </div>
+<div class="container-plots" id="test">
 
-<div class="container-bar">
-    <div class="chart" id="bar_key">
-        <script>
-            var layout = {}
-            Plotly.newPlot('bar_key', data['keys_bar'], layout, {responsive:true})
-        </script>
-    </div>
-    <div class="chart" id="bar_mode">
-        <script>
-            var layout = {}
-            Plotly.newPlot('bar_mode', data['mode_bar'], layout, {responsive:true})
-        </script>
-    </div>
-    <div class="chart" id="bar_cluster">
-        <script> 
-            var layout = {}
-            Plotly.newPlot('bar_cluster', data['cluster_bar'], layout, {responsive:true})
-        </script>
+
+    <div class="container-bar">
+        <div class="chart" id="bar_key">
+        </div>
+        <div class="chart" id="bar_mode">
+            <script>
+                var layout = {}
+                Plotly.newPlot('bar_mode', data['mode_bar'], layout, {responsive:true})
+            </script>
+        </div>
+        <div class="chart" id="bar_cluster">
+            <script> 
+                var layout = {}
+                Plotly.newPlot('bar_cluster', data['cluster_bar'], layout, {responsive:true})
+            </script>
+        </div>
+
+
     </div>
 
+    <div class="container-1">
+
+        <div class="chart" id="3d-scatterOne">
+            <script>
+                //var graphs = {{plot1 | safe}};
+                layout = {}
+                Plotly.newPlot('3d-scatterOne', data['scatter3d'][1], layout, {responsive:true});
+            </script>
+        </div>
+
+        <div class="chart" id="3d-scatterTwo">
+            <script>
+                //var graphs = {{plot2 | safe}};
+                layout = {}
+                Plotly.newPlot('3d-scatterTwo', data['scatter3d'][2], layout, {responsive:true});
+            </script>
+        </div>
+
+    </div>
+
+    <div class="container-2">
+        <div class="chart" id="3d-scatterThree">
+            <script>
+                //var graphs = {{plot3 | safe}};
+                layout = {}
+                Plotly.newPlot('3d-scatterThree', data['scatter3d'][3], layout, {responsive:true});
+            </script>
+        </div>
+
+        <div class="chart" id="3d-scatterFour">
+            <script>
+                //var graphs = {{plot4 | safe}};
+                layout = {}
+                Plotly.newPlot('3d-scatterFour', data['scatter3d'][4], layout, {responsive:true});
+            </script>
+        </div>
+
+    </div>
+    <div class="sub-title-container">
+        <h2>Radar Chart of your Clusters</h2>
+    </div>
+
+    <div class="container-3">
+
+        <div class="chart" id="radarCharts">
+            <script>
+                var layout = {}
+                //var data = {{radar | safe}};
+                Plotly.newPlot('radarCharts', data['polar'], layout);
+            </script>
+        </div>
+
+    </div>
+    <div class="container-4">
+        <div class="chart" id="scatter_matrix">
+            <script>
+                var layout = {}
+                Plotly.newPlot('scatter_matrix', data['scatter_matrix'], layout)
+            </script>
+        </div>
+    </div>
 
 </div>
 
-<div class="container-1">
+<script>
 
-    <div class="chart" id="3d-scatterOne">
-        <script>
-            //var graphs = {{plot1 | safe}};
-            layout = {}
-            Plotly.newPlot('3d-scatterOne', data['scatter3d'][1], layout, {responsive:true});
-        </script>
-    </div>
+    var taskId = '{{task_id | safe}}'
 
-    <div class="chart" id="3d-scatterTwo">
-        <script>
-            //var graphs = {{plot2 | safe}};
-            layout = {}
-            Plotly.newPlot('3d-scatterTwo', data['scatter3d'][2], layout, {responsive:true});
-        </script>
-    </div>
+    var resultFound = false;
 
-</div>
+    let plotsWrapper = document.getElementById('test')
 
-<div class="container-2">
-    <div class="chart" id="3d-scatterThree">
-        <script>
-            //var graphs = {{plot3 | safe}};
-            layout = {}
-            Plotly.newPlot('3d-scatterThree', data['scatter3d'][3], layout, {responsive:true});
-        </script>
-    </div>
+    var fetchNow = function() {
+    fetch('/status/'+taskId)
+    .then(res => res.json())
+    .then(data => {
+        if(data['plots']) {
+        plotsWrapper.style.display = 'flex';
+        const data_p = JSON.parse(data['plots'])
+        var layout = {}
+        //function to draw all the plots
+        Plotly.newPlot('bar_key', data_p['keys_bar'], layout, {responsive:true})
+        }
+        else {
+        console.log(data['status'])
+        fetchNow();
+        }
+    });
+    }
 
-    <div class="chart" id="3d-scatterFour">
-        <script>
-            //var graphs = {{plot4 | safe}};
-            layout = {}
-            Plotly.newPlot('3d-scatterFour', data['scatter3d'][4], layout, {responsive:true});
-        </script>
-    </div>
+    fetchNow();
 
-</div>
-<div class="sub-title-container">
-    <h2>Radar Chart of your Clusters</h2>
-</div>
+</script>
 
-<div class="container-3">
-
-    <div class="chart" id="radarCharts">
-        <script>
-            var layout = {}
-            //var data = {{radar | safe}};
-            Plotly.newPlot('radarCharts', data['polar'], layout);
-        </script>
-    </div>
-
-</div>
-<div class="container-4">
-    <div class="chart" id="scatter_matrix">
-        <script>
-            var layout = {}
-            Plotly.newPlot('scatter_matrix', data['scatter_matrix'], layout)
-        </script>
-    </div>
-</div>
 {% endblock %}
