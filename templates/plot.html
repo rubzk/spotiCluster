@@ -110,7 +110,7 @@
     .then(data => {
         if(data['plots']) {
         plotsWrapper.style.display = 'flex';
-        const data_p = JSON.parse(data['plots'])
+        data_p = JSON.parse(data['plots'])
         var layout = {}
         //function to draw all the plots
         Plotly.newPlot('bar_key', data_p['keys_bar'], layout, {responsive:true})
