@@ -14,17 +14,17 @@
 
 
     <div class="container-bar">
-        <div class="chart" id="bar_key">
+        <div class="chart" id="keys_bar">
         </div>
-        <div class="chart" id="bar_mode">
+        <div class="chart" id="mode_bar">
             <script>
-                var layout = {}
+                
                 Plotly.newPlot('bar_mode', data['mode_bar'], layout, {responsive:true})
             </script>
         </div>
-        <div class="chart" id="bar_cluster">
+        <div class="chart" id="cluster_bar">
             <script> 
-                var layout = {}
+                
                 Plotly.newPlot('bar_cluster', data['cluster_bar'], layout, {responsive:true})
             </script>
         </div>
@@ -76,9 +76,9 @@
 
     <div class="container-3">
 
-        <div class="chart" id="radarCharts">
+        <div class="chart" id="polar">
             <script>
-                var layout = {}
+                
                 //var data = {{radar | safe}};
                 Plotly.newPlot('radarCharts', data['polar'], layout);
             </script>
@@ -88,7 +88,7 @@
     <div class="container-4">
         <div class="chart" id="scatter_matrix">
             <script>
-                var layout = {}
+                
                 Plotly.newPlot('scatter_matrix', data['scatter_matrix'], layout)
             </script>
         </div>
@@ -113,7 +113,11 @@
         data_p = JSON.parse(data['plots'])
         var layout = {}
         //function to draw all the plots
-        Plotly.newPlot('bar_key', data_p['keys_bar'], layout, {responsive:true})
+        for (const [key, value] of Object.entries(data_p)) {
+            Plotly.newPlot(key, data_p[key], layout, {responsive:true})
+            console.log(key, value)
+
+        }
         }
         else {
         console.log(data['status'])
