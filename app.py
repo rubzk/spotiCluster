@@ -110,7 +110,6 @@ def tarea(self,auth_code):
                                                     'xaxis': 'Count',
                                                     'yaxis': 'Cluster number'
                                                 }}),
-                 'n_tracks': transform.n_tracks,
                  'scatter_matrix': plotter.scatter_matrix({'dimensions': ['danceability', 'valence','tempo','energy'],
                                                            'color': 'cluster'})}
 

@@ -8,21 +8,6 @@
     display: none;
 }
 
-.container-1 {
-    display:flex;
-    justify-content: center;
-}
-
-.container-2 {
-    display:flex;
-    justify-content: center;
-}
-
-.container-3{
-    display:flex;
-    justify-content: center;
-}
-
 .title-container{
     font-family: 'Heebo', sans-serif;
     display:flex;
@@ -41,7 +26,23 @@
     flex-direction: column;
 }
 
-.container-4 {
+
+.loading-plots {
+    display: flex;
+    justify-content: center;
+}
+
+.first-div { 
+    display: flex;
+    justify-content: center;
+}
+
+.polar-div {
+    display: flex;
+    justify-content: center;
+}
+
+.scatter-div {
     display: flex;
     justify-content: center;
 }

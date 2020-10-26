@@ -1,99 +1,37 @@
-
 {% extends "base.html" %}
 {% block content %}
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href='/static/plot.css' />
+<link rel="stylesheet" href="{{ url_for('static',filename='styles/plot.css') }}">
 
 
-<div class="title-container">
+<div class="loading-plots" id="loading-plots">
 
-    <h1>3D Overview of your data</h1>
+    <h1>Loading plots....</h1>
 
 </div>
+
 <div class="container-plots" id="test">
 
+    <div class="title-container">
 
-    <div class="container-bar">
-        <div class="chart" id="keys_bar">
-        </div>
-        <div class="chart" id="mode_bar">
-            <script>
-                
-                Plotly.newPlot('bar_mode', data['mode_bar'], layout, {responsive:true})
-            </script>
-        </div>
-        <div class="chart" id="cluster_bar">
-            <script> 
-                
-                Plotly.newPlot('bar_cluster', data['cluster_bar'], layout, {responsive:true})
-            </script>
-        </div>
-
-
+        <h1>3D Overview of your data</h1>
+    
     </div>
 
-    <div class="container-1">
+    <div class="first-div">
 
-        <div class="chart" id="3d-scatterOne">
-            <script>
-                //var graphs = {{plot1 | safe}};
-                layout = {}
-                Plotly.newPlot('3d-scatterOne', data['scatter3d'][1], layout, {responsive:true});
-            </script>
-        </div>
-
-        <div class="chart" id="3d-scatterTwo">
-            <script>
-                //var graphs = {{plot2 | safe}};
-                layout = {}
-                Plotly.newPlot('3d-scatterTwo', data['scatter3d'][2], layout, {responsive:true});
-            </script>
-        </div>
+        <div class="chart" id="keys_bar"></div>
+        <div class="chart" id="mode_bar"></div>
+        <div class="chart" id="cluster_bar"></div>
 
     </div>
-
-    <div class="container-2">
-        <div class="chart" id="3d-scatterThree">
-            <script>
-                //var graphs = {{plot3 | safe}};
-                layout = {}
-                Plotly.newPlot('3d-scatterThree', data['scatter3d'][3], layout, {responsive:true});
-            </script>
-        </div>
-
-        <div class="chart" id="3d-scatterFour">
-            <script>
-                //var graphs = {{plot4 | safe}};
-                layout = {}
-                Plotly.newPlot('3d-scatterFour', data['scatter3d'][4], layout, {responsive:true});
-            </script>
-        </div>
-
+    <div class="polar-div">
+        <div class="chart" id="polar"></div>
     </div>
-    <div class="sub-title-container">
-        <h2>Radar Chart of your Clusters</h2>
+    <div class="scatter-div">
+        <div class="chart" id="scatter_matrix"></div>
     </div>
-
-    <div class="container-3">
-
-        <div class="chart" id="polar">
-            <script>
-                
-                //var data = {{radar | safe}};
-                Plotly.newPlot('radarCharts', data['polar'], layout);
-            </script>
-        </div>
-
-    </div>
-    <div class="container-4">
-        <div class="chart" id="scatter_matrix">
-            <script>
-                
-                Plotly.newPlot('scatter_matrix', data['scatter_matrix'], layout)
-            </script>
-        </div>
-    </div>
-
+    
 </div>
 
 <script>
@@ -110,13 +48,18 @@
     .then(data => {
         if(data['plots']) {
         plotsWrapper.style.display = 'flex';
+        document.getElementById('loading-plots').style.display = 'none';
         data_p = JSON.parse(data['plots'])
         var layout = {}
         //function to draw all the plots
         for (const [key, value] of Object.entries(data_p)) {
-            Plotly.newPlot(key, data_p[key], layout, {responsive:true})
-            console.log(key, value)
-
+            if (key == "scatter3d"){
+                console.log(key, value)
+            }
+            else {
+                Plotly.newPlot(key, data_p[key], layout, {responsive:true})
+                console.log(key, value)   
+            }
         }
         }
         else {
