@@ -1,2 +1,21 @@
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+
+
 credentials.py
 output.csv

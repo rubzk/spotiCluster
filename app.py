@@ -1,31 +1,74 @@
 import json
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+import os
+from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 import requests 
-from utils.extract import DataExtractor
+from src.extract import DataExtractor
 import credentials
-from utils.transform import TransformDataFrame
+from src.transform import TransformDataFrame
 from src.plot import Plot3D
 from plotly.utils import PlotlyJSONEncoder
-
-
+from utils.flask_celery import make_celery
 
 app = Flask(__name__)
+app.config['CELERY_BROKER_URL'] = os.environ['CELERY_BROKER_URL']
+app.config['CELERY_BACKEND'] = os.environ['CELERY_BACKEND']
 
+celery = make_celery(app)
 
 @app.route('/')
 def index():
     return render_template('index.html', auth_url=credentials.auth_url)
 
 
-@app.route('/auth_ok/', methods=['GET', 'POST'])
-def auth_ok():
+@app.route('/auth_ok/')
+def auth():
+    auth_code = request.args.get('code')
+    app.logger.info(f'auth_code{auth_code}')
+    task = tarea.delay(auth_code)
 
-    extractor = DataExtractor(credentials.client_id, credentials.client_secret, credentials.redirect_uri, 50)
+    return render_template('plot.html', task_id=task.id), 202, {'Location': url_for('taskstatus', task_id=task.id)}
 
+
+@app.route('/status/<task_id>', methods=['GET'])
+def taskstatus(task_id):
+    task = tarea.AsyncResult(task_id)
+    if task.state == 'PENDING':
+        response = {
+            'state': task.state,
+            'current': 0,
+            'total': 1,
+            'status': 'Pending...'
+        }
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'current': task.info.get('current', 0),
+            'total': task.info.get('total', 1),
+            'status': task.info.get('status', '')
+        }
+        if 'plots' in task.info:
+            response['plots'] = task.info['plots']
+    else:
+        response = {
+            'state': task.state,
+            'current': 1,
+            'total': 1,
+            'status': str(task.info),
+        }
+    return jsonify(response)
+
+
+@celery.task(bind=True,name='app.lala')
+def tarea(self,auth_code):
+    self.update_state(state='PROGRESS', 
+    meta={'current': 0, 'total': 100, 'status': 'Getting Auth'})
+    extractor = DataExtractor(credentials.client_id, credentials.client_secret, credentials.redirect_uri, 50, auth_code)
+    self.update_state(state='PROGRESS', 
+    meta={'current': 33, 'total': 100, 'status': 'Transforming data'})
     transform = TransformDataFrame(extractor.df_tracks_info, extractor.df_audio_ft)
-
+    self.update_state(state='PROGRESS', 
+    meta={'current': 66, 'total': 100, 'status': 'Generating the plots'})
     plotter = Plot3D(transform.final_df, transform.n_clusters, transform.cluster_stats)
-
 
     form_data = {'polar': plotter.radar_chart(),
                  'scatter3d': {
@@ -67,14 +110,22 @@ def auth_ok():
                                                     'xaxis': 'Count',
                                                     'yaxis': 'Cluster number'
                                                 }}),
-                 'n_tracks': transform.n_tracks,
                  'scatter_matrix': plotter.scatter_matrix({'dimensions': ['danceability', 'valence','tempo','energy'],
                                                            'color': 'cluster'})}
+
+    form_data = json.dumps(form_data, cls=PlotlyJSONEncoder)
+
+    return {'current': 100, 'total': 100, 'status': 'DONE!', 'plots': form_data}
+
+
+@app.route('/auth_test/', methods=['GET', 'POST'])
+def auth_ok():
+
                                                            
     return render_template('plot.html', form=json.dumps(form_data, cls=PlotlyJSONEncoder))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 
 
