@@ -25,10 +25,25 @@
     <div class="chart" id="cluster_bar"></div>
 
 </div>
+
+<div class="scatter-3d_1" id="forth-row">
+    <div class="chart" id="scatter-1"></div>
+    <div class="chart" id="scatter-2"></div>
+</div>
+
+<div class="scatter-3d_2" id="fifth-row">
+    <div class="chart" id="scatter-3"></div>
+    <div class="chart" id="scatter-4"></div>
+</div>
+
+
+
 <div class="polar-div" id="second-row">
+    <h2>Radar Chart</h2>
     <div class="chart" id="polar"></div>
 </div>
 <div class="scatter-div" id="third-row">
+    <h2>Scatter Matrix</h2>
     <div class="chart" id="scatter_matrix"></div>
 </div>
 
@@ -42,18 +57,13 @@
 
     var resultFound = false;
 
-    let plotsWrapper = document.getElementById('test')
-
-    document.getElementsByClassName("")
-
     var fetchNow = function() {
     fetch('/status/'+taskId)
     .then(res => res.json())
     .then(data => {
         if(data['plots']) {
-        //plotsWrapper.style.display = 'flex';
         document.getElementById("title").style.display = 'flex';
-        document.getElementById("title").innerHTML = asd;
+        //document.getElementById("title").innerHTML = asd;
 
         document.getElementById("first-row").style.display = 'flex';
 
@@ -68,6 +78,10 @@
         for (const [key, value] of Object.entries(data_p)) {
             if (key == "scatter3d"){
                 console.log(key, value)
+                Plotly.newPlot("scatter-1", data_p[key][1], layout, {responsive:true})
+                Plotly.newPlot("scatter-2", data_p[key][2], layout, {responsive:true})
+                Plotly.newPlot("scatter-3", data_p[key][3], layout, {responsive:true})
+                Plotly.newPlot("scatter-4", data_p[key][4], layout, {responsive:true})
             }
             else {
                 Plotly.newPlot(key, data_p[key], layout, {responsive:true})
