@@ -4,10 +4,6 @@
     justify-content: center;
 }
 
-.container-plots {
-    display: none;
-}
-
 .title-container{
     font-family: 'Heebo', sans-serif;
     display: none;
@@ -48,12 +44,17 @@
 }
 
 .scatter-3d-1 {
-    display: flex;
+    display: none;
     justify-content: center;
 
 }
 
 .scatter-3d-2 {
-    display: flex;
+    display: none;
+    justify-content: center;
+}
+
+.plots {
+    display: none;
     justify-content: center;
 }

@@ -11,42 +11,43 @@
 </div>
 
 
+<div class="plots">
 
-<div class="title-container" id="title">
+    <div class="title-container" id="title">
 
-    <h1>3D Overview of your data</h1>
+        <h1>3D Overview of your data</h1>
 
+    </div>
+
+    <div class="first-div" id="first-row">
+
+        <div class="chart" id="keys_bar"></div>
+        <div class="chart" id="mode_bar"></div>
+        <div class="chart" id="cluster_bar"></div>
+
+    </div>
+
+    <div class="scatter-3d_1" id="forth-row">
+        <div class="chart" id="scatter-1"></div>
+        <div class="chart" id="scatter-2"></div>
+    </div>
+
+    <div class="scatter-3d_2" id="fifth-row">
+        <div class="chart" id="scatter-3"></div>
+        <div class="chart" id="scatter-4"></div>
+    </div>
+
+
+
+    <div class="polar-div" id="second-row">
+        <h2>Radar Chart</h2>
+        <div class="chart" id="polar"></div>
+    </div>
+    <div class="scatter-div" id="third-row">
+        <h2>Scatter Matrix</h2>
+        <div class="chart" id="scatter_matrix"></div>
+    </div>
 </div>
-
-<div class="first-div" id="first-row">
-
-    <div class="chart" id="keys_bar"></div>
-    <div class="chart" id="mode_bar"></div>
-    <div class="chart" id="cluster_bar"></div>
-
-</div>
-
-<div class="scatter-3d_1" id="forth-row">
-    <div class="chart" id="scatter-1"></div>
-    <div class="chart" id="scatter-2"></div>
-</div>
-
-<div class="scatter-3d_2" id="fifth-row">
-    <div class="chart" id="scatter-3"></div>
-    <div class="chart" id="scatter-4"></div>
-</div>
-
-
-
-<div class="polar-div" id="second-row">
-    <h2>Radar Chart</h2>
-    <div class="chart" id="polar"></div>
-</div>
-<div class="scatter-div" id="third-row">
-    <h2>Scatter Matrix</h2>
-    <div class="chart" id="scatter_matrix"></div>
-</div>
-
 
 
 <script>
@@ -63,6 +64,7 @@
     .then(data => {
         if(data['plots']) {
         document.getElementById("title").style.display = 'flex';
+
         //document.getElementById("title").innerHTML = asd;
 
         document.getElementById("first-row").style.display = 'flex';
@@ -71,7 +73,12 @@
 
         document.getElementById("third-row").style.display = 'flex';
 
+        document.getElementById("forth-row").style.display = 'flex';
+
+        document.getElementById("fifth-row").style.display = 'flex';
+
         document.getElementById('loading-plots').style.display = 'none';
+
         data_p = JSON.parse(data['plots'])
         var layout = {}
         //function to draw all the plots
