@@ -10,7 +10,7 @@
 
 .title-container{
     font-family: 'Heebo', sans-serif;
-    display:flex;
+    display: none;
     justify-content: center;
 }
 
@@ -33,16 +33,16 @@
 }
 
 .first-div { 
-    display: flex;
+    display: none;
     justify-content: center;
 }
 
 .polar-div {
-    display: flex;
+    display: none;
     justify-content: center;
 }
 
 .scatter-div {
-    display: flex;
+    display: none;
     justify-content: center;
 }

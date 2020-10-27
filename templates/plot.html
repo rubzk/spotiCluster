@@ -10,31 +10,33 @@
 
 </div>
 
-<div class="container-plots" id="test">
 
-    <div class="title-container">
 
-        <h1>3D Overview of your data</h1>
-    
-    </div>
+<div class="title-container" id="title">
 
-    <div class="first-div">
+    <h1>3D Overview of your data</h1>
 
-        <div class="chart" id="keys_bar"></div>
-        <div class="chart" id="mode_bar"></div>
-        <div class="chart" id="cluster_bar"></div>
-
-    </div>
-    <div class="polar-div">
-        <div class="chart" id="polar"></div>
-    </div>
-    <div class="scatter-div">
-        <div class="chart" id="scatter_matrix"></div>
-    </div>
-    
 </div>
 
+<div class="first-div" id="first-row">
+
+    <div class="chart" id="keys_bar"></div>
+    <div class="chart" id="mode_bar"></div>
+    <div class="chart" id="cluster_bar"></div>
+
+</div>
+<div class="polar-div" id="second-row">
+    <div class="chart" id="polar"></div>
+</div>
+<div class="scatter-div" id="third-row">
+    <div class="chart" id="scatter_matrix"></div>
+</div>
+
+
+
 <script>
+
+    var asd = 9000;
 
     var taskId = '{{task_id | safe}}'
 
@@ -42,12 +44,23 @@
 
     let plotsWrapper = document.getElementById('test')
 
+    document.getElementsByClassName("")
+
     var fetchNow = function() {
     fetch('/status/'+taskId)
     .then(res => res.json())
     .then(data => {
         if(data['plots']) {
-        plotsWrapper.style.display = 'flex';
+        //plotsWrapper.style.display = 'flex';
+        document.getElementById("title").style.display = 'flex';
+        document.getElementById("title").innerHTML = asd;
+
+        document.getElementById("first-row").style.display = 'flex';
+
+        document.getElementById("second-row").style.display = 'flex';
+
+        document.getElementById("third-row").style.display = 'flex';
+
         document.getElementById('loading-plots').style.display = 'none';
         data_p = JSON.parse(data['plots'])
         var layout = {}
