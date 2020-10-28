@@ -22,39 +22,39 @@
     flex-direction: column;
 }
 
-
 .loading-plots {
     display: flex;
     justify-content: center;
 }
 
 .first-div { 
-    display: none;
+    display: flex;
     justify-content: center;
 }
 
 .polar-div {
-    display: none;
+    display: flex;
     justify-content: center;
 }
 
 .scatter-div {
-    display: none;
+    display: flex;
     justify-content: center;
 }
 
-.scatter-3d-1 {
-    display: none;
+.scatter-3d_1 {
+    display: flex;
     justify-content: center;
 
 }
 
-.scatter-3d-2 {
-    display: none;
+.scatter-3d_2 {
+    display: flex;
     justify-content: center;
 }
 
 .plots {
     display: none;
-    justify-content: center;
+    flex-direction: column;
 }
+
