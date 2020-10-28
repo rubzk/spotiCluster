@@ -16,6 +16,8 @@
     <div class="title-container" id="title">
 
         <h1>3D Overview of your data</h1>
+        <h2 id="n_cluster"></h2>
+        <h2 id="n_tracks"></h2>
 
     </div>
 
@@ -54,7 +56,6 @@
 
     var asd = "<h1>5000 Songs Analyzed!</h1>";
 
-
     var taskId = '{{task_id | safe}}'
 
     var resultFound = false;
@@ -66,19 +67,9 @@
         if(data['plots']) {
         document.getElementById("title").style.display = 'flex';
 
-        //document.getElementById("title").innerHTML = asd;
+
 
         document.getElementById("plots").style.display = 'flex';
-
-        //document.getElementById("first-row").style.display = 'flex';
-
-        //document.getElementById("second-row").style.display = 'flex';
-
-        //document.getElementById("third-row").style.display = 'flex';
-
-        //document.getElementById("forth-row").style.display = 'flex';
-
-        //document.getElementById("fifth-row").style.display = 'flex';
 
         document.getElementById('loading-plots').style.display = 'none';
 
@@ -95,7 +86,8 @@
                 Plotly.newPlot("scatter-4", data_p[key][4], layout,config)
             }
             else if (key =='user_data') { 
-                document.getElementById("title").innerHTML = data_p[key][0];
+                document.getElementById("n_cluster").innerHTML ="<h2>Your datas was clusterized in " + data_p[key][0] + " clusters</h2>";
+                document.getElementById("n_tracks").innerHTML ="<h2>We analyzed " + data_p[key][1] + " tracks</h2>";
 
             }
             else {
