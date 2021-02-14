@@ -6,6 +6,36 @@ from sklearn.cluster import KMeans
 
 class TransformDataFrame:
 
+    """A class to transform all the extracted data from DataExtractor
+    and return a Data Frame ready to be plotted.
+
+    ...
+
+    Attributes
+    ----------
+    df_tracks : dataframe
+        Pandas Data Frame with all the info of the user tracks
+    df_audio_ft : dataframe
+        Pandas Data frame with all the audio features of the user tracks
+    
+    Methods
+    .......
+
+    concat_data():
+        Concat tracks data frame and audio features data frame.
+    scale_features():
+        Scale thhe features of the data frame in preparation for clustering.
+    get_cluster_number():
+        Defines the number of clusters that K-means will user.
+    clustering():
+        Apply K-means clustering to the tracks.
+    normalization():
+        Mapping of some classes of a column to proper viz.
+    get_cluster_stats():
+        Create a new Data Frame with stats of each cluster for viz.
+
+    """
+
     def __init__(self, df_tracks, df_audio_ft):
         self.df_tracks = df_tracks
         self.df_audio_ft = df_audio_ft
@@ -22,6 +52,11 @@ class TransformDataFrame:
         
 
     def concat_data(self):
+        """
+
+        Concat tracks data frame and audio features data frame.
+
+        """
 
         self.df_tracks.reset_index(drop=True, inplace=True)
         self.df_audio_ft.reset_index(drop=True, inplace=True)
@@ -36,6 +71,11 @@ class TransformDataFrame:
         return df_join
 
     def scale_features(self):
+        """
+
+        Scale thhe features of the data frame in preparation for clustering.
+
+        """
 
         scaler = MinMaxScaler()
 
@@ -45,12 +85,24 @@ class TransformDataFrame:
 
     def get_cluster_number(self):
 
+        """
+
+        Defines the number of clusters that K-means will user.
+
+        """
+
         ### WIP WIP WIP
 
         return 4
 
     
     def clustering(self):
+
+        """
+
+        Apply K-means clustering to the tracks.
+
+        """
 
         kmeans = KMeans(n_clusters=self.n_clusters).fit(self.concat_df[self.fit_features])
 
@@ -72,6 +124,12 @@ class TransformDataFrame:
     
     def normalization(self):
 
+        """
+
+        Mapping of some classes of a column to proper viz.
+
+        """
+
         self.final_df['key'] = self.final_df['key'].map({0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'A#', 11: 'B'})
 
         self.final_df['mode'] = self.final_df['mode'].map({1: 'Major', 0: 'Minor'})
@@ -80,6 +138,12 @@ class TransformDataFrame:
         return self.final_df['key'], self.final_df['mode']
 
     def get_cluster_stats(self):
+
+        """
+
+        Create a new Data Frame with stats of each cluster for viz.
+        
+        """
 
         cluster_stats = pd.DataFrame(columns=self.audio_ft)
 
