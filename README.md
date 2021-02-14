@@ -17,7 +17,7 @@ The is a Flask web app with Celery to paralellize tasks and Plotly to create the
 - Fix responsive
 - Refactor some celery stuff(bathces of requests)
 - Add last trends in music plot
-- 
+- Store data in Amazon S3 bucket.
 
 ## How to build:
 
