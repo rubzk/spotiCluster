@@ -9,14 +9,22 @@ import json
 
 
 class DataExtractor:
+    """
 
-    def __init__(self, client_id, client_secret, redirect_uri, limit, auth_code):
+    Explain here What DataExtractor Does
+
+    """
+
+    def __init__(self, client_id, client_secret,
+                 redirect_uri, limit, auth_code):
+        
+        
         self.limit = limit
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.redirect_uri = redirect_uri
-        self.auth_code = auth_code
-        self.auth_token = self.get_auth_token()
+        self.__client_id = client_id
+        self.__client_secret = client_secret
+        self.__redirect_uri = redirect_uri
+        self.__auth_code = auth_code
+        self.__auth_token = self.get_auth_token()
         self.user_id = self.get_user_id()
         self.playlists_id = self.get_all_playlists()
         self.df_tracks_info = self.get_all_tracks()
@@ -25,15 +33,15 @@ class DataExtractor:
 
     def get_auth_token(self):
 
-        headers = {"Authorization" : f"Basic {transform_to_64(self.client_id+':'+self.client_secret)}"}
+        headers = {"Authorization" : f"Basic {transform_to_64(self.__client_id+':'+self.__client_secret)}"}
 
-        body = {"grant_type": "authorization_code", "code": self.auth_code, "redirect_uri": self.redirect_uri}
+        body = {"grant_type": "authorization_code", "code": self.__auth_code, "redirect_uri": self.__redirect_uri}
 
         return requests.post('https://accounts.spotify.com/api/token', headers=headers, data=body).json()['access_token']
     
     def get_user_id(self):
 
-        headers = {'Authorization': f"Bearer {self.auth_token}"}
+        headers = {'Authorization': f"Bearer {self.__auth_token}"}
 
         return requests.get('https://api.spotify.com/v1/me', headers=headers).json()['id']
 
@@ -41,7 +49,7 @@ class DataExtractor:
 
         headers = {'Accept': 'application/json',
                'Content-Type': 'application/json',
-               'Authorization': f'Bearer {self.auth_token}'}
+               'Authorization': f'Bearer {self.__auth_token}'}
 
         playlists = requests.get('https://api.spotify.com/v1/me/playlists?'+'limit={}'.format(self.limit)+'&offset={}'.format(offset), headers=headers).json()['items']
 
@@ -53,7 +61,7 @@ class DataExtractor:
 
         headers = {'Accept': 'application/json',
                'Content-Type': 'application/json',
-               'Authorization': f'Bearer {self.auth_token}'}
+               'Authorization': f'Bearer {self.__auth_token}'}
 
         
         tracks_info = pd.DataFrame([], columns=['id','name','artist'])
@@ -87,7 +95,7 @@ class DataExtractor:
         df_audio_ft = pd.DataFrame([], columns=['danceability','energy','key','loudness','mode','speechiness','acousticness','instrumentalness','liveness',
                                    'valence','tempo','type','id','uri','track_href','analysis_url','duration_ms','time_signature'])
         
-        headers = {'Authorization': f"Bearer {self.auth_token}"}
+        headers = {'Authorization': f"Bearer {self.__auth_token}"}
 
         tracks_ids = self.df_tracks_info['id'].to_list()
 
