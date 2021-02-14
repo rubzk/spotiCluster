@@ -9,9 +9,35 @@ import json
 
 
 class DataExtractor:
-    """
+    """A class to extract data from the Spotify-API
 
-    Explain here What DataExtractor Does
+    ...
+
+    Attributes
+    ----------
+    client_id : str
+        API requirement to make requests.
+    client_secret : str
+        API secret requirement to make requests.
+    redirect_uri : str
+        The redirect URI after the auth process.
+    limit : int
+        The limit number of results delivered by the request.
+    auth_code : str
+        Code retrieved by the auth process.
+
+    Methods
+    -------
+    get_auth_token():
+        Gets the auth token necessary to get data from the user.
+    get_user_id():
+        Gets the user id with the auth token.
+    get_all_playlists(, offset=0):
+        Gets all the playlist ids from the users.
+    get_all_tracks():
+        Gets all the tracks from the playlists.
+    get_all_audio_features():
+        Gets all the audio features from the tracks.
 
     """
 
@@ -32,6 +58,11 @@ class DataExtractor:
 
 
     def get_auth_token(self):
+        """
+        
+        Gets the auth token necessary to get data from the user.
+
+        """
 
         headers = {"Authorization" : f"Basic {transform_to_64(self.__client_id+':'+self.__client_secret)}"}
 
@@ -40,12 +71,27 @@ class DataExtractor:
         return requests.post('https://accounts.spotify.com/api/token', headers=headers, data=body).json()['access_token']
     
     def get_user_id(self):
+        """ 
+
+        Gets the user id with the auth token.
+
+        """
 
         headers = {'Authorization': f"Bearer {self.__auth_token}"}
 
         return requests.get('https://api.spotify.com/v1/me', headers=headers).json()['id']
 
     def get_all_playlists(self, offset=0):
+
+        """
+
+        Gets all the playlist ids from the users.
+
+        Parameters
+        ----------
+            offset : int
+                The index of the first playlist to return. Default: 0
+        """
 
         headers = {'Accept': 'application/json',
                'Content-Type': 'application/json',
@@ -58,6 +104,12 @@ class DataExtractor:
         return playlists_id
 
     def get_all_tracks(self):
+
+        """
+
+        Gets all the tracks from the playlists.
+
+        """
 
         headers = {'Accept': 'application/json',
                'Content-Type': 'application/json',
@@ -91,6 +143,13 @@ class DataExtractor:
 
     
     def get_all_audio_features(self):
+
+        """
+
+        Gets all the audio features from the tracks and return a data frame
+
+
+        """
 
         df_audio_ft = pd.DataFrame([], columns=['danceability','energy','key','loudness','mode','speechiness','acousticness','instrumentalness','liveness',
                                    'valence','tempo','type','id','uri','track_href','analysis_url','duration_ms','time_signature'])
