@@ -49,7 +49,7 @@ class Plot3D:
             ),
             showlegend=True,
             width=600,
-            height=600
+            height=600,
         )
 
         return fig

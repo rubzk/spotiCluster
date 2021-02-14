@@ -16,9 +16,14 @@
     <div class="title-container" id="title">
 
         <h1>3D Overview of your data</h1>
-        <h2 id="n_cluster"></h2>
-        <h2 id="n_tracks"></h2>
+    </div>
 
+    <div class="title-container" id="n_clusters">
+        <h2 id="n_cluster"></h2>
+    </div>
+
+    <div class="title-container" id="n_tracks">
+        <h2 id="n_tracks"></h2>
     </div>
 
     <div class="first-div" id="first-row">
@@ -54,7 +59,6 @@
 
 <script>
 
-    var asd = "<h1>5000 Songs Analyzed!</h1>";
 
     var taskId = '{{task_id | safe}}'
 
@@ -86,8 +90,10 @@
                 Plotly.newPlot("scatter-4", data_p[key][4], layout,config)
             }
             else if (key =='user_data') { 
-                document.getElementById("n_cluster").innerHTML ="<h2>Your datas was clusterized in " + data_p[key][0] + " clusters</h2>";
+                document.getElementById("n_clusters").innerHTML ="<h2>Your datas was clusterized in " + data_p[key][0] + " clusters</h2>";
                 document.getElementById("n_tracks").innerHTML ="<h2>We analyzed " + data_p[key][1] + " tracks</h2>";
+                document.getElementById("n_clusters").style.display = 'flex';
+                document.getElementById("n_tracks").style.display = 'flex';
 
             }
             else {
