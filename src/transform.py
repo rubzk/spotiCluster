@@ -9,11 +9,11 @@ class TransformDataFrame:
     def __init__(self, df_tracks, df_audio_ft):
         self.df_tracks = df_tracks
         self.df_audio_ft = df_audio_ft
-        self.concat_df = self.concat_data()
-        self.n_clusters = self.get_cluster_number()
         self.audio_ft = ['danceability', 'energy', 'loudness', 'speechiness','acousticness','instrumentalness','liveness','valence','tempo']
         self.fit_features = ['danceability','energy','tempo','valence']
+        self.concat_df = self.concat_data()
         self.concat_df[self.audio_ft] = self.scale_features()
+        self.n_clusters = 6
         self.final_df = self.clustering()
         self.final_df['key'], self.final_df['mode'] = self.normalization()
         self.cluster_stats = self.get_cluster_stats()
@@ -45,9 +45,15 @@ class TransformDataFrame:
 
     def get_cluster_number(self):
 
-        ### WIP WIP WIP
+        inertia = []
+        for n in range(1,11):
+            km = KMeans(n_clusters=n).fit(self.concat_df[self.fit_features])
+            inertia.append((km.inertia_))
+        inertia = np.array(inertia)
+        n_clusters = [idx for idx,x in enumerate(inertia) if x <= np.median(inertia)][0] + 1
+        return n_clusters
 
-        return 4
+            
 
     
     def clustering(self):
