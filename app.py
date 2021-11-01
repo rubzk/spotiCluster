@@ -119,14 +119,7 @@ def tarea(self,auth_code):
     return {'current': 100, 'total': 100, 'status': 'DONE!', 'plots': form_data}
 
 
-@app.route('/auth_test/', methods=['GET', 'POST'])
-def auth_ok():
-
-                                                           
-    return render_template('plot.html', form=json.dumps(form_data, cls=PlotlyJSONEncoder))
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
 
 
