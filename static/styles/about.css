@@ -3,9 +3,11 @@
 .main-body {
 		display: flex;
 		justify-content: center;
+		padding: 30px;
+		font-family: 'Ubuntu', sans-serif;
 }
-.content {
-		display: flex;
-		flex-direction: column;	
+.main-body div {
+		flex-direction: column;
+		margin: 10px;
 			
 }
