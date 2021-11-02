@@ -1,0 +1,11 @@
+
+
+.main-body {
+		display: flex;
+		justify-content: center;
+}
+.content {
+		display: flex;
+		flex-direction: column;	
+			
+}

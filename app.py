@@ -19,6 +19,9 @@ celery = make_celery(app)
 def index():
     return render_template('index.html', auth_url=credentials.auth_url)
 
+@app.route('/how-it-works')
+def how_it_works():
+    return render_template('about.html')
 
 @app.route('/auth_ok/')
 def auth():
@@ -117,6 +120,7 @@ def tarea(self,auth_code):
     form_data = json.dumps(form_data, cls=PlotlyJSONEncoder)
 
     return {'current': 100, 'total': 100, 'status': 'DONE!', 'plots': form_data}
+
 
 
 if __name__ == '__main__':
