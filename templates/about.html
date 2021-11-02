@@ -9,11 +9,26 @@
 
 		<div>
 
-				<h1> How it works? </h1>
-				<p>This web application uses the official spotify API to gather your data and with a simple
-		alrotithm it clusters it
-				</p>
-				<h2> Testing the flex </h2>
+				<h1 id="how-it-works-">How it works?</h1>
+<h3 id="tl-dr">TL;DR</h3>
+<p><em> A web app that gather your data and create K-means clusters with it </em></p>
+<h2 id="deep-dive">Deep dive</h2>
+<h3 id="getting-the-data">Getting the data</h3>
+<p>This Flask web app uses the official <a href="https://developer.spotify.com/documentation/web-api/">Spotify Api</a> to gather your playlists and then get the <a href="https://developer.spotify.com/console/get-audio-features-track/">audio features</a> of each song.</p>
+<p>For parallel processing it uses Celery Workers</p>
+<h3 id="clustering">Clustering</h3>
+<p>After collecting all your data, it uses the K-means algorithm to create different clusters with your data.</p>
+<h4 id="how-the-algorithm-works-">How the algorithm works?</h4>
+<p>It uses the data points of the different audio features and assigned random centroids based on how many clusters do you want.
+Then it meausres the distance between the data points and the centroids and assigned the data point to the nearest cluster.</p>
+<p><img src="https://i.imgur.com/enNo44i.png" alt="Statquest video"></p>
+<p>As a result, the algorithm calculates the mean of each cluster but to get the better cluster since the algorithm can see, it uses the variation of each iteration to decide the best cluster.</p>
+<p><img src="https://i.imgur.com/GB6goo1.png" alt="Statquest video"></p>
+<p>I recommend watching <a href="https://www.youtube.com/watch?v=4b5d3muPQmA">Staquest video</a> if you want to have a deeper explanation</p>
+<h3 id="plotting">Plotting</h3>
+<p>The plots are made with my favorite plotting library <a href="https://plotly.com/">Plotly</a> which let me create the figures in Python and then encode them to be plotted in Js.</p>
+
+
 		</div>
 </div>
 
