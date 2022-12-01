@@ -29,7 +29,11 @@ class DataExtractor:
 
         body = {"grant_type": "authorization_code", "code": self.auth_code, "redirect_uri": self.redirect_uri}
 
-        return requests.post('https://accounts.spotify.com/api/token', headers=headers, data=body).json()['access_token']
+
+        response = requests.post('https://accounts.spotify.com/api/token', headers=headers, data=body).json()
+
+
+        return response['access_token']
     
     def get_user_id(self):
 
