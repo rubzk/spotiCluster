@@ -7,7 +7,7 @@ from plotly.utils import PlotlyJSONEncoder
 from celery import shared_task
 
 
-@shared_task(bind=True,name='app.lala')
+@shared_task(bind=True,name='ETL Data')
 def tarea(self,auth_code):
     self.update_state(state='PROGRESS', 
     meta={'current': 0, 'total': 100, 'status': 'Getting Auth'})
