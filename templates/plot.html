@@ -80,6 +80,7 @@
         data_p = JSON.parse(data['plots'])
         var layout = {autosize: true}
         var config = {responsive:true}
+
         //function to draw all the plots
         for (const [key, value] of Object.entries(data_p)) {
             if (key == "scatter3d"){
@@ -103,7 +104,7 @@
         }
         }
         else {
-        console.log(data['status'])
+        //console.log(data['status'])
         fetchNow();
         }
     });

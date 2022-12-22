@@ -10,10 +10,10 @@ class TransformDataFrame:
         self.df_tracks = df_tracks
         self.df_audio_ft = df_audio_ft
         self.concat_df = self.concat_data()
-        self.n_clusters = self.get_cluster_number()
         self.audio_ft = ['danceability', 'energy', 'loudness', 'speechiness','acousticness','instrumentalness','liveness','valence','tempo']
-        self.fit_features = ['danceability','energy','tempo','valence']
+        self.fit_features = ['danceability','energy','tempo']
         self.concat_df[self.audio_ft] = self.scale_features()
+        self.n_clusters = self.determine_optimal_k(max_k=35)
         self.final_df = self.clustering()
         self.final_df['key'], self.final_df['mode'] = self.normalization()
         self.cluster_stats = self.get_cluster_stats()
@@ -41,7 +41,21 @@ class TransformDataFrame:
 
         return scaler.fit_transform(self.concat_df[self.audio_ft])
 
-    
+    def determine_optimal_k(self, max_k):
+        # Initialize a list to store the inertias for each value of k
+        inertias = []
+
+        # Loop through different values of k
+        for k in range(1, max_k+1):
+            # Fit a K-means model with the current value of k
+            model = KMeans(n_clusters=k)
+            model.fit(self.concat_df[self.fit_features])
+
+            # Append the inertia for the current model to the list
+            inertias.append(model.inertia_)
+
+        # Return the value of k that has the smallest inertia
+        return inertias.index(min(inertias)) + 1 
 
     def get_cluster_number(self):
 
