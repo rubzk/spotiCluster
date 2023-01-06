@@ -3,7 +3,6 @@ import os
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 import requests
 from src.extract import DataExtractor
-import credentials
 import configparser
 from src.transform import TransformDataFrame
 from src.plot import Plot3D
@@ -30,7 +29,12 @@ def index():
 def auth():
     auth_code = request.args.get("code")
     # app.logger.info(f'auth_code: {auth_code}')
-    task = celery_etl.delay(auth_code)
+    task = celery_etl.delay(
+        auth_code,
+        client_id=config.get("spotify-api", "client_id"),
+        client_secret=config.get("spotify-api", "client_secret"),
+        redirect_uri=config.get("spotify-api", "redirect_uri"),
+    )
 
     return (
         render_template("plot.html", task_id=task.id),
