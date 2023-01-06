@@ -8,7 +8,7 @@ from celery import shared_task
 
 
 @shared_task(bind=True,name='ETL Data')
-def tarea(self,auth_code):
+def celery_etl(self,auth_code):
     self.update_state(state='PROGRESS', 
     meta={'current': 0, 'total': 100, 'status': 'Getting Auth'})
     extractor = DataExtractor(credentials.client_id, credentials.client_secret, credentials.redirect_uri, 50, auth_code)

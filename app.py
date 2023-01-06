@@ -8,7 +8,7 @@ from src.transform import TransformDataFrame
 from src.plot import Plot3D
 from plotly.utils import PlotlyJSONEncoder
 from utils.flask_celery import make_celery
-from src.tasks import tarea
+from src.tasks import celery_etl
 
 app = Flask(__name__)
 app.config['CELERY_BROKER_URL'] = os.environ['CELERY_BROKER_URL']
@@ -25,13 +25,13 @@ def index():
 @app.route('/auth_ok/')
 def auth():
     auth_code = request.args.get('code')
-    app.logger.info(f'auth_code: {auth_code}')
-    task = tarea.delay(auth_code)
+    #app.logger.info(f'auth_code: {auth_code}')
+    task = celery_etl.delay(auth_code)
 
     return render_template('plot.html', task_id=task.id), 202, {'Location': url_for('taskstatus', task_id=task.id)}
 
 
-@app.route('/status/<task_id>', methods=['GET','POST'])
+@app.route('/status/<task_id>', methods=['GET'])
 def taskstatus(task_id):
     task = celery.AsyncResult(task_id)
     if task.state == 'PENDING':
