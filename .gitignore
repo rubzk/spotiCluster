@@ -17,5 +17,5 @@ celerybeat.pid
 
 
 
-credentials.py
+config.cfg
 output.csv
