@@ -2,13 +2,10 @@ import json
 import os
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session
 import requests
-from src.extract import DataExtractor
 import configparser
-from src.transform import TransformDataFrame
-from src.plot import Plot3D
-from plotly.utils import PlotlyJSONEncoder
 from utils.flask_celery import make_celery
 from src.tasks import celery_etl
+from urllib.parse import urlencode, quote_plus
 
 app = Flask(__name__)
 app.config["CELERY_BROKER_URL"] = os.environ["CELERY_BROKER_URL"]
@@ -22,7 +19,20 @@ config.read(r"config.cfg")
 
 @app.route("/")
 def index():
-    return render_template("index.html", auth_url=config.get("spotify-api", "auth_url"))
+
+    payload = {
+        "client_id": config.get("spotify-api", "client_id"),
+        "response_type": "code",
+        "redirect_uri": config.get("spotify-api", "redirect_uri"),
+        "scope": config.get("spotify-api", "scope"),
+        "show_dialog": "true",
+    }
+
+    query_parameters = urlencode(payload, quote_via=quote_plus)
+
+    return render_template(
+        "index.html", auth_url=config.get("spotify-api", "url") + query_parameters
+    )
 
 
 @app.route("/auth_ok/")
