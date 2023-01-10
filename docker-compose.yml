@@ -5,22 +5,22 @@ services:
             context: "."
         ports:
             - "5000:5000"
-        environment: 
+        environment:
             CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
             CELERY_BACKEND: "${CELERY_BACKEND}"
         volumes:
             - ./:/app/
-        depends_on: 
+        depends_on:
             - redis
             - postgres
         env_file:
             - ".env"
-    
+
     redis:
         image: redis:5
         ports:
             - "6379:6379"
-    
+
     postgres:
         image: postgres:10.14
         restart: always
@@ -28,23 +28,25 @@ services:
             - "5432:5432"
         expose:
             - 5432
-        environment: 
+        environment:
             POSTGRES_DB: "${POSTGRES_DB}"
             POSTGRES_USER: "${POSTGRES_USER}"
             POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-        env_file: 
+        env_file:
             - ".env"
 
     celery:
-        build: 
+        build:
             context: "."
         command: celery -A app.celery worker --loglevel=INFO
         volumes:
             - ./:/app/
-        depends_on: 
+        depends_on:
             - redis
             - postgres
-        env_file: 
+        deploy:
+            replicas: 4
+        env_file:
             - ".env"
         links:
             - postgres
