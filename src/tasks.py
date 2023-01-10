@@ -3,6 +3,7 @@ from src.extract import DataExtractor
 import configparser
 from src.transform import TransformDataFrame
 from src.plot import Plot3D
+from src.auth import Authenticator
 from plotly.utils import PlotlyJSONEncoder
 from celery import shared_task
 
@@ -12,7 +13,24 @@ def celery_etl(self, auth_code, client_id, client_secret, redirect_uri):
     self.update_state(
         state="PROGRESS", meta={"current": 0, "total": 100, "status": "Getting Auth"}
     )
-    extractor = DataExtractor(client_id, client_secret, redirect_uri, 50, auth_code)
+
+    print("Antes de autenticar")
+    auth = Authenticator(
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=redirect_uri,
+        auth_code=auth_code,
+    )
+
+    print(f"Auth Token:{auth.auth_token}")
+
+    self.update_state(
+        state="PROGRESS",
+        meta={"current": 25, "total": 100, "status": "Start Extraction"},
+    )
+
+    extractor = DataExtractor(auth.auth_token)
+
     self.update_state(
         state="PROGRESS",
         meta={"current": 33, "total": 100, "status": "Transforming data"},
