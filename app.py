@@ -38,9 +38,9 @@ def index():
 @app.route("/auth_ok/")
 def auth():
     auth_code = request.args.get("code")
-    # app.logger.info(f'auth_code: {auth_code}')
+    # app.logger.info(f"auth_code: {auth_code}")
     task = celery_etl.delay(
-        auth_code,
+        auth_code=auth_code,
         client_id=config.get("spotify-api", "client_id"),
         client_secret=config.get("spotify-api", "client_secret"),
         redirect_uri=config.get("spotify-api", "redirect_uri"),
