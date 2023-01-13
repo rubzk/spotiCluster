@@ -3,9 +3,58 @@ from src.extract import DataExtractor
 import configparser
 from src.transform import TransformDataFrame
 from src.plot import Plot3D
+import pandas as pd
 from src.auth import Authenticator
 from plotly.utils import PlotlyJSONEncoder
-from celery import shared_task
+from celery import shared_task, group, chain
+
+
+@shared_task(bind=True, name="Get tracks")
+def get_tracks_celery(self, auth_token, playlist):
+
+    data_extractor = DataExtractor(auth_token)
+
+    tracks = data_extractor.get_all_tracks_v2(playlist)
+
+    tracks_audio_ft = data_extractor.get_all_audio_features_v2(tracks)
+
+    transform = TransformDataFrame(tracks, tracks_audio_ft)
+
+    return transform.concat_data()
+
+
+@shared_task(bind=True, name="Get all the tracks")
+def process_all_tracks(self, auth_token: str):
+
+    extractor = DataExtractor(auth_token)
+
+    playlists = extractor.get_all_playlists()
+
+    total_tracks = [
+        get_tracks_celery.delay(auth_token, playlist) for playlist in playlists
+    ]
+
+    group_task = group(total_tracks)
+
+    result = group_task.apply_async()
+
+    return result
+
+
+@shared_task(bind=True, name="Process all the tracks")
+def concatenate_all_tracks(self, auth_token):
+
+    chain(process_all_tracks.s(auth_token) | append_results.s()).apply_async()
+
+
+@shared_task(bind=True, name="Append all the results")
+def append_results(self, results):
+    result = pd.DataFrame()
+
+    for tracks in results:
+        result = result.append(tracks[1])
+
+    return result
 
 
 @shared_task(bind=True, name="ETL Data")
@@ -22,8 +71,6 @@ def celery_etl(self, auth_code, client_id, client_secret, redirect_uri):
         auth_code=auth_code,
     )
 
-    print(f"Auth Token:{auth.auth_token}")
-
     self.update_state(
         state="PROGRESS",
         meta={"current": 25, "total": 100, "status": "Start Extraction"},
@@ -31,11 +78,16 @@ def celery_etl(self, auth_code, client_id, client_secret, redirect_uri):
 
     extractor = DataExtractor(auth.auth_token)
 
-    self.update_state(
-        state="PROGRESS",
-        meta={"current": 33, "total": 100, "status": "Transforming data"},
-    )
-    transform = TransformDataFrame(extractor.df_tracks_info, extractor.df_audio_ft)
+    concatenate_all_tracks.apply_async(args=(auth.auth_token,))
+
+    """total_tracks = [
+        get_tracks_celery.delay(auth_token=auth.auth_token, playlist=playlist)
+        for playlist in playlists
+    ]"""
+
+    # results = [async_item.wait() for async_item in asyncs]
+
+    """transform = TransformDataFrame(extractor.df_tracks_info, extractor.df_audio_ft)
     self.update_state(
         state="PROGRESS",
         meta={"current": 66, "total": 100, "status": "Generating the plots"},
@@ -107,3 +159,5 @@ def celery_etl(self, auth_code, client_id, client_secret, redirect_uri):
     form_data = json.dumps(form_data, cls=PlotlyJSONEncoder)
 
     return {"current": 100, "total": 100, "status": "DONE!", "plots": form_data}
+"""
+    return {"current": 100, "total": 100, "status": "DONE!"}

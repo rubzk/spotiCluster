@@ -4,8 +4,11 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 import requests
 import configparser
 from utils.flask_celery import make_celery
-from src.tasks import celery_etl
+from src.tasks import concatenate_all_tracks
+from src.extract import DataExtractor
+from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
+
 
 app = Flask(__name__)
 app.config["CELERY_BROKER_URL"] = os.environ["CELERY_BROKER_URL"]
@@ -39,12 +42,15 @@ def index():
 def auth():
     auth_code = request.args.get("code")
     # app.logger.info(f"auth_code: {auth_code}")
-    task = celery_etl.delay(
-        auth_code=auth_code,
+
+    auth = Authenticator(
         client_id=config.get("spotify-api", "client_id"),
         client_secret=config.get("spotify-api", "client_secret"),
         redirect_uri=config.get("spotify-api", "redirect_uri"),
+        auth_code=auth_code,
     )
+
+    task = concatenate_all_tracks.apply_async(args=(auth.auth_token,))
 
     return (
         render_template("plot.html", task_id=task.id),
