@@ -20,7 +20,7 @@ def get_tracks_celery(self, auth_token, playlist):
 
     transform = TransformDataFrame(tracks, tracks_audio_ft)
 
-    return transform.concat_data()
+    return json.dumps(transform.concat_data().to_dict())
 
 
 @shared_task(bind=True, name="Process all the tracks")
@@ -42,9 +42,9 @@ def append_results(self, results):
     result = pd.DataFrame()
 
     for tracks in results:
-        result = result.append(tracks[1])
+        result = result.append(pd.read_json(tracks))
 
-    return result
+    return json.dumps(result.to_dict())
 
 
 @shared_task(bind=True, name="ETL Data")
