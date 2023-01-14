@@ -9,7 +9,7 @@ from plotly.utils import PlotlyJSONEncoder
 from celery import shared_task, group, chain, chord
 
 
-@shared_task(bind=True, name="Get tracks")
+@shared_task(bind=True, name="Get tracks", propagate=False)
 def get_tracks_celery(self, auth_token, playlist):
 
     data_extractor = DataExtractor(auth_token)
