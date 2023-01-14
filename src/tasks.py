@@ -6,7 +6,7 @@ from src.plot import Plot3D
 import pandas as pd
 from src.auth import Authenticator
 from plotly.utils import PlotlyJSONEncoder
-from celery import shared_task, group, chain
+from celery import shared_task, group, chain, chord
 
 
 @shared_task(bind=True, name="Get tracks")
@@ -23,28 +23,18 @@ def get_tracks_celery(self, auth_token, playlist):
     return transform.concat_data()
 
 
-@shared_task(bind=True, name="Get all the tracks")
-def process_all_tracks(self, auth_token: str):
+@shared_task(bind=True, name="Process all the tracks")
+def concatenate_all_tracks(self, auth_token):
+
+    # chain(process_all_tracks.s(auth_token) | append_results.s()).apply_async()
 
     extractor = DataExtractor(auth_token)
 
     playlists = extractor.get_all_playlists()
 
-    total_tracks = [
-        get_tracks_celery.delay(auth_token, playlist) for playlist in playlists
-    ]
+    total_tracks = [get_tracks_celery.s(auth_token, playlist) for playlist in playlists]
 
-    group_task = group(total_tracks)
-
-    result = group_task.apply_async()
-
-    return result
-
-
-@shared_task(bind=True, name="Process all the tracks")
-def concatenate_all_tracks(self, auth_token):
-
-    chain(process_all_tracks.s(auth_token) | append_results.s()).apply_async()
+    chord(total_tracks)(append_results.s())
 
 
 @shared_task(bind=True, name="Append all the results")
