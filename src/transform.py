@@ -8,7 +8,7 @@ class TransformDataFrame:
     def __init__(self, df_tracks, df_audio_ft):
         self.df_tracks = df_tracks
         self.df_audio_ft = df_audio_ft
-        self.concat_df = self.concat_data()
+        # self.df_audio_ft = self.concat_data()
         self.audio_ft = [
             "danceability",
             "energy",
@@ -21,12 +21,13 @@ class TransformDataFrame:
             "tempo",
         ]
         self.fit_features = ["danceability", "energy", "tempo"]
-        self.concat_df[self.audio_ft] = self.scale_features()
-        self.n_clusters = self.determine_optimal_k(max_k=3)
-        self.final_df = self.clustering()
-        self.final_df["key"], self.final_df["mode"] = self.normalization()
-        self.cluster_stats = self.get_cluster_stats()
-        self.n_tracks = self.final_df.shape[0]
+        # self.df_audio_ft = self.scale_features()
+        # self.n_clusters = self.determine_optimal_k(max_k=3)
+        self.n_clusters = 4
+        # self.df_audio_ft = self.clustering()
+        # self.audio_ft["key"], self.audio_["mode"] = self.normalization()
+        # self.cluster_stats = self.get_cluster_stats()
+        # self.n_tracks = self.final_df.shape[0]
 
     def concat_data(self):
 
@@ -45,7 +46,7 @@ class TransformDataFrame:
 
         scaler = MinMaxScaler()
 
-        return scaler.fit_transform(self.concat_df[self.audio_ft])
+        return scaler.fit_transform(self.df_audio_ft[self.audio_ft])
 
     def determine_optimal_k(self, max_k):
         # Initialize a list to store the inertias for each value of k
@@ -55,7 +56,7 @@ class TransformDataFrame:
         for k in range(1, max_k + 1):
             # Fit a K-means model with the current value of k
             model = KMeans(n_clusters=k)
-            model.fit(self.concat_df[self.fit_features])
+            model.fit(self.df_audio_ft[self.fit_features])
 
             # Append the inertia for the current model to the list
             inertias.append(model.inertia_)
@@ -72,23 +73,25 @@ class TransformDataFrame:
     def clustering(self):
 
         kmeans = KMeans(n_clusters=self.n_clusters).fit(
-            self.concat_df[self.fit_features]
+            self.df_audio_ft[self.fit_features]
         )
 
-        y_kmeans = kmeans.predict(self.concat_df[self.fit_features])
+        y_kmeans = kmeans.predict(self.df_audio_ft[self.fit_features])
 
-        self.concat_df["cluster"] = y_kmeans
+        self.df_audio_ft["cluster"] = y_kmeans
 
-        self.concat_df["cluster"] = self.concat_df["cluster"].astype("str")
+        self.df_audio_ft["cluster"] = self.df_audio_ft["cluster"].astype("str")
 
         cluster_names = {}
 
         for cluster in range(0, self.n_clusters):
             cluster_names.update({str(cluster): f"Cluster {cluster}"})
 
-        self.concat_df["cluster_name"] = self.concat_df["cluster"].map(cluster_names)
+        self.df_audio_ft["cluster_name"] = self.df_audio_ft["cluster"].map(
+            cluster_names
+        )
 
-        return self.concat_df
+        return self.df_audio_ft
 
     def normalization(self):
 
