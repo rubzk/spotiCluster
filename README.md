@@ -23,7 +23,7 @@ The is a Flask web app with Celery to paralellize tasks and Plotly to create the
 
 Simplest way to run the project is by `docker-compose up`
 
-For doing this you will need to create a `credentials.py` with the following variables:
+For doing this you will need to add your credentials to the `config.cfg` file:
 
  - __client_id__ 
  - __client_secret__ 
