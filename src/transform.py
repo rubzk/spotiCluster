@@ -24,7 +24,7 @@ class TransformDataFrame:
         # self.df_audio_ft = self.scale_features()
         # self.n_clusters = self.determine_optimal_k(max_k=3)
         self.n_clusters = 4
-        self.df_audio_ft = self.clustering()
+        # self.df_audio_ft = self.clustering()
         # self.audio_ft["key"], self.audio_["mode"] = self.normalization()
         # self.cluster_stats = self.get_cluster_stats()
         # self.n_tracks = self.final_df.shape[0]
