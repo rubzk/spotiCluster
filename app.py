@@ -62,30 +62,18 @@ def auth():
 @app.route("/status/<task_id>", methods=["GET"])
 def taskstatus(task_id):
     task = celery.AsyncResult(task_id)
-    if task.state == "PENDING":
-        response = {
-            "state": task.state,
-            "current": 0,
-            "total": 1,
-            "status": "Pending...",
-        }
-    elif task.state != "FAILURE":
-        response = {
-            "state": task.state,
-            "current": task.info.get("current", 0),
-            "total": task.info.get("total", 1),
-            "status": task.info.get("status", ""),
-        }
-        if "plots" in task.info:
-            response["plots"] = task.info["plots"]
+
+    app.logger.info(f"status: {task.state}")
+
+    if task.info["current"] == 50:
+
+        task = celery.AsyncResult(task.info["result_id"])
+
+        return jsonify(task.info["plots"])
+
     else:
-        response = {
-            "state": task.state,
-            "current": 1,
-            "total": 1,
-            "status": str(task.info),
-        }
-    return jsonify(response)
+        response = task.info
+        return jsonify(response)
 
 
 if __name__ == "__main__":
