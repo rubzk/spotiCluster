@@ -5,8 +5,7 @@ from src.transform import TransformDataFrame
 from src.plot import Plot3D
 import pandas as pd
 from src.auth import Authenticator
-from plotly.utils import PlotlyJSONEncoder
-from celery import shared_task, group, chain, chord
+from celery import shared_task, chord
 
 
 @shared_task(bind=True, name="Get tracks", propagate=False)
