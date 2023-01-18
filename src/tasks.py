@@ -10,7 +10,7 @@ from celery import shared_task, group, chain, chord
 
 
 @shared_task(bind=True, name="Get tracks", propagate=False)
-def get_tracks_celery(self, auth_token, playlist):
+def get_tracks(self, auth_token, playlist):
 
     data_extractor = DataExtractor(auth_token)
 
@@ -20,7 +20,11 @@ def get_tracks_celery(self, auth_token, playlist):
 
     transform = TransformDataFrame(tracks, tracks_audio_ft)
 
-    return json.dumps(transform.concat_data().to_dict())
+    result = transform.concat_data()
+
+    result = result.dropna(axis=0,how='any')
+
+    return json.dumps(result.to_dict('list'))
 
 
 @shared_task(bind=True, name="Process all the tracks", propagate=False)
@@ -35,7 +39,7 @@ def concatenate_all_tracks(self, auth_token):
 
     playlists = extractor.get_all_playlists()
 
-    total_tracks = [get_tracks_celery.s(auth_token, playlist) for playlist in playlists]
+    total_tracks = [get_tracks.s(auth_token, playlist) for playlist in playlists]
 
     res = chord(total_tracks)(append_results.s())
 
@@ -74,9 +78,14 @@ def append_results(self, results):
     for tracks in results:
         result = result.append(pd.read_json(tracks))
 
+
+    result = result.dropna(axis=0,how='any',subset=['id'])
+
+    result = result.drop(axis=1,columns="0")
+
     return {
         "current": 100,
         "total": 100,
         "status": "DONE!",
-        "plots": json.dumps(result.to_dict()),
+        "plots": result.to_dict('list'),
     }
