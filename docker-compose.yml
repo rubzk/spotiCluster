@@ -45,7 +45,7 @@ services:
             - redis
             - postgres
         deploy:
-            replicas: 4
+            replicas: 2
         env_file:
             - ".env"
         links:
