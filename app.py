@@ -8,6 +8,7 @@ from src.tasks import concatenate_all_tracks
 from src.extract import DataExtractor
 from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
+from celery import current_app
 
 
 app = Flask(__name__)
@@ -74,6 +75,18 @@ def taskstatus(task_id):
     else:
         response = task.info
         return jsonify(response)
+
+
+@app.route("/tasks/", methods=["GET"])
+def get_tasks_celery():
+
+    current_app.loader.import_default_modules()
+
+    tasks = list(
+        sorted(name for name in current_app.tasks if not name.startswith("celery."))
+    )
+
+    return jsonify(tasks)
 
 
 if __name__ == "__main__":
