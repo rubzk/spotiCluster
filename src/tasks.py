@@ -1,11 +1,15 @@
 import json
-from src.extract import DataExtractor
 import configparser
-from src.transform import TransformDataFrame
-from src.plot import Plot3D
-import pandas as pd
+
 from src.auth import Authenticator
-from celery import shared_task, chord
+from src.extract import DataExtractor
+from src.transform import TransformDataFrame
+from src.clustering import Clustering
+from src.plot import Plot3D
+
+
+import pandas as pd
+from celery import shared_task, chord, chain, group
 
 
 @shared_task(bind=True, name="Get tracks", propagate=False)
@@ -21,9 +25,9 @@ def get_tracks(self, auth_token, playlist):
 
     result = transform.concat_data()
 
-    result = result.dropna(axis=0,how='any')
+    result = result.dropna(axis=0, how="any")
 
-    return json.dumps(result.to_dict('list'))
+    return json.dumps(result.to_dict("list"))
 
 
 @shared_task(bind=True, name="Process all the tracks", propagate=False)
@@ -77,14 +81,21 @@ def append_results(self, results):
     for tracks in results:
         result = result.append(pd.read_json(tracks))
 
+    result = result.dropna(axis=0, how="any", subset=["id"])
 
-    result = result.dropna(axis=0,how='any',subset=['id'])
+    result = result.drop(axis=1, columns="0")
 
-    result = result.drop(axis=1,columns="0")
+    clustering = Clustering(result)
+
+    scaled_df = clustering.scale_features(clustering.df_all_tracks)
+
+    df_cluster = clustering.k_means_clustering(scaled_df)
 
     return {
-        "current": 100,
+        "current": 85,
         "total": 100,
-        "status": "DONE!",
-        "plots": result.to_dict('list'),
+        "status": "Appending data",
+        "plots": df_cluster.to_dict(
+            "list"
+        ),  ## Esto esta mal, hay que cambiar el nombre
     }
