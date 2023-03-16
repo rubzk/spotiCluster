@@ -1,0 +1,25 @@
+{
+  "name": "spoticluster",
+  "version": "1.0.0",
+  "description": "The mission of this web app is to help you understand your taste in music. __Still WIP__",
+  "main": "index.js",
+  "scripts": {
+    "tw-build": "npx tailwindcss -i ./static/src/input.css -o ./static/dist/css/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rubzk/spotiCluster.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rubzk/spotiCluster/issues"
+  },
+  "homepage": "https://github.com/rubzk/spotiCluster#readme",
+  "dependencies": {
+    "@fullhuman/postcss-purgecss": "^5.0.0",
+    "autoprefixer": "^10.4.14",
+    "postcss-cli": "^10.1.0",
+    "tailwindcss": "^3.2.7"
+  }
+}
