@@ -1,8 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-   <h1 class="text-center">Spotify Library Analysis</h1> 
-   <div class='text-center'>
-    <button type="button" class="btn btn-dark" onclick="window.location.href='{{auth_url}}'">click to rock your data</button>
+
+<div class="w-max flex flex-col mx-auto py-12">
+   <div class="container mx-auto ">
+      <h1 class="font-bold text-8xl text-amber-50 tracking-tighter">Spotify Library Analysis</h1>
+      <div class="py-24 flex flex-col justify-center relative ">
+
+
+         <a class="text-4xl font-bold p-2 border-2 rounded-xl text-amber-50 tracking-tighter hover:bg-zinc-200 hover:text-zinc-800"
+            href="{{auth_url}}">
+            Analyze your data</a>
+
+
+
+
+      </div>
    </div>
-       
+
+
+
+</div>
+
+
 {% endblock %}

@@ -1,60 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static',filename='styles/plot.css') }}">
 
 
-<div class="loading-plots" id="loading-plots">
-
-    <h1>Loading plots....</h1>
-
+<div class="w-max flex flex-col mx-auto py-12">
+    <h1 class="font-bold text-8xl text-amber-50 tracking-tighter">Loading Plots</h1>
 </div>
 
 
-<div class="plots" id="plots">
-
-    <div class="title-container" id="title">
-
-        <h1>3D Overview of your data</h1>
-    </div>
-
-    <div class="title-container" id="n_clusters">
-        <h2 id="n_cluster"></h2>
-    </div>
-
-    <div class="title-container" id="n_tracks">
-        <h2 id="n_tracks"></h2>
-    </div>
-
-    <div class="first-div" id="first-row">
-
-        <div class="chart" id="keys_bar"></div>
-        <div class="chart" id="mode_bar"></div>
-        <div class="chart" id="cluster_bar"></div>
-
-    </div>
-
-    <div class="scatter-3d_1" id="forth-row">
-        <div class="chart" id="scatter-1"></div>
-        <div class="chart" id="scatter-2"></div>
-    </div>
-
-    <div class="scatter-3d_2" id="fifth-row">
-        <div class="chart" id="scatter-3"></div>
-        <div class="chart" id="scatter-4"></div>
-    </div>
-
-
-
-    <div class="polar-div" id="second-row">
-        <h2>Radar Chart</h2>
-        <div class="chart" id="polar"></div>
-    </div>
-    <div class="scatter-div" id="third-row">
-        <h2>Scatter Matrix</h2>
-        <div class="chart" id="scatter_matrix"></div>
-    </div>
-</div>
 
 
 <script>
@@ -64,53 +16,57 @@
 
     var resultFound = false;
 
-    var fetchNow = function() {
-    fetch('/status/'+taskId)
-    .then(res => res.json())
-    .then(data => {
-        if(data['plots']) {
-        document.getElementById("title").style.display = 'flex';
+    var fetchNow = function () {
+        fetch('/status/' + taskId)
+            .then(res => res.json())
+            .then(data => {
+
+                /*
+                if (data['plots']) {
+                    document.getElementById("title").style.display = 'flex';
 
 
 
-        document.getElementById("plots").style.display = 'flex';
+                    document.getElementById("plots").style.display = 'flex';
 
-        document.getElementById('loading-plots').style.display = 'none';
+                    document.getElementById('loading-plots').style.display = 'none';
 
-        data_p = JSON.parse(data['plots'])
-        var layout = {autosize: true}
-        var config = {responsive:true}
+                    data_p = JSON.parse(data['plots'])
+                    var layout = { autosize: true }
+                    var config = { responsive: true }
 
-        //function to draw all the plots
-        for (const [key, value] of Object.entries(data_p)) {
-            if (key == "scatter3d"){
-                console.log(key, value)
-                Plotly.newPlot("scatter-1", data_p[key][1], layout,config)
-                Plotly.newPlot("scatter-2", data_p[key][2], layout,config)
-                Plotly.newPlot("scatter-3", data_p[key][3], layout,config)
-                Plotly.newPlot("scatter-4", data_p[key][4], layout,config)
-            }
-            else if (key =='user_data') { 
-                document.getElementById("n_clusters").innerHTML ="<h2>Your datas was clusterized in " + data_p[key][0] + " clusters</h2>";
-                document.getElementById("n_tracks").innerHTML ="<h2>We analyzed " + data_p[key][1] + " tracks</h2>";
-                document.getElementById("n_clusters").style.display = 'flex';
-                document.getElementById("n_tracks").style.display = 'flex';
+                    //function to draw all the plots
+                    for (const [key, value] of Object.entries(data_p)) {
+                        if (key == "scatter3d") {
+                            console.log(key, value)
+                            Plotly.newPlot("scatter-1", data_p[key][1], layout, config)
+                            Plotly.newPlot("scatter-2", data_p[key][2], layout, config)
+                            Plotly.newPlot("scatter-3", data_p[key][3], layout, config)
+                            Plotly.newPlot("scatter-4", data_p[key][4], layout, config)
+                        }
+                        else if (key == 'user_data') {
+                            document.getElementById("n_clusters").innerHTML = "<h2>Your datas was clusterized in " + data_p[key][0] + " clusters</h2>";
+                            document.getElementById("n_tracks").innerHTML = "<h2>We analyzed " + data_p[key][1] + " tracks</h2>";
+                            document.getElementById("n_clusters").style.display = 'flex';
+                            document.getElementById("n_tracks").style.display = 'flex';
 
-            }
-            else {
-                Plotly.newPlot(key, data_p[key], layout, config)
-                console.log(key, value)   
-            }
-        }
-        }
-        else {
-        //console.log(data['status'])
-        fetchNow();
-        }
-    });
+                        }
+                        else {
+                            Plotly.newPlot(key, data_p[key], layout, config)
+                            console.log(key, value)
+                        }
+                    }
+                }
+                else {
+                    console.log(data['status'])
+                    fetchNow();
+                }
+                */
+            });
     }
 
     fetchNow();
+    console.log('Hola funciona')
 
 </script>
 
