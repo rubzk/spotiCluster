@@ -5,11 +5,11 @@ from src.auth import Authenticator
 from src.extract import DataExtractor
 from src.transform import TransformDataFrame
 from src.clustering import Clustering
-from src.plot import Plot3D
+from src.plot import Plot
 
 
 import pandas as pd
-from celery import shared_task, chord, chain, group
+from celery import shared_task, chord, chain, group, current_app
 
 
 @shared_task(bind=True, name="Get tracks", propagate=False)
@@ -46,35 +46,17 @@ def concatenate_all_tracks(self, auth_token):
 
     res = chord(total_tracks)(append_results.s())
 
-    self.update_state(
-        state="PROGRESS",
-        meta={
-            "current": 50,
-            "total": 100,
-            "status": "Finish Processing  all the tracks",
-            "result_id": res.id,
-        },
-    )
 
     return {
         "current": 50,
         "total": 100,
         "status": "Finish Processing  all the tracks",
-        "result_id": res.id,
+        "plot": res.id,
     }
 
 
 @shared_task(bind=True, name="Append all the results")
 def append_results(self, results):
-
-    self.update_state(
-        state="PROGRESS",
-        meta={
-            "current": 75,
-            "total": 100,
-            "status": "Concatenating Tasks",
-        },
-    )
 
     result = pd.DataFrame()
 
@@ -92,10 +74,5 @@ def append_results(self, results):
     df_cluster = clustering.k_means_clustering(scaled_df)
 
     return {
-        "current": 85,
-        "total": 100,
-        "status": "Appending data",
-        "plots": df_cluster.to_dict(
-            "list"
-        ),  ## Esto esta mal, hay que cambiar el nombre
+        "plots" : df_cluster.to_dict("list")
     }

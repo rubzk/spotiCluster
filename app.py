@@ -9,11 +9,19 @@ from src.extract import DataExtractor
 from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
 from celery import current_app
+#from flask_assets import Environment, Bundle
 
 
 app = Flask(__name__)
 app.config["CELERY_BROKER_URL"] = os.environ["CELERY_BROKER_URL"]
 app.config["CELERY_BACKEND"] = os.environ["CELERY_BACKEND"]
+
+"""
+assets = Environment()
+assets.init_app(app)
+
+css = Bundle('src/css/*.css', filters='postcss', output='dist/css/main.css')
+assets.register('css', css)"""
 
 celery = make_celery(app)
 
@@ -62,20 +70,30 @@ def auth():
 
 @app.route("/status/<task_id>", methods=["GET"])
 def taskstatus(task_id):
+
     task = celery.AsyncResult(task_id)
 
     app.logger.info(f"status: {task.state}")
 
-    if task.info["current"] == 50:
+    try:
 
-        task = celery.AsyncResult(task.info["result_id"])
+        if task.state != 'PROGRESS':
 
-        return jsonify(task.info["plots"])
+            app.logger.info("Entrando al if")
 
-    else:
-        response = task.info
-        return jsonify(response)
+            task = celery.AsyncResult(task.info["plot"])
 
+            return task.info
+
+    except TypeError as e:
+
+
+        return "Not available yet"
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    app.logger.exception(f"Unhandled exception: {e}")
+    return "Internal server error", 500
 
 @app.route("/tasks/", methods=["GET"])
 def get_tasks_celery():
