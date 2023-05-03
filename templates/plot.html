@@ -21,6 +21,19 @@
             .then(res => res.json())
             .then(data => {
 
+
+                if (data['plots']) {
+
+                    console.log(data['plots'])
+
+                }
+                else {
+
+                    console.log(data['status'])
+                    fetchNow();
+
+                }
+
                 /*
                 if (data['plots']) {
                     document.getElementById("title").style.display = 'flex';
@@ -66,7 +79,7 @@
     }
 
     fetchNow();
-    console.log('Hola funciona')
+    
 
 </script>
 

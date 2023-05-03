@@ -83,22 +83,6 @@ def taskstatus(task_id):
 
     return {"status" : task.state}
 
-    # try:
-
-    #     if task.state != 'SUCCESS':
-
-    #         app.logger.info("Entrando al if")
-
-    #         task = celery.AsyncResult(task.info["plot"])
-
-    #         return task.info
-    #     else:
-    #         return "Not available yet"
-
-    # except TypeError as e:
-
-
-    #     return "Not available yet"
 
 @app.errorhandler(Exception)
 def handle_exception(e):
