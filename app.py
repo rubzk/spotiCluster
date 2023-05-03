@@ -4,24 +4,17 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 import requests
 import configparser
 from utils.flask_celery import make_celery
-from src.tasks import concatenate_all_tracks
+from src.tasks import concatenate_all_tracks,get_tracks,append_results
 from src.extract import DataExtractor
 from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
-from celery import current_app
+from celery import current_app, chord
 #from flask_assets import Environment, Bundle
 
 
 app = Flask(__name__)
 app.config["CELERY_BROKER_URL"] = os.environ["CELERY_BROKER_URL"]
 app.config["CELERY_BACKEND"] = os.environ["CELERY_BACKEND"]
-
-"""
-assets = Environment()
-assets.init_app(app)
-
-css = Bundle('src/css/*.css', filters='postcss', output='dist/css/main.css')
-assets.register('css', css)"""
 
 celery = make_celery(app)
 
@@ -59,7 +52,14 @@ def auth():
         auth_code=auth_code,
     )
 
-    task = concatenate_all_tracks.apply_async(args=(auth.auth_token,))
+    extractor = DataExtractor(auth.auth_token)
+
+    playlists = extractor.get_all_playlists()
+
+    total_tracks = [get_tracks.s(auth.auth_token, playlist) for playlist in playlists]
+
+    task = chord(total_tracks)(append_results.s())
+    #task = concatenate_all_tracks.apply_async(args=(auth.auth_token,))
 
     return (
         render_template("plot.html", task_id=task.id),
@@ -75,20 +75,26 @@ def taskstatus(task_id):
 
     app.logger.info(f"status: {task.state}")
 
-    try:
+    #app.logger.info(task.info)
 
-        if task.state != 'PROGRESS':
+    return {"state" : task.state}
 
-            app.logger.info("Entrando al if")
+    # try:
 
-            task = celery.AsyncResult(task.info["plot"])
+    #     if task.state != 'SUCCESS':
 
-            return task.info
+    #         app.logger.info("Entrando al if")
 
-    except TypeError as e:
+    #         task = celery.AsyncResult(task.info["plot"])
+
+    #         return task.info
+    #     else:
+    #         return "Not available yet"
+
+    # except TypeError as e:
 
 
-        return "Not available yet"
+    #     return "Not available yet"
 
 @app.errorhandler(Exception)
 def handle_exception(e):
