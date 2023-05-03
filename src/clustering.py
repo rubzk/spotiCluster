@@ -68,13 +68,8 @@ class Clustering:
 
     def get_cluster_stats(self, df_cluster):
 
-        cluster_stats = pd.DataFrame(columns=self.audio_ft)
 
-        for n in self.df_cluster["cluster"].value_counts().index.to_list():
-            cluster_stats = cluster_stats.append(
-                self.df_cluster[self.df_cluster["cluster"] == n][self.audio_ft].mean(),
-                ignore_index=True,
-            )
+        cluster_stats = df_cluster.groupby("cluster_name")[self.audio_ft].mean()
 
         return cluster_stats
 
