@@ -56,11 +56,29 @@ def cluster_results(self,result):
 
     df_cluster = clustering.k_means_clustering(scaled_df)
 
-    return {
-        "plots" : df_cluster.to_dict("list")
-    }
+
+    df_cluster_stats = clustering.get_cluster_stats(df_cluster)
+
+
+    return {"clusters" : df_cluster.to_dict("list"),
+            "cluster_stats" : df_cluster_stats.to_dict("list") }
+
 
 
 @shared_task(bind=True, name="Create the plots")
-def create_plots(self,clusters):
-    pass
+def create_plots(self,clusters_info):
+ 
+    clusters_stats = pd.read_json(json.dumps(clusters_info['cluster_stats']))
+
+
+    plot = Plot(audio_df=["danceability", "energy", "tempo","instrumentalness","valence"])
+
+    radar_chart = plot.radar_chart(clusters_stats)
+
+
+    return {
+        "plots" : {"radar_chart" : radar_chart}
+    }
+
+
+

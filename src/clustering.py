@@ -69,7 +69,9 @@ class Clustering:
     def get_cluster_stats(self, df_cluster):
 
 
-        cluster_stats = df_cluster.groupby("cluster_name")[self.audio_ft].mean()
+        cluster_stats = df_cluster.groupby("cluster_name")[self.audio_ft].mean().reset_index()
+
+        # cluster_stats.to_csv('cluster_stats.csv')
 
         return cluster_stats
 
