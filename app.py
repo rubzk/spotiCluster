@@ -75,9 +75,13 @@ def taskstatus(task_id):
 
     app.logger.info(f"status: {task.state}")
 
+    if task.state == 'SUCCESS':
+        return {"status" : task.state,
+                "plots" :task.info["plots"]}
+
     #app.logger.info(task.info)
 
-    return {"state" : task.state}
+    return {"status" : task.state}
 
     # try:
 
