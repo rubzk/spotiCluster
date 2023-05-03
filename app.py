@@ -4,7 +4,7 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 import requests
 import configparser
 from utils.flask_celery import make_celery
-from src.tasks import concatenate_all_tracks,get_tracks,append_results
+from src.tasks import get_tracks,append_results,cluster_results
 from src.extract import DataExtractor
 from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
@@ -58,8 +58,10 @@ def auth():
 
     total_tracks = [get_tracks.s(auth.auth_token, playlist) for playlist in playlists]
 
-    task = chord(total_tracks)(append_results.s())
-    #task = concatenate_all_tracks.apply_async(args=(auth.auth_token,))
+    #task = chord(total_tracks)(append_results.s())
+
+    task = chord(total_tracks)(append_results.s() | cluster_results.s())
+
 
     return (
         render_template("plot.html", task_id=task.id),
@@ -84,10 +86,10 @@ def taskstatus(task_id):
     return {"status" : task.state}
 
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    app.logger.exception(f"Unhandled exception: {e}")
-    return "Internal server error", 500
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     app.logger.exception(f"Unhandled exception: {e}")
+#     return "Internal server error", 500
 
 @app.route("/tasks/", methods=["GET"])
 def get_tasks_celery():

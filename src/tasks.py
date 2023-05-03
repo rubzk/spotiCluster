@@ -30,31 +30,6 @@ def get_tracks(self, auth_token, playlist):
     return json.dumps(result.to_dict("list"))
 
 
-@shared_task(bind=True, name="Process all the tracks", propagate=False)
-def concatenate_all_tracks(self, auth_token):
-
-    self.update_state(
-        state="PROGRESS",
-        meta={"current": 35, "total": 100, "status": "Processing All the tracks"},
-    )
-
-    extractor = DataExtractor(auth_token)
-
-    playlists = extractor.get_all_playlists()
-
-    total_tracks = [get_tracks.s(auth_token, playlist) for playlist in playlists]
-
-    res = chord(total_tracks)(append_results.s())
-
-
-    return {
-        "current": 50,
-        "total": 100,
-        "status": "Finish Processing  all the tracks",
-        "plot": res.id,
-    }
-
-
 @shared_task(bind=True, name="Append all the results")
 def append_results(self, results):
 
@@ -67,6 +42,14 @@ def append_results(self, results):
 
     result = result.drop(axis=1, columns="0")
 
+    
+    return json.dumps(result.to_dict("list"))
+
+@shared_task(bind=True, name="Cluster all the results")
+def cluster_results(self,result):
+
+    result = pd.read_json(result)
+
     clustering = Clustering(result)
 
     scaled_df = clustering.scale_features(clustering.df_all_tracks)
@@ -76,3 +59,8 @@ def append_results(self, results):
     return {
         "plots" : df_cluster.to_dict("list")
     }
+
+
+@shared_task(bind=True, name="Create the plots")
+def create_plots(self,clusters):
+    pass
