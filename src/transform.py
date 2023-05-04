@@ -20,16 +20,19 @@ class TransformDataFrame:
         df_join["title"] = df_join["name"] + " - " + df_join["artist"]
 
 
+        df_join["key"], df_join["mode"] = self._key_normalization(df_join)
+
 
         df_join.to_csv("output.csv")
 
         return df_join
     
+    
 
     def _remove_unnecessary_columns(self):
         pass
 
-    def _rename_and_organize_columns(self,concat_data):
+    def rename_and_reindex_columns(self,concat_data):
 
         renamed_columns = {
             'id' : 'song_id',
@@ -40,12 +43,21 @@ class TransformDataFrame:
             
         }
 
-        return concat_data.rename(columns=renamed_columns)
+        reindex_columns = ['spotify_user_id','song_id','song_name','song_artist','song_title','song_uri',
+                           'song_key','song_mode','danceability','energy','loudness','spechiness',
+                           'acousticness','instrumentalness','liveness','valence','tempo',
+                           'time_signature','duration_ms','track_href','analysis_url','created','songs_cluster',
+                           'cluster_name']
+
+        concat_data = concat_data.rename(columns=renamed_columns)
 
 
-    def _key_normalization(self):
+        return concat_data.reindex(columns=reindex_columns)
 
-        self.final_df["key"] = self.final_df["key"].map(
+
+    def _key_normalization(self,final_df):
+
+        final_df["key"] = final_df["key"].map(
             {
                 0: "C",
                 1: "C#",
@@ -62,9 +74,9 @@ class TransformDataFrame:
             }
         )
 
-        self.final_df["mode"] = self.final_df["mode"].map({1: "Major", 0: "Minor"})
+        final_df["is_major"] = final_df["mode"].map({1: True , 0: False})
 
-        return self.final_df["key"], self.final_df["mode"]
+        return final_df["key"], final_df["mode"]
 
 
 
