@@ -13,16 +13,37 @@ class TransformDataFrame:
         self.df_tracks.reset_index(drop=True, inplace=True)
         self.df_audio_ft.reset_index(drop=True, inplace=True)
 
-        df_join = pd.concat([self.df_tracks, self.df_audio_ft], axis=1)
+        #df_join = pd.concat([self.df_tracks, self.df_audio_ft], axis=1) OLD WAY
 
-        df_join["song_name"] = df_join["name"] + " - " + df_join["artist"]
+        df_join = self.df_tracks.merge(self.df_audio_ft, on='id', how='inner')
+
+        df_join["title"] = df_join["name"] + " - " + df_join["artist"]
+
+
 
         df_join.to_csv("output.csv")
 
         return df_join
+    
+
+    def _remove_unnecessary_columns(self):
+        pass
+
+    def _rename_and_organize_columns(self,concat_data):
+
+        renamed_columns = {
+            'id' : 'song_id',
+            'name' : 'song_name',
+            'key' : 'song_key',
+            'mode' : 'song_mode',
+            'uri' : 'song_uri',
+            
+        }
+
+        return concat_data.rename(columns=renamed_columns)
 
 
-    def normalization(self):
+    def _key_normalization(self):
 
         self.final_df["key"] = self.final_df["key"].map(
             {
