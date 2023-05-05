@@ -48,9 +48,9 @@ def append_results(self, results):
     for tracks in results:
         result = result.append(pd.read_json(tracks))
 
-    result = result.dropna(axis=0, how="any", subset=["id"])
+    result = result.dropna(axis=0, how="any", subset=["song_id"])
 
-    result = result.drop(axis=1, columns="0")
+    #result = result.drop(axis=1, columns="0")
 
     
     return json.dumps(result.to_dict("list"))
@@ -62,7 +62,11 @@ def cluster_results(self,result):
 
     clustering = Clustering(result)
 
+    result.to_csv('before_scaled.csv')
+
     scaled_df = clustering.scale_features(clustering.df_all_tracks)
+
+    scaled_df.to_csv('scaled_df.csv')
 
     df_cluster = clustering.k_means_clustering(scaled_df)
 
@@ -70,6 +74,8 @@ def cluster_results(self,result):
 
 
     df_cluster_stats = clustering.get_cluster_stats(df_cluster)
+
+    df_cluster_stats.to_csv('cluster_stats.csv')
 
 
     return {"clusters" : df_cluster.to_dict("list"),

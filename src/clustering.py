@@ -10,7 +10,7 @@ class Clustering:
             "danceability",
             "energy",
             "loudness",
-            "speechiness",
+            "spechiness",
             "acousticness",
             "instrumentalness",
             "liveness",
@@ -53,16 +53,16 @@ class Clustering:
 
         y_kmeans = kmeans.predict(fit_features_df)
 
-        scaled_df["cluster"] = y_kmeans
+        scaled_df["songs_cluster"] = y_kmeans
 
-        scaled_df["cluster"] = scaled_df["cluster"].astype("str")
+        scaled_df["songs_cluster"] = scaled_df["songs_cluster"].astype("str")
 
         cluster_names = {}
 
         for cluster in range(0, self.n_clusters):
             cluster_names.update({str(cluster): f"Cluster {cluster}"})
 
-        scaled_df["cluster_name"] = scaled_df["cluster"].map(cluster_names)
+        scaled_df["cluster_name"] = scaled_df["songs_cluster"].map(cluster_names)
 
         return scaled_df
 

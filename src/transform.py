@@ -46,8 +46,7 @@ class TransformDataFrame:
         reindex_columns = ['spotify_user_id','song_id','song_name','song_artist','song_title','song_uri',
                            'song_key','song_mode','danceability','energy','loudness','spechiness',
                            'acousticness','instrumentalness','liveness','valence','tempo',
-                           'time_signature','duration_ms','track_href','analysis_url','created','songs_cluster',
-                           'cluster_name']
+                           'time_signature','duration_ms','track_href','analysis_url','created']
 
         concat_data = concat_data.rename(columns=renamed_columns)
 
