@@ -20,7 +20,7 @@ class TransformDataFrame:
         df_join["title"] = df_join["name"] + " - " + df_join["artist"]
 
 
-        df_join["key"], df_join["mode"] = self._key_normalization(df_join)
+        df_join["key"], df_join["is_major"] = self._key_normalization(df_join)
 
 
         df_join.to_csv("output.csv")
@@ -43,8 +43,8 @@ class TransformDataFrame:
             
         }
 
-        reindex_columns = ['spotify_user_id','song_id','song_name','song_artist','song_title','song_uri',
-                           'song_key','song_mode','danceability','energy','loudness','spechiness',
+        reindex_columns = ['spotify_user_id','song_id','song_name','artist','title','song_uri',
+                           'song_key','is_major','danceability','energy','loudness','spechiness',
                            'acousticness','instrumentalness','liveness','valence','tempo',
                            'time_signature','duration_ms','track_href','analysis_url','created']
 
@@ -75,7 +75,7 @@ class TransformDataFrame:
 
         final_df["is_major"] = final_df["mode"].map({1: True , 0: False})
 
-        return final_df["key"], final_df["mode"]
+        return final_df["key"], final_df["is_major"]
 
 
 
