@@ -21,7 +21,8 @@ class PostgresDB(object):
     ):
         username = os.environ['POSTGRES_USER']
         password = os.environ['POSTGRES_PASSWORD']
-        host = os.environ['POSTGRES_HOST']
+        # host = os.environ['POSTGRES_HOST']
+        host = 'localhost'
 
         if not hasattr(self, "_conn"):
             url_object = URL.create(
@@ -41,29 +42,28 @@ class PostgresDB(object):
                 pool_pre_ping=False,
             )
         return self._conn
-    
+
     def engine(self):
-        return self.conn 
-    
+        return self.conn
+
 
 def df_to_db(
-    database: str = 'postgresql',
-    schema=None,
+    df,
+    table_name,
+    db_name: str = "postgresql",
     insert_method="append",
     chunksize=None,
     method="multi",
-    df,
-    table_name,
 ):
     """Wrap df_to_db function to create engine and write to database table."""
-    db = PostgresDB(database)
+    db = PostgresDB()
 
     df.to_sql(
         table_name,
         con=db.engine(),
         index=False,
         if_exists=insert_method,
-        schema=schema,
+        schema="public",
         chunksize=chunksize,
         method=method,
     )
