@@ -4,7 +4,7 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 import requests
 import configparser
 from utils.flask_celery import make_celery
-from src.tasks import get_tracks,append_results,cluster_results,create_plots
+from src.tasks import get_tracks,append_results,cluster_results,create_plots,save_data_in_postgres
 from src.extract import DataExtractor
 from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
@@ -60,7 +60,9 @@ def auth():
 
     #task = chord(total_tracks)(append_results.s())
 
-    task = chord(total_tracks)(append_results.s() | cluster_results.s() | create_plots.s())
+    final_chord = (save_data_in_postgres.s())
+
+    task = chord(total_tracks)(append_results.s() | cluster_results.s() | save_data_in_postgres.s() | create_plots.s())
 
 
     return (

@@ -7,6 +7,8 @@ from src.transform import TransformDataFrame
 from src.clustering import Clustering
 from src.plot import Plot
 
+from utils.postgres import df_to_db
+
 
 import pandas as pd
 from celery import shared_task, chord
@@ -98,7 +100,15 @@ def create_plots(self,clusters_info):
     }
 
 @shared_task(bind=True, name="SAVE CLUSTER DATA IN POSTGRES")
-def save_data_in_postgres(self,cluster_data):
-    pass
+def save_data_in_postgres(self,result):
+    
+    cluster_data = pd.read_json(json.dumps(result['clusters']))
+    cluster_stats = pd.read_json(json.dumps(result['cluster_stats']))
+
+    print("Funciona la task")
+
+
+    return {"clusters" : cluster_data.to_dict("list"),
+            "cluster_stats" : cluster_stats.to_dict("list")}
 
 
