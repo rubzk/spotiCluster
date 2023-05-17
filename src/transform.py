@@ -44,7 +44,7 @@ class TransformDataFrame:
         }
 
         reindex_columns = ['spotify_user_id','song_id','song_name','artist','title','song_uri',
-                           'song_key','is_major','danceability','energy','loudness','spechiness',
+                           'song_key','is_major','danceability','energy','loudness','speechiness',
                            'acousticness','instrumentalness','liveness','valence','tempo',
                            'time_signature','duration_ms','track_href','analysis_url','created']
 

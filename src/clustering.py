@@ -10,7 +10,7 @@ class Clustering:
             "danceability",
             "energy",
             "loudness",
-            "spechiness",
+            "speechiness",
             "acousticness",
             "instrumentalness",
             "liveness",
