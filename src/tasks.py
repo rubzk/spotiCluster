@@ -52,13 +52,13 @@ def append_results(self, results):
 
     result = result.dropna(axis=0, how="any", subset=["song_id"])
 
-    # result = result.drop(axis=1, columns="0")
+    #result = result.drop(axis=1, columns="0")
 
+    
     return json.dumps(result.to_dict("list"))
 
-
 @shared_task(bind=True, name="Cluster all the results")
-def cluster_results(self, result):
+def cluster_results(self,result):
 
     result = pd.read_json(result)
 
@@ -74,41 +74,57 @@ def cluster_results(self, result):
 
     df_cluster.to_csv('clusters.csv')
 
+
     df_cluster_stats = clustering.get_cluster_stats(df_cluster)
 
     df_cluster_stats.to_csv('cluster_stats.csv')
 
-    return {"clusters": df_cluster.to_dict("list"),
-            "cluster_stats": df_cluster_stats.to_dict("list")}
+
+    return {"clusters" : df_cluster.to_dict("list"),
+            "cluster_stats" : df_cluster_stats.to_dict("list") }
+
 
 
 @shared_task(bind=True, name="Create the plots")
-def create_plots(self, clusters_info):
-
+def create_plots(self,clusters_info):
+ 
     clusters_stats = pd.read_json(json.dumps(clusters_info['cluster_stats']))
 
-    plot = Plot(audio_df=["danceability", "energy",
-                "tempo", "instrumentalness", "valence"])
+
+    plot = Plot(audio_df=["danceability", "energy", "tempo","instrumentalness","valence"])
 
     radar_chart = plot.radar_chart(clusters_stats)
 
     return {
-        "plots": {"radar_chart": radar_chart}
+        "plots" : {"radar_chart" : radar_chart}
     }
 
-
 @shared_task(bind=True, name="SAVE CLUSTER DATA IN POSTGRES")
-def save_data_in_postgres(self, result):
+def save_data_in_postgres(self,cluster_data):
+    
+    clusters = pd.read_json(json.dumps(cluster_data['clusters']))
 
-    cluster_data = pd.read_json(json.dumps(result['clusters']))
-    cluster_stats = pd.read_json(json.dumps(result['cluster_stats']))
+    cluster_stats = pd.read_json(json.dumps(cluster_data['cluster_stats']))
 
-    db = PostgresDB()
+
+    # clusters.to_sql(
+    #     "music",
+    #     con=db,
+    #     index=False,
+    #     if_exists="append",
+    #     schema="public",
+    #     chunksize=None,
+    #     method="multi"
+    #     )
+    
 
     df_to_db(
-        df=cluster_data,
-        table_name="user_clusters",
+        df=clusters,
+        table_name='music',
+        insert_method='append'
     )
 
-    return {"clusters": cluster_data.to_dict("list"),
-            "cluster_stats": cluster_stats.to_dict("list")}
+    return {"clusters" : clusters.to_dict("list"),
+            "cluster_stats" : cluster_stats.to_dict("list") }
+
+

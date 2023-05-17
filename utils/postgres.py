@@ -15,14 +15,14 @@ class PostgresDB(object):
         self.db_name = db_name
         self.port = int(port)
 
+
     @property
     def conn(
         self
     ):
         username = os.environ['POSTGRES_USER']
         password = os.environ['POSTGRES_PASSWORD']
-        # host = os.environ['POSTGRES_HOST']
-        host = 'localhost'
+        host = os.environ['POSTGRES_HOST']
 
         if not hasattr(self, "_conn"):
             url_object = URL.create(
@@ -50,7 +50,6 @@ class PostgresDB(object):
 def df_to_db(
     df,
     table_name,
-    db_name: str = "postgresql",
     insert_method="append",
     chunksize=None,
     method="multi",
