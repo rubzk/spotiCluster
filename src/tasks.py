@@ -33,7 +33,7 @@ def get_tracks(self, auth_token, playlist):
 
     result['spotify_user_id'] = user_id
 
-    result['created'] = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+    #result['created'] = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
     result = transform.rename_and_reindex_columns(result)
 
@@ -51,6 +51,8 @@ def append_results(self, results):
         result = result.append(pd.read_json(tracks))
 
     result = result.dropna(axis=0, how="any", subset=["song_id"])
+
+    result['created'] = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
     #result = result.drop(axis=1, columns="0")
 
@@ -106,16 +108,6 @@ def save_data_in_postgres(self,cluster_data):
 
     cluster_stats = pd.read_json(json.dumps(cluster_data['cluster_stats']))
 
-
-    # clusters.to_sql(
-    #     "music",
-    #     con=db,
-    #     index=False,
-    #     if_exists="append",
-    #     schema="public",
-    #     chunksize=None,
-    #     method="multi"
-    #     )
     
 
     df_to_db(
