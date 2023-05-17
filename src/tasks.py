@@ -48,7 +48,8 @@ def append_results(self, results):
     result = pd.DataFrame()
 
     for tracks in results:
-        result = result.append(pd.read_json(tracks))
+        #result = result.append(pd.read_json(tracks))
+        result = pd.concat([result,pd.read_json(tracks)], ignore_index=True)
 
     result = result.dropna(axis=0, how="any", subset=["song_id"])
 

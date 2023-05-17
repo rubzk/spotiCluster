@@ -74,7 +74,7 @@ class DataExtractor:
                     "name": track["track"]["name"],
                     "artist": track["track"]["artists"][0]["name"],
                 }
-                tracks_info = tracks_info.append(d_tracks, ignore_index=True)
+                tracks_info = pd.concat([tracks_info,pd.DataFrame([d_tracks])], ignore_index=True)
 
         tracks_info = tracks_info.dropna(how="any", subset=["id"])
 
@@ -215,6 +215,7 @@ class DataExtractor:
                 ),
                 headers=headers,
             ).json()["audio_features"]
-            tracks_audio_ft = tracks_audio_ft.append(response, ignore_index=True)
+
+            tracks_audio_ft = pd.concat([tracks_audio_ft,pd.DataFrame(response)], ignore_index=True)
 
         return tracks_audio_ft
