@@ -27,8 +27,6 @@ class Plot:
             size="size",
         )
 
-        self.df.to_csv("output.csv")
-
         return fig
 
     def radar_chart(self, cluster_stats):

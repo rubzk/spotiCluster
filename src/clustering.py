@@ -38,8 +38,6 @@ class Clustering:
     def k_means_clustering(self, scaled_df):
         fit_features_df = pd.DataFrame(scaled_df)
 
-        fit_features_df.to_csv("test_scale.csv")
-
         print(fit_features_df)
 
         # fit_features_df = scaled_df.iloc[:, self.fit_features]
@@ -67,8 +65,6 @@ class Clustering:
         cluster_stats = (
             df_cluster.groupby("cluster_name")[self.audio_ft].mean().reset_index()
         )
-
-        # cluster_stats.to_csv('cluster_stats.csv')
 
         return cluster_stats
 
