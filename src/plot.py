@@ -10,9 +10,9 @@ import plotly.express as px
 class Plot:
     def __init__(self, audio_df):
         self.audio_ft = audio_df
-        #self.df["size"] = 3
-        #self.n_clusters = n_clusters
-        #self.cluster_stats = cluster_stats
+        # self.df["size"] = 3
+        # self.n_clusters = n_clusters
+        # self.cluster_stats = cluster_stats
 
     def scatter_3d(self, x_ax, y_ax, z_ax):
         fig = px.scatter_3d(
@@ -31,17 +31,17 @@ class Plot:
 
         return fig
 
-    def radar_chart(self,cluster_stats):
-        
+    def radar_chart(self, cluster_stats):
         plot = {}
 
-        cluster_stats = cluster_stats[['cluster_name'] + self.audio_ft]
+        cluster_stats = cluster_stats[["cluster_name"] + self.audio_ft]
 
         for cluster in range(cluster_stats.shape[0]):
-            plot[cluster_stats.iloc[cluster]["cluster_name"]] = cluster_stats.iloc[cluster, cluster_stats.columns != "cluster_name"].to_list()
+            plot[cluster_stats.iloc[cluster]["cluster_name"]] = cluster_stats.iloc[
+                cluster, cluster_stats.columns != "cluster_name"
+            ].to_list()
 
         plot["categories"] = self.audio_ft
-
 
         return plot
 

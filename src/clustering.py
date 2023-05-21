@@ -24,11 +24,9 @@ class Clustering:
         # self.df_all_tracks = self._json_to_df()
 
     def _json_to_df(self):
-
         return pd.read_json(self.all_data)
 
     def scale_features(self, all_tracks):
-
         print(all_tracks.columns)
 
         scaler = MinMaxScaler()
@@ -38,7 +36,6 @@ class Clustering:
         return all_tracks
 
     def k_means_clustering(self, scaled_df):
-
         fit_features_df = pd.DataFrame(scaled_df)
 
         fit_features_df.to_csv("test_scale.csv")
@@ -67,9 +64,9 @@ class Clustering:
         return scaled_df
 
     def get_cluster_stats(self, df_cluster):
-
-
-        cluster_stats = df_cluster.groupby("cluster_name")[self.audio_ft].mean().reset_index()
+        cluster_stats = (
+            df_cluster.groupby("cluster_name")[self.audio_ft].mean().reset_index()
+        )
 
         # cluster_stats.to_csv('cluster_stats.csv')
 
