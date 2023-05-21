@@ -2,154 +2,21 @@
 {% block content %}
 
 
-
-
-
 <div class="w-max flex flex-col mx-auto py-12">
-    <h1 class="font-bold text-8xl text-amber-50 tracking-tighter">Loading Plots</h1>
+    <h1 id="loading-text" class="font-bold text-8xl text-amber-50 tracking-tighter">Loading Plots</h1>
 </div>
 
 <div>
-    <canvas class="mx-auto" id="radarChart"></canvas>
+    <canvas class="w-1/4 mx-auto" id="radarChart"></canvas>
 </div>
+
+
 
 <script src="{{ url_for('static', filename='js/plot.js') }}"></script>
 <script>
     var taskId = '{{task_id | safe}}'
+
+
 </script>
-<!-- /*
-<script>
-
-
-    var taskId = '{{task_id | safe}}'
-
-    var resultFound = false;
-
-    var fetchNow = function () {
-        fetch('/status/' + taskId)
-            .then(res => res.json())
-            .then(data => {
-
-
-                if (data['plots']) {
-
-                    console.log(data['plots'])
-
-                    
-
-
-                    var ctx = document.getElementById('radarChart').getContext('2d');
-
-                    // Define data for the chart
-                    var dataPlots = {
-                        labels: data['plots']['radar_chart']['categories'],
-                        datasets: [{
-                            label: 'Cluster 1',
-                            data: data['plots']['radar_chart']['Cluster 0'],
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 2,
-                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 1,
-                            pointRadius: 3
-                        }, {
-                            label: 'Cluster 2',
-                            data: data['plots']['radar_chart']['Cluster 1'],
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 1,
-                            pointRadius: 3
-                        }]
-                    }; 
-
-
-                            var options = {
-                    scale: {
-                        ticks: {
-                            beginAtZero: true,
-                            max: 1
-                        },
-                        pointLabels: {
-                            fontSize: 14
-                        }
-                    },
-                    legend: {
-                        position: 'bottom'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Audio Features by Cluster'
-                    }
-                };
-
-                // Create the chart
-                var myRadarChart = new Chart(ctx, {
-                    type: 'radar',
-                    data: dataPlots,
-                    options: options
-                });
-
-                }
-                else {
-
-                    //console.log(data['status'])
-                    fetchNow();
-
-                }
-
-                /*
-                if (data['plots']) {
-                    document.getElementById("title").style.display = 'flex';
-
-
-
-                    document.getElementById("plots").style.display = 'flex';
-
-                    document.getElementById('loading-plots').style.display = 'none';
-
-                    data_p = JSON.parse(data['plots'])
-                    var layout = { autosize: true }
-                    var config = { responsive: true }
-
-                    //function to draw all the plots
-                    for (const [key, value] of Object.entries(data_p)) {
-                        if (key == "scatter3d") {
-                            console.log(key, value)
-                            Plotly.newPlot("scatter-1", data_p[key][1], layout, config)
-                            Plotly.newPlot("scatter-2", data_p[key][2], layout, config)
-                            Plotly.newPlot("scatter-3", data_p[key][3], layout, config)
-                            Plotly.newPlot("scatter-4", data_p[key][4], layout, config)
-                        }
-                        else if (key == 'user_data') {
-                            document.getElementById("n_clusters").innerHTML = "<h2>Your datas was clusterized in " + data_p[key][0] + " clusters</h2>";
-                            document.getElementById("n_tracks").innerHTML = "<h2>We analyzed " + data_p[key][1] + " tracks</h2>";
-                            document.getElementById("n_clusters").style.display = 'flex';
-                            document.getElementById("n_tracks").style.display = 'flex';
-
-                        }
-                        else {
-                            Plotly.newPlot(key, data_p[key], layout, config)
-                            console.log(key, value)
-                        }
-                    }
-                }
-                else {
-                    console.log(data['status'])
-                    fetchNow();
-                }
-                */
-            });
-    }
-
-    fetchNow();
-
-
-    
-
-</script> -->
 
 {% endblock %}
