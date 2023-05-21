@@ -2,6 +2,15 @@ var taskId = '{{task_id | safe}}'
 
 var resultFound = false;
 
+var colors = [
+    'rgba(255, 99, 132, 0.2)',   // Red
+    'rgba(54, 162, 235, 0.2)',    // Blue
+    'rgba(255, 206, 86, 0.2)',    // Yellow
+    'rgba(75, 192, 192, 0.2)',    // Green
+    'rgba(153, 102, 255, 0.2)',   // Purple
+    'rgba(255, 159, 64, 0.2)'     // Orange
+];
+
 var fetchNow = function () {
     fetch('/status/' + taskId)
         .then(res => res.json())
@@ -9,33 +18,37 @@ var fetchNow = function () {
             if (data['plots']) {
                 console.log(data['plots'])
 
+                document.getElementById("loading-text").style.display = 'none';
+
                 var ctx = document.getElementById('radarChart').getContext('2d');
 
-                // Define data for the chart
+
                 var dataPlots = {
                     labels: data['plots']['radar_chart']['categories'],
-                    datasets: [{
-                        label: 'Cluster 1',
-                        data: data['plots']['radar_chart']['Cluster 0'],
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 1,
-                        pointRadius: 3
-                    }, {
-                        label: 'Cluster 2',
-                        data: data['plots']['radar_chart']['Cluster 1'],
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 1,
-                        pointRadius: 3
-                    }]
+                    datasets: []
                 };
+
+
+
+                // Iterate over the data and generate datasets
+                for (var i = 0; i < Object.keys(data['plots']['radar_chart']).length - 1; i++) {
+                    var clusterLabel = 'Cluster ' + (i);
+                    var dataset = {
+                        label: clusterLabel,
+                        data: data['plots']['radar_chart'][clusterLabel],
+                        backgroundColor: colors[i % colors.length],
+                        borderColor: colors[i % colors.length].replace('0.2', '1'), // Increase opacity
+                        borderWidth: 2,
+                        pointBackgroundColor: colors[i % colors.length].replace('0.2', '1'),
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1,
+                        pointRadius: 3
+                    };
+
+                    dataPlots.datasets.push(dataset);
+                }
+
+
 
                 var options = {
                     scale: {
@@ -44,15 +57,26 @@ var fetchNow = function () {
                             max: 1
                         },
                         pointLabels: {
-                            fontSize: 14
+                            fontSize: 14,
+                            fontColor: 'white'
+
+                        }, gridLines: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        },
+                        angleLines: {
+                            color: 'white'
                         }
                     },
                     legend: {
-                        position: 'bottom'
+                        position: 'top',
+                        labels: {
+                            fontColor: 'white'
+                        }
                     },
                     title: {
                         display: true,
-                        text: 'Audio Features by Cluster'
+                        text: 'Audio Features by Cluster',
+                        fontColor: 'white'
                     }
                 };
 
