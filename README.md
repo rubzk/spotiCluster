@@ -4,11 +4,11 @@ The mission of this web app is to help you understand your taste in music. __Sti
 
 ### How it works:
 
-The app extracts your spotify data with [their public API](https://developer.spotify.com/documentation/web-api/), and then apply the famous clustering method [K-means](https://en.wikipedia.org/wiki/K-means_clustering) and plot some insights with [Plotly](https://plotly.com/python/).
+The app extracts your spotify data with [their public API](https://developer.spotify.com/documentation/web-api/), and then apply the famous clustering method [K-means](https://en.wikipedia.org/wiki/K-means_clustering) and plot some insights with [ChartJS](https://www.chartjs.org/docs/latest/).
 
 ### Composition:
 
-The is a Flask web app with Celery to paralellize tasks and Plotly to create the plots.
+The is a Flask web app with Celery to paralellize tasks and ChartJS to create the plots.
 
 ### To-DO:
 
