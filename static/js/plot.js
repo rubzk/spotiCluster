@@ -20,6 +20,8 @@ var fetchNow = function () {
 
                 document.getElementById("loading-text").style.display = 'none';
 
+                document.getElementById("done-text").style.display = 'flex';
+
                 var ctx = document.getElementById('radarChart').getContext('2d');
 
 
