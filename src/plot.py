@@ -43,6 +43,16 @@ class Plot:
 
         return plot
 
+    def pie_chart(self, clusters):
+        df_pie_chart = (
+            clusters.groupby("cluster_name")[["spotify_user_id"]]
+            .count()
+            .reset_index()
+            .rename(columns={"spotify_user_id": "number_of_songs"})
+        )
+
+        return df_pie_chart.to_dict("list")
+
     def bar_chart(self, data):
         fig = px.bar(
             x=data["x"],
