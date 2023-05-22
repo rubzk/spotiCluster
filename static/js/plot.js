@@ -52,19 +52,20 @@ var fetchNow = function () {
 
                 var options = {
                     scale: {
+                        angleLines: {
+                            color: 'white'
+                        },
+                        gridLines: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        },
                         ticks: {
                             beginAtZero: true,
-                            max: 1
+                            max: 1,
+                            fontColor: 'white'
                         },
                         pointLabels: {
                             fontSize: 14,
                             fontColor: 'white'
-
-                        }, gridLines: {
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        },
-                        angleLines: {
-                            color: 'white'
                         }
                     },
                     legend: {
@@ -77,6 +78,9 @@ var fetchNow = function () {
                         display: true,
                         text: 'Audio Features by Cluster',
                         fontColor: 'white'
+                    },
+                    pointLabels: {
+                        fontColor: 'white'
                     }
                 };
 
@@ -84,6 +88,20 @@ var fetchNow = function () {
                 var myRadarChart = new Chart(ctx, {
                     type: 'radar',
                     data: dataPlots,
+                    options: options
+                });
+
+                var dataPieChart = {
+                    labels: data['plots']['pie_chart']['cluster_name'],
+                    datasets: [{
+                        data: data['plots']['pie_chart']['number_of_songs']
+                    }]
+                }
+                var ctx_pie = document.getElementById('pieChart').getContext('2d');
+
+                var myPieChart = new Chart(ctx_pie, {
+                    type: 'pie',
+                    data: dataPieChart,
                     options: options
                 });
             }
