@@ -50,6 +50,8 @@ def append_results(self, results):
 
     result = result.dropna(axis=0, how="any", subset=["song_id"])
 
+    result = result.drop_duplicates(subset=["song_id"])
+
     return json.dumps(result.to_dict("list"))
 
 
@@ -84,7 +86,9 @@ def create_plots(self, clusters_info):
 
     pie_chart = plot.pie_chart(clusters)
 
-    return {"plots": {"radar_chart": radar_chart, "pie_chart": pie_chart}}
+    return {"plots": {"radar_chart": radar_chart, "pie_chart": pie_chart,
+                      "number_of_tracks": clusters.shape[0],
+                      "number_of_clusters" : len(clusters.cluster_name.unique())}}
 
 
 @shared_task(bind=True, name="SAVE CLUSTER DATA IN POSTGRES")
