@@ -1,3 +1,4 @@
+
 var taskId = '{{task_id | safe}}'
 
 var resultFound = false;
@@ -20,17 +21,17 @@ var fetchNow = function () {
 
                 document.getElementById("loading-text").style.display = 'none';
 
+                document.getElementById("done-text").innerHTML = "We analyzed " + data['plots']['number_of_tracks'] + " tracks and created " + data['plots']['number_of_clusters'] + " clusters" 
+
                 document.getElementById("done-text").style.display = 'flex';
 
-                var ctx = document.getElementById('radarChart').getContext('2d');
-
+                var ctx_radar = document.getElementById('radarChart').getContext('2d');
+                var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
                 var dataPlots = {
                     labels: data['plots']['radar_chart']['categories'],
                     datasets: []
                 };
-
-
 
                 // Iterate over the data and generate datasets
                 for (var i = 0; i < Object.keys(data['plots']['radar_chart']).length - 1; i++) {
@@ -49,6 +50,14 @@ var fetchNow = function () {
 
                     dataPlots.datasets.push(dataset);
                 }
+
+                var dataPieChart = {
+                    labels: data['plots']['pie_chart']['cluster_name'],
+                    datasets: [{
+                        data: data['plots']['pie_chart']['number_of_songs']
+                    }]
+                }
+
 
 
 
@@ -86,21 +95,14 @@ var fetchNow = function () {
                     }
                 };
 
-                // Create the chart
-                var myRadarChart = new Chart(ctx, {
+                // Create the charts  
+                var myRadarChart = new Chart(ctx_radar, {
                     type: 'radar',
                     data: dataPlots,
                     options: options
                 });
 
-                var dataPieChart = {
-                    labels: data['plots']['pie_chart']['cluster_name'],
-                    datasets: [{
-                        data: data['plots']['pie_chart']['number_of_songs']
-                    }]
-                }
-                var ctx_pie = document.getElementById('pieChart').getContext('2d');
-
+                
                 var myPieChart = new Chart(ctx_pie, {
                     type: 'pie',
                     data: dataPieChart,
