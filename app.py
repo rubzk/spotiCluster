@@ -4,12 +4,19 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 import requests
 import configparser
 from utils.flask_celery import make_celery
-from src.tasks import get_tracks,append_results,cluster_results,create_plots,save_data_in_postgres
+from src.tasks import (
+    get_tracks,
+    append_results,
+    cluster_results,
+    create_plots,
+    save_data_in_postgres,
+)
 from src.extract import DataExtractor
 from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
 from celery import current_app, chord
-#from flask_assets import Environment, Bundle
+
+# from flask_assets import Environment, Bundle
 
 
 app = Flask(__name__)
@@ -24,7 +31,6 @@ config.read(r"config.cfg")
 
 @app.route("/")
 def index():
-
     payload = {
         "client_id": config.get("spotify-api", "client_id"),
         "response_type": "code",
@@ -58,34 +64,42 @@ def auth():
 
     total_tracks = [get_tracks.s(auth.auth_token, playlist) for playlist in playlists]
 
-    #task = chord(total_tracks)(append_results.s())
+    # task = chord(total_tracks)(append_results.s())
 
-    final_chord = (save_data_in_postgres.s())
+    final_chord = save_data_in_postgres.s()
 
-    task = chord(total_tracks)(append_results.s() | cluster_results.s() | save_data_in_postgres.s() | create_plots.s())
-
-
-    return (
-        render_template("plot.html", task_id=task.id),
-        202,
-        {"Location": url_for("taskstatus", task_id=task.id)},
+    task = chord(total_tracks)(
+        append_results.s()
+        | cluster_results.s()
+        | save_data_in_postgres.s()
+        | create_plots.s()
     )
+
+    return redirect(url_for("taskstatus", task_id=task.id))
+
+    # return (
+    #     render_template("plot.html", task_id=task.id),
+    #     202,
+    #     {"Location": url_for("taskstatus", task_id=task.id)},
+    # )
 
 
 @app.route("/status/<task_id>", methods=["GET"])
 def taskstatus(task_id):
-
     task = celery.AsyncResult(task_id)
 
     app.logger.info(f"status: {task.state}")
 
-    if task.state == 'SUCCESS':
-        return {"status" : task.state,
-                "plots" :task.info["plots"]}
+    if "application/json" in request.headers.get("Content-Type", ""):
+        if task.state == "SUCCESS":
+            return {"status": task.state, "plots": task.info["plots"]}
 
-    #app.logger.info(task.info)
+        app.logger.info(task.info)
 
-    return {"status" : task.state}
+        return {"status": task.state}
+
+    # Render the template for normal browser request
+    return render_template("plot.html", task_id=task_id)
 
 
 # @app.errorhandler(Exception)
@@ -93,9 +107,9 @@ def taskstatus(task_id):
 #     app.logger.exception(f"Unhandled exception: {e}")
 #     return "Internal server error", 500
 
+
 @app.route("/tasks/", methods=["GET"])
 def get_tasks_celery():
-
     current_app.loader.import_default_modules()
 
     tasks = list(

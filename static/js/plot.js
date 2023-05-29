@@ -12,8 +12,13 @@ var colors = [
     'rgba(255, 159, 64, 0.2)'     // Orange
 ];
 
+var headers = new Headers();
+headers.append('Content-Type', 'application/json');
+
 var fetchNow = function () {
-    fetch('/status/' + taskId)
+    fetch('/status/' + taskId, {
+        headers: headers
+    })
         .then(res => res.json())
         .then(data => {
             if (data['plots']) {
@@ -21,7 +26,7 @@ var fetchNow = function () {
 
                 document.getElementById("loading-text").style.display = 'none';
 
-                document.getElementById("done-text").innerHTML = "We analyzed " + data['plots']['number_of_tracks'] + " tracks and created " + data['plots']['number_of_clusters'] + " clusters" 
+                document.getElementById("done-text").innerHTML = "We analyzed " + data['plots']['number_of_tracks'] + " tracks and created " + data['plots']['number_of_clusters'] + " clusters"
 
                 document.getElementById("done-text").style.display = 'flex';
 
@@ -102,7 +107,7 @@ var fetchNow = function () {
                     options: options
                 });
 
-                
+
                 var myPieChart = new Chart(ctx_pie, {
                     type: 'pie',
                     data: dataPieChart,
