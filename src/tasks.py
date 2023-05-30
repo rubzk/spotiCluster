@@ -92,7 +92,7 @@ def create_plots(self, clusters_info):
                       "number_of_tracks": clusters.shape[0],
                       "number_of_clusters" : len(clusters.cluster_name.unique()),
                       "top_3_artist" : top_3_artist,
-                      "songs" : clusters[["cluster_name","song_name","artist","title"]].to_dict("list")}
+                      "songs" : clusters[["cluster_name","song_name","artist","title","danceability", "energy", "instrumentalness","valence","tempo"]].to_dict("list")}
                       }
 
 
