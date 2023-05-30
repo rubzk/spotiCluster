@@ -37,7 +37,7 @@ var fetchNow = function () {
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
                 var dataPlots = {
-                    labels: data['plots']['radar_chart']['categories'],
+                    labels: data['plots']['radar_chart']['categories'].slice(0, 4),
                     datasets: []
                 };
 
@@ -46,7 +46,7 @@ var fetchNow = function () {
                     var clusterLabel = 'Cluster ' + (i);
                     var dataset = {
                         label: clusterLabel,
-                        data: data['plots']['radar_chart'][clusterLabel],
+                        data: data['plots']['radar_chart'][clusterLabel].slice(0, 4),
                         backgroundColor: colors[i % colors.length],
                         borderColor: colors[i % colors.length].replace('0.2', '1'), // Increase opacity
                         borderWidth: 2,
@@ -65,6 +65,20 @@ var fetchNow = function () {
                         data: data['plots']['pie_chart']['number_of_songs']
                     }]
                 }
+
+                const addButton = document.getElementById('add-valence');
+
+                addButton.addEventListener('click', function () {
+                    handler(chart) {
+                        const data = chart.data;
+                        if (dataPlots.labels.includes("valence")) {
+                            // remove it
+                        }
+                        else {
+                            // add it 
+                        }
+                    }
+                });
 
 
 
@@ -116,6 +130,18 @@ var fetchNow = function () {
                     data: dataPieChart,
                     options: options
                 });
+
+
+                const dataScatter = [];
+                for (let i = 0; i < songs.length; i++) {
+                    data.push({
+                        x: danceability[i],
+                        y: energy[i],
+                        label: songs[i],
+                        cluster: clusterNames[i],
+                        instrumentalness: instrumentalness[i]
+                    });
+                }
             }
             else {
                 fetchNow();
