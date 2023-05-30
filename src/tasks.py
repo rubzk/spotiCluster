@@ -79,7 +79,14 @@ def create_plots(self, clusters_info):
     clusters = pd.read_json(json.dumps(clusters_info["clusters"]))
 
     plot = Plot(
-        audio_df=["danceability", "energy", "tempo", "instrumentalness", "valence"]
+        audio_df=[
+            "danceability",
+            "energy",
+            "tempo",
+            "instrumentalness",
+            "valence",
+            "loudness",
+        ]
     )
 
     radar_chart = plot.radar_chart(clusters_stats)
