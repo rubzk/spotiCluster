@@ -91,8 +91,9 @@ def create_plots(self, clusters_info):
     return {"plots": {"radar_chart": radar_chart, "pie_chart": pie_chart,
                       "number_of_tracks": clusters.shape[0],
                       "number_of_clusters" : len(clusters.cluster_name.unique()),
-                      "top_3_artist" : top_3_artist},
+                      "top_3_artist" : top_3_artist,
                       "songs" : clusters[["cluster_name","song_name","artist","title"]].to_dict("list")}
+                      }
 
 
 @shared_task(bind=True, name="SAVE CLUSTER DATA IN POSTGRES")
