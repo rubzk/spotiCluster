@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, render_template, redirect, url_for, request, jsonify, session
+from flask import Flask, render_template, redirect, url_for, request, jsonify, session,make_response
 import requests
 import configparser
 from utils.flask_celery import make_celery
@@ -58,15 +58,28 @@ def auth():
         auth_code=auth_code,
     )
 
+    res = make_response()
+
+    res.headers["my-header"] = "Test Header"
+
     extractor = DataExtractor(auth.auth_token)
+
+    user_id = extractor.get_user_id()
+
+    res.set_cookie(
+        "username",
+        value=user_id,
+        expires=None,
+        path="/",
+        secure=True,
+        httponly=True,
+        domain='127.0.0.1'
+    )
 
     playlists = extractor.get_all_playlists()
 
     total_tracks = [get_tracks.s(auth.auth_token, playlist) for playlist in playlists]
 
-    # task = chord(total_tracks)(append_results.s())
-
-    final_chord = save_data_in_postgres.s()
 
     task = chord(total_tracks)(
         append_results.s()
@@ -77,11 +90,6 @@ def auth():
 
     return redirect(url_for("taskstatus", task_id=task.id))
 
-    # return (
-    #     render_template("plot.html", task_id=task.id),
-    #     202,
-    #     {"Location": url_for("taskstatus", task_id=task.id)},
-    # )
 
 
 @app.route("/status/<task_id>", methods=["GET"])
@@ -101,11 +109,6 @@ def taskstatus(task_id):
     # Render the template for normal browser request
     return render_template("plot.html", task_id=task_id)
 
-
-# @app.errorhandler(Exception)
-# def handle_exception(e):
-#     app.logger.exception(f"Unhandled exception: {e}")
-#     return "Internal server error", 500
 
 
 @app.route("/tasks/", methods=["GET"])
