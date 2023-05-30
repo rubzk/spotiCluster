@@ -30,6 +30,9 @@ var fetchNow = function () {
 
                 document.getElementById("done-text").style.display = 'flex';
 
+                document.getElementById("div-test").style.display = 'flex';
+
+
                 var ctx_radar = document.getElementById('radarChart').getContext('2d');
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
