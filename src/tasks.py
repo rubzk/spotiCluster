@@ -86,9 +86,12 @@ def create_plots(self, clusters_info):
 
     pie_chart = plot.pie_chart(clusters)
 
+    top_3_artist = plot.top_3_artist(clusters)
+
     return {"plots": {"radar_chart": radar_chart, "pie_chart": pie_chart,
                       "number_of_tracks": clusters.shape[0],
-                      "number_of_clusters" : len(clusters.cluster_name.unique())}}
+                      "number_of_clusters" : len(clusters.cluster_name.unique()),
+                      "top_3_artist" : top_3_artist}}
 
 
 @shared_task(bind=True, name="SAVE CLUSTER DATA IN POSTGRES")

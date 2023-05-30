@@ -17,7 +17,7 @@ class Clustering:
             "valence",
             "tempo",
         ]
-        self.fit_features = ["danceability", "energy", "tempo"]
+        self.fit_features = ["danceability", "energy", "instrumentalness","valence","tempo"]
         self.n_clusters = 4
         self.df_all_tracks = all_tracks
         # self.json_all_tracks = json_all_tracks

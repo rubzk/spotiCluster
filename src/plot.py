@@ -52,6 +52,11 @@ class Plot:
         )
 
         return df_pie_chart.to_dict("list")
+    
+    def top_3_artist(self, clusters):
+        gb = clusters.groupby('cluster_name')['artist'].value_counts().groupby(level=0).head(3).sort_values(ascending=False).to_frame('counts').reset_index()
+
+        return gb.sort_values(by="cluster_name", ascending=False).to_dict("list")
 
     def bar_chart(self, data):
         fig = px.bar(
