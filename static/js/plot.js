@@ -47,6 +47,33 @@ function adaptDataForChart(dataObj) {
     return datasets;
 }
 
+function updateChartProperty(property, chartObject, originalData) {
+    // Check if the property is already present in the chart
+    var isPropertyPresent = chartObject.data.labels.includes(property);
+
+    if (isPropertyPresent) {
+        // Remove the property from the chart
+        var dataObj = originalData;
+        delete dataObj.radar[property];
+
+        // Adapt the updated data for the chart
+        var updatedDatasets = adaptDataForChart(dataObj);
+        chartObject.data.datasets = updatedDatasets;
+    } else {
+        // Add the property to the chart
+        var dataObj = originalData;
+        dataObj.radar[property] = [];
+        // You can populate the values for the new property here
+
+        // Adapt the updated data for the chart
+        var updatedDatasets = adaptDataForChart(dataObj);
+        chartObject.data.datasets = updatedDatasets;
+    }
+
+    // Update the chart
+    chartObject.update();
+}
+
 var fetchNow = function () {
     fetch('/status/' + taskId, {
         headers: headers
@@ -66,23 +93,15 @@ var fetchNow = function () {
 
 
                 var ctx_radar = document.getElementById('radarChart').getContext('2d');
-                var ctx_radar_test = document.getElementById('radarChartTest').getContext('2d');
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
                 var dataPlots = {
-                    cluster_name: data['plots']['radar_chart']['categories'].slice(0, 4),
+                    labels: data['plots']['radar_chart']['categories'].slice(0, 4),
                     datasets: []
                 };
 
 
-                var radarChartTest = data['plots']['radar_chart_test'];
-
-                var dataPlotsTest = {
-                    cluster_name: ['valence', 'danceability', 'energy'],
-                    datasets: []
-                };
-
-
+                var originalData = data['plots']['radar_chart_test']
 
 
                 // Iterate over the data and generate datasets
@@ -114,15 +133,13 @@ var fetchNow = function () {
 
 
 
-                console.log(dataPlots)
-
-                console.log(data['plots']['radar_chart_test'])
+                // console.log(dataPlots)
 
 
-                var datasetTest = adaptDataForChart(data['plots']['radar_chart_test']);
-                console.log(datasetTest);
 
 
+                // var datasetTest = adaptDataForChart(data['plots']['radar_chart_test']);
+                // console.log(datasetTest);
 
 
 
@@ -181,16 +198,18 @@ var fetchNow = function () {
                 });
 
 
-                const dataScatter = [];
-                for (let i = 0; i < songs.length; i++) {
-                    data.push({
-                        x: danceability[i],
-                        y: energy[i],
-                        label: songs[i],
-                        cluster: clusterNames[i],
-                        instrumentalness: instrumentalness[i]
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    var addButton = document.getElementById('add-valence');
+
+                    addButton.addEventListener('click', function () {
+                        var property = 'valence'; // Replace with the desired property
+                        var chartObject = myRadarChart; // Replace with your actual chart object
+                        console.log("This works")
+
+                        updateChartProperty(property, chartObject, originalData);
                     });
-                }
+                });
             }
             else {
                 fetchNow();
@@ -198,21 +217,9 @@ var fetchNow = function () {
         });
 }
 
-// const addButton = document.getElementById('add-valence');
 
-// addButton.addEventListener('click', function () {
 
-//     const data = chart.data;
-//     if (dataPlots.cluster_name.includes("valence")) {
-//         // remove it
-//         //agregarlo al labesl
-//         // agregarlo al data 
-//     }
-//     else {
-//         // add it 
-//     }
 
-// });
 
 
 fetchNow();
