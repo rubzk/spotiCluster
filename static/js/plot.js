@@ -25,10 +25,10 @@ function adaptDataForChart(dataObj) {
         var dataset = {
             label: clusterLabel,
             data: [],
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: colors[i % colors.length],
+            borderColor: colors[i % colors.length].replace('0.2', '1'), // Increase opacity
             borderWidth: 2,
-            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+            pointBackgroundColor: colors[i % colors.length].replace('0.2', '1'),
             pointBorderColor: '#fff',
             pointBorderWidth: 1,
             pointRadius: 3
@@ -41,8 +41,12 @@ function adaptDataForChart(dataObj) {
             }
         }
 
+
+
         datasets.push(dataset);
     }
+
+    console.log(datasets)
 
     return datasets;
 }
@@ -54,7 +58,7 @@ function updateChartProperty(property, chartObject, originalData) {
     if (isPropertyPresent) {
         // Remove the property from the chart
         var dataObj = originalData;
-        delete dataObj.radar[property];
+        delete dataObj[property];
 
         // Adapt the updated data for the chart
         var updatedDatasets = adaptDataForChart(dataObj);
@@ -125,7 +129,7 @@ var fetchNow = function () {
 
 
                 var dataPieChart = {
-                    cluster_name: data['plots']['pie_chart']['cluster_name'],
+                    labels: data['plots']['pie_chart']['cluster_name'],
                     datasets: [{
                         data: data['plots']['pie_chart']['number_of_songs']
                     }]
@@ -198,18 +202,19 @@ var fetchNow = function () {
                 });
 
 
+                console.log(myRadarChart.data.labels)
 
-                document.addEventListener('DOMContentLoaded', function () {
-                    var addButton = document.getElementById('add-valence');
 
-                    addButton.addEventListener('click', function () {
-                        var property = 'valence'; // Replace with the desired property
-                        var chartObject = myRadarChart; // Replace with your actual chart object
-                        console.log("This works")
+                var addButton = document.getElementById('add-valence');
 
-                        updateChartProperty(property, chartObject, originalData);
-                    });
+                addButton.addEventListener('click', function () {
+                    var property = 'energy'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
                 });
+
             }
             else {
                 fetchNow();
