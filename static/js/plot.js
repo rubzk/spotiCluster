@@ -46,10 +46,11 @@ function adaptDataForChart(dataObj) {
         datasets.push(dataset);
     }
 
-    console.log(datasets)
 
     return datasets;
 }
+
+
 
 function updateChartProperty(property, chartObject, originalData) {
     // Check if the property is already present in the chart
@@ -57,12 +58,49 @@ function updateChartProperty(property, chartObject, originalData) {
 
     if (isPropertyPresent) {
         // Remove the property from the chart
-        var dataObj = originalData;
-        delete dataObj[property];
+
+
+        var newLabels = chartObject.data.labels.filter(function (label) {
+            return label !== property;
+        });
+
+        var newData = chartObject.data.labels.filter(function (label) {
+            return label !== property;
+        });
+
+
+
+        newData.push("cluster_name");
+
+
+
+
+        console.log(chartObject.data.labels)
+        console.log(newLabels)
+
+
+        var filteredData = newData.reduce(function (obj, key) {
+            if (key in originalData) {
+                obj[key] = originalData[key];
+            }
+            return obj;
+        }, {});
+
+        console.log(originalData)
+
+        console.log(filteredData)
+
+
+        // var dataObj = originalData;
+
+        // delete dataObj[property];
+
 
         // Adapt the updated data for the chart
-        var updatedDatasets = adaptDataForChart(dataObj);
+        var updatedDatasets = adaptDataForChart(filteredData);
         chartObject.data.datasets = updatedDatasets;
+        chartObject.data.labels = newLabels;
+
     } else {
         // Add the property to the chart
         var dataObj = originalData;
@@ -203,6 +241,7 @@ var fetchNow = function () {
 
 
                 console.log(myRadarChart.data.labels)
+                console.log(myRadarChart.data.datasets)
 
 
                 var addButton = document.getElementById('add-valence');
