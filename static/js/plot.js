@@ -15,6 +15,38 @@ var colors = [
 var headers = new Headers();
 headers.append('Content-Type', 'application/json');
 
+
+function adaptDataForChart(dataObj) {
+    var datasets = [];
+
+    // Iterate over the clusters
+    for (var i = 0; i < dataObj.cluster_name.length; i++) {
+        var clusterLabel = dataObj.cluster_name[i];
+        var dataset = {
+            label: clusterLabel,
+            data: [],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointRadius: 3
+        };
+
+        // Iterate over the properties in each cluster
+        for (var prop in dataObj) {
+            if (prop !== 'cluster_name' && dataObj.hasOwnProperty(prop)) {
+                dataset.data.push(dataObj[prop][i]);
+            }
+        }
+
+        datasets.push(dataset);
+    }
+
+    return datasets;
+}
+
 var fetchNow = function () {
     fetch('/status/' + taskId, {
         headers: headers
@@ -38,7 +70,7 @@ var fetchNow = function () {
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
                 var dataPlots = {
-                    labels: data['plots']['radar_chart']['categories'].slice(0, 4),
+                    cluster_name: data['plots']['radar_chart']['categories'].slice(0, 4),
                     datasets: []
                 };
 
@@ -46,7 +78,7 @@ var fetchNow = function () {
                 var radarChartTest = data['plots']['radar_chart_test'];
 
                 var dataPlotsTest = {
-                    labels: ['valence', 'danceability', 'energy'],
+                    cluster_name: ['valence', 'danceability', 'energy'],
                     datasets: []
                 };
 
@@ -71,38 +103,25 @@ var fetchNow = function () {
                     dataPlots.datasets.push(dataset);
                 }
 
-                for (var i = 0; i < radarChartTest['cluster_name'].length; i++) {
-                    var clusterLabel = radarChartTest['cluster_name'][i];
-                    var dataset = {
-                        label: clusterLabel,
-                        data: [{
-                            'valence': radarChartTest['valence'][i],
-                            'danceability': radarChartTest['danceability'][i],
-                            'energy': radarChartTest['energy'][i],
-                        }]
-                        ,
-                        backgroundColor: colors[i % colors.length],
-                        borderColor: colors[i % colors.length].replace('0.2', '1'), // Increase opacity
-                        borderWidth: 2,
-                        pointBackgroundColor: colors[i % colors.length].replace('0.2', '1'),
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 1,
-                        pointRadius: 3
-                    };
 
-                    dataPlotsTest.datasets.push(dataset);
-                }
 
                 var dataPieChart = {
-                    labels: data['plots']['pie_chart']['cluster_name'],
+                    cluster_name: data['plots']['pie_chart']['cluster_name'],
                     datasets: [{
                         data: data['plots']['pie_chart']['number_of_songs']
                     }]
                 }
 
 
-                console.log(dataPlotsTest)
+
                 console.log(dataPlots)
+
+                console.log(data['plots']['radar_chart_test'])
+
+
+                var datasetTest = adaptDataForChart(data['plots']['radar_chart_test']);
+                console.log(datasetTest);
+
 
 
 
@@ -120,14 +139,14 @@ var fetchNow = function () {
                             max: 1,
                             fontColor: 'white'
                         },
-                        pointLabels: {
+                        pointcluster_name: {
                             fontSize: 14,
                             fontColor: 'white'
                         }
                     },
                     legend: {
                         position: 'top',
-                        labels: {
+                        cluster_name: {
                             fontColor: 'white'
                         }
                     },
@@ -136,7 +155,7 @@ var fetchNow = function () {
                         text: 'Audio Features by Cluster',
                         fontColor: 'white'
                     },
-                    pointLabels: {
+                    pointcluster_name: {
                         fontColor: 'white'
                     }
                 };
@@ -148,11 +167,11 @@ var fetchNow = function () {
                     options: options
                 });
 
-                var myRadarChartTest = new Chart(ctx_radar_test, {
-                    type: 'radar',
-                    data: dataPlotsTest,
-                    options: options
-                });
+                // var myRadarChartTest = new Chart(ctx_radar_test, {
+                //     type: 'radar',
+                //     data: dataPlotsTest,
+                //     options: options
+                // });
 
 
                 var myPieChart = new Chart(ctx_pie, {
@@ -184,7 +203,7 @@ var fetchNow = function () {
 // addButton.addEventListener('click', function () {
 
 //     const data = chart.data;
-//     if (dataPlots.labels.includes("valence")) {
+//     if (dataPlots.cluster_name.includes("valence")) {
 //         // remove it
 //         //agregarlo al labesl
 //         // agregarlo al data 
