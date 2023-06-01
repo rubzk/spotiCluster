@@ -91,6 +91,8 @@ def create_plots(self, clusters_info):
 
     radar_chart = plot.radar_chart(clusters_stats)
 
+    radar_chart_test = plot.radar_chart_test(clusters_stats)
+
     pie_chart = plot.pie_chart(clusters)
 
     top_3_artist = plot.top_3_artist(clusters)
@@ -98,6 +100,7 @@ def create_plots(self, clusters_info):
     return {
         "plots": {
             "radar_chart": radar_chart,
+            "radar_chart_test" : radar_chart_test,
             "pie_chart": pie_chart,
             "number_of_tracks": clusters.shape[0],
             "number_of_clusters": len(clusters.cluster_name.unique()),

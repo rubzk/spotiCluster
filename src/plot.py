@@ -42,6 +42,15 @@ class Plot:
         plot["categories"] = self.audio_ft
 
         return plot
+    
+    def radar_chart_test(self,cluster_stats):
+
+        plot = {}
+
+        for c in cluster_stats.columns:
+            plot[c] = cluster_stats[c].to_list()
+
+        return plot
 
     def pie_chart(self, clusters):
         df_pie_chart = (

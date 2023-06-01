@@ -34,12 +34,24 @@ var fetchNow = function () {
 
 
                 var ctx_radar = document.getElementById('radarChart').getContext('2d');
+                var ctx_radar_test = document.getElementById('radarChartTest').getContext('2d');
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
                 var dataPlots = {
                     labels: data['plots']['radar_chart']['categories'].slice(0, 4),
                     datasets: []
                 };
+
+
+                var radarChartTest = data['plots']['radar_chart_test'];
+
+                var dataPlotsTest = {
+                    labels: ['valence', 'danceability', 'energy'],
+                    datasets: []
+                };
+
+
+
 
                 // Iterate over the data and generate datasets
                 for (var i = 0; i < Object.keys(data['plots']['radar_chart']).length - 1; i++) {
@@ -59,6 +71,28 @@ var fetchNow = function () {
                     dataPlots.datasets.push(dataset);
                 }
 
+                for (var i = 0; i < radarChartTest['cluster_name'].length; i++) {
+                    var clusterLabel = radarChartTest['cluster_name'][i];
+                    var dataset = {
+                        label: clusterLabel,
+                        data: [{
+                            'valence': radarChartTest['valence'][i],
+                            'danceability': radarChartTest['danceability'][i],
+                            'energy': radarChartTest['energy'][i],
+                        }]
+                        ,
+                        backgroundColor: colors[i % colors.length],
+                        borderColor: colors[i % colors.length].replace('0.2', '1'), // Increase opacity
+                        borderWidth: 2,
+                        pointBackgroundColor: colors[i % colors.length].replace('0.2', '1'),
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1,
+                        pointRadius: 3
+                    };
+
+                    dataPlotsTest.datasets.push(dataset);
+                }
+
                 var dataPieChart = {
                     labels: data['plots']['pie_chart']['cluster_name'],
                     datasets: [{
@@ -66,19 +100,9 @@ var fetchNow = function () {
                     }]
                 }
 
-                const addButton = document.getElementById('add-valence');
 
-                addButton.addEventListener('click', function () {
-                    handler(chart) {
-                        const data = chart.data;
-                        if (dataPlots.labels.includes("valence")) {
-                            // remove it
-                        }
-                        else {
-                            // add it 
-                        }
-                    }
-                });
+                console.log(dataPlotsTest)
+                console.log(dataPlots)
 
 
 
@@ -124,6 +148,12 @@ var fetchNow = function () {
                     options: options
                 });
 
+                var myRadarChartTest = new Chart(ctx_radar_test, {
+                    type: 'radar',
+                    data: dataPlotsTest,
+                    options: options
+                });
+
 
                 var myPieChart = new Chart(ctx_pie, {
                     type: 'pie',
@@ -148,5 +178,22 @@ var fetchNow = function () {
             }
         });
 }
+
+// const addButton = document.getElementById('add-valence');
+
+// addButton.addEventListener('click', function () {
+
+//     const data = chart.data;
+//     if (dataPlots.labels.includes("valence")) {
+//         // remove it
+//         //agregarlo al labesl
+//         // agregarlo al data 
+//     }
+//     else {
+//         // add it 
+//     }
+
+// });
+
 
 fetchNow();
