@@ -175,32 +175,9 @@ var fetchNow = function () {
                 var ctx_radar = document.getElementById('radarChart').getContext('2d');
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
-                var dataPlots = {
-                    labels: data['plots']['radar_chart']['categories'].slice(0, 4),
-                    datasets: []
-                };
 
 
                 var originalData = data['plots']['radar_chart_test']
-
-
-                // Iterate over the data and generate datasets
-                for (var i = 0; i < Object.keys(data['plots']['radar_chart']).length - 1; i++) {
-                    var clusterLabel = 'Cluster ' + (i);
-                    var dataset = {
-                        label: clusterLabel,
-                        data: data['plots']['radar_chart'][clusterLabel].slice(0, 4),
-                        backgroundColor: colors[i % colors.length],
-                        borderColor: colors[i % colors.length].replace('0.2', '1'), // Increase opacity
-                        borderWidth: 2,
-                        pointBackgroundColor: colors[i % colors.length].replace('0.2', '1'),
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 1,
-                        pointRadius: 3
-                    };
-
-                    dataPlots.datasets.push(dataset);
-                }
 
 
 
@@ -210,16 +187,6 @@ var fetchNow = function () {
                         data: data['plots']['pie_chart']['number_of_songs']
                     }]
                 }
-
-
-
-                // console.log(dataPlots)
-
-
-
-
-                // var datasetTest = adaptDataForChart(data['plots']['radar_chart_test']);
-                // console.log(datasetTest);
 
 
 
@@ -257,19 +224,26 @@ var fetchNow = function () {
                     }
                 };
 
+                var dataPlots = {
+                    labels: [],
+                    datasets: []
+                };
+
+                dataPlots.labels = Object.keys(originalData).filter(function (label) {
+                    return label !== "cluster_name";
+                });
+
+
+                dataPlots.datasets = adaptDataForChart(originalData);
+
+                console.log(dataPlots)
+
                 // Create the charts  
                 var myRadarChart = new Chart(ctx_radar, {
                     type: 'radar',
                     data: dataPlots,
                     options: options
                 });
-
-                // var myRadarChartTest = new Chart(ctx_radar_test, {
-                //     type: 'radar',
-                //     data: dataPlotsTest,
-                //     options: options
-                // });
-
 
                 var myPieChart = new Chart(ctx_pie, {
                     type: 'pie',
