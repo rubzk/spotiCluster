@@ -177,7 +177,7 @@ var fetchNow = function () {
 
 
 
-                var originalData = data['plots']['radar_chart_test']
+                var originalData = data['plots']['radar_chart']
 
 
 
