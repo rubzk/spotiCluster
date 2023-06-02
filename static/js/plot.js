@@ -56,8 +56,13 @@ function updateChartProperty(property, chartObject, originalData) {
     // Check if the property is already present in the chart
     var isPropertyPresent = chartObject.data.labels.includes(property);
 
+
+    console.log(isPropertyPresent)
+
     if (isPropertyPresent) {
         // Remove the property from the chart
+
+        console.log("Remove data")
 
 
         var newLabels = chartObject.data.labels.filter(function (label) {
@@ -87,8 +92,8 @@ function updateChartProperty(property, chartObject, originalData) {
         }, {});
 
         console.log(originalData)
-
         console.log(filteredData)
+
 
 
         // var dataObj = originalData;
@@ -101,19 +106,52 @@ function updateChartProperty(property, chartObject, originalData) {
         chartObject.data.datasets = updatedDatasets;
         chartObject.data.labels = newLabels;
 
+
+
     } else {
+
+        console.log("Add data")
         // Add the property to the chart
-        var dataObj = originalData;
-        dataObj.radar[property] = [];
+        chartObject.data.labels.push(property)
+
+        console.log(chartObject.data.labels)
+
+        var newData = chartObject.data.labels.slice()
+
+        newData.push("cluster_name")
+
+        console.log(newData)
+
+
+        var filteredData = newData.reduce(function (obj, key) {
+            if (key in originalData) {
+                obj[key] = originalData[key];
+            }
+            return obj;
+        }, {});
+
+        console.log(originalData)
+        console.log(filteredData)
+
         // You can populate the values for the new property here
 
         // Adapt the updated data for the chart
-        var updatedDatasets = adaptDataForChart(dataObj);
+        var updatedDatasets = adaptDataForChart(filteredData);
+
+        console.log
+
         chartObject.data.datasets = updatedDatasets;
+
+        // chartObject.update();
     }
 
-    // Update the chart
+
     chartObject.update();
+
+    console.log(chartObject.data.labels)
+    console.log(chartObject.data.datasets)
+
+    // Update the chart
 }
 
 var fetchNow = function () {
