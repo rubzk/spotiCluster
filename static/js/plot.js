@@ -282,10 +282,20 @@ var fetchNow = function () {
                 console.log(myRadarChart.data.datasets)
 
 
-                var addButton = document.getElementById('add-valence');
+                var addButtonEnergy = document.getElementById('add-energy');
 
-                addButton.addEventListener('click', function () {
+                var addButtonTempo = document.getElementById('add-tempo');
+
+                addButtonEnergy.addEventListener('click', function () {
                     var property = 'energy'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonTempo.addEventListener('click', function () {
+                    var property = 'tempo'; // Replace with the desired property
                     var chartObject = myRadarChart; // Replace with your actual chart object
 
 
