@@ -16,6 +16,6 @@ celerybeat-schedule
 celerybeat.pid
 
 /notebooks
-
+node_modules/
 config.cfg
 output.csv
