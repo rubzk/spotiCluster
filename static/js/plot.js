@@ -260,6 +260,16 @@ var fetchNow = function () {
 
                 var addButtonTempo = document.getElementById('add-tempo');
 
+                var addButtonLiveness = document.getElementById('add-liveness');
+
+                var addButtonLoudness = document.getElementById('add-loudness');
+
+                var addButtonSpeechiness = document.getElementById('add-speechiness');
+
+                var addButtonDanceability = document.getElementById('add-danceability');
+
+                var addButtonAcousticness = document.getElementById('add-acousticness');
+
                 addButtonEnergy.addEventListener('click', function () {
                     var property = 'energy'; // Replace with the desired property
                     var chartObject = myRadarChart; // Replace with your actual chart object
@@ -275,6 +285,52 @@ var fetchNow = function () {
 
                     updateChartProperty(property, chartObject, originalData);
                 });
+
+
+
+                addButtonLiveness.addEventListener('click', function () {
+                    var property = 'liveness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonLoudness.addEventListener('click', function () {
+                    var property = 'loudness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonSpeechiness.addEventListener('click', function () {
+                    var property = 'speechiness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonDanceability.addEventListener('click', function () {
+                    var property = 'danceability'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonAcousticness.addEventListener('click', function () {
+                    var property = 'acousticness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+
+
+
 
             }
             else {
