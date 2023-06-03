@@ -50,8 +50,6 @@ function adaptDataForChart(dataObj) {
     return datasets;
 }
 
-
-
 function updateChartProperty(property, chartObject, originalData) {
     // Check if the property is already present in the chart
     var isPropertyPresent = chartObject.data.labels.includes(property);
@@ -62,8 +60,6 @@ function updateChartProperty(property, chartObject, originalData) {
     if (isPropertyPresent) {
         // Remove the property from the chart
 
-        console.log("Remove data")
-
 
         var newLabels = chartObject.data.labels.filter(function (label) {
             return label !== property;
@@ -73,16 +69,7 @@ function updateChartProperty(property, chartObject, originalData) {
             return label !== property;
         });
 
-
-
         newData.push("cluster_name");
-
-
-
-
-        console.log(chartObject.data.labels)
-        console.log(newLabels)
-
 
         var filteredData = newData.reduce(function (obj, key) {
             if (key in originalData) {
@@ -90,17 +77,6 @@ function updateChartProperty(property, chartObject, originalData) {
             }
             return obj;
         }, {});
-
-        console.log(originalData)
-        console.log(filteredData)
-
-
-
-        // var dataObj = originalData;
-
-        // delete dataObj[property];
-
-
         // Adapt the updated data for the chart
         var updatedDatasets = adaptDataForChart(filteredData);
         chartObject.data.datasets = updatedDatasets;
@@ -110,17 +86,14 @@ function updateChartProperty(property, chartObject, originalData) {
 
     } else {
 
-        console.log("Add data")
         // Add the property to the chart
         chartObject.data.labels.push(property)
 
-        console.log(chartObject.data.labels)
 
         var newData = chartObject.data.labels.slice()
 
         newData.push("cluster_name")
 
-        console.log(newData)
 
 
         var filteredData = newData.reduce(function (obj, key) {
@@ -130,19 +103,12 @@ function updateChartProperty(property, chartObject, originalData) {
             return obj;
         }, {});
 
-        console.log(originalData)
-        console.log(filteredData)
-
-        // You can populate the values for the new property here
-
-        // Adapt the updated data for the chart
         var updatedDatasets = adaptDataForChart(filteredData);
 
-        console.log
 
         chartObject.data.datasets = updatedDatasets;
 
-        // chartObject.update();
+
     }
 
 
@@ -236,8 +202,6 @@ var fetchNow = function () {
 
                 dataPlots.datasets = adaptDataForChart(originalData);
 
-                console.log(dataPlots)
-
                 // Create the charts  
                 var myRadarChart = new Chart(ctx_radar, {
                     type: 'radar',
@@ -251,9 +215,6 @@ var fetchNow = function () {
                     options: options
                 });
 
-
-                console.log(myRadarChart.data.labels)
-                console.log(myRadarChart.data.datasets)
 
 
                 var addButtonEnergy = document.getElementById('add-energy');
