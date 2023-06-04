@@ -22,9 +22,9 @@ def get_tracks(self, auth_token, playlist):
 
     user_id = data_extractor.get_user_id()
 
-    tracks = data_extractor.get_all_tracks_v2(playlist)
+    tracks = data_extractor.get_all_tracks(playlist)
 
-    tracks_audio_ft = data_extractor.get_all_audio_features_v2(tracks)
+    tracks_audio_ft = data_extractor.get_all_audio_features(tracks)
 
     transform = TransformDataFrame(tracks, tracks_audio_ft)
 
