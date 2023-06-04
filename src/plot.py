@@ -29,19 +29,7 @@ class Plot:
 
         return fig
 
-    # def radar_chart(self, cluster_stats):
-    #     plot = {}
 
-    #     cluster_stats = cluster_stats[["cluster_name"] + self.audio_ft]
-
-    #     for cluster in range(cluster_stats.shape[0]):
-    #         plot[cluster_stats.iloc[cluster]["cluster_name"]] = cluster_stats.iloc[
-    #             cluster, cluster_stats.columns != "cluster_name"
-    #         ].to_list()
-
-    #     plot["categories"] = self.audio_ft
-
-    #     return plot
     
     def radar_chart(self,cluster_stats):
 
