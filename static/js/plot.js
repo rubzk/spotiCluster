@@ -150,7 +150,8 @@ var fetchNow = function () {
                 var dataPieChart = {
                     labels: data['plots']['pie_chart']['cluster_name'],
                     datasets: [{
-                        data: data['plots']['pie_chart']['number_of_songs']
+                        data: data['plots']['pie_chart']['number_of_songs'],
+                        backgroundColor: colors
                     }]
                 }
 
