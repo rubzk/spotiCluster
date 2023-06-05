@@ -15,7 +15,7 @@ class DataExtractor:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.auth_token}",
         }
-        self.test = self.get_all_saved_tracks()
+        # self.test = self.get_all_saved_tracks()
 
     def get_user_id(self):
         return requests.get(
