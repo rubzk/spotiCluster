@@ -10,29 +10,28 @@ class DataExtractor:
     def __init__(self, auth_token):
         self.auth_token = auth_token
         self.limit = 50
-
-
-    def get_user_id(self):
-
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
-
-        return requests.get("https://api.spotify.com/v1/me", headers=headers).json()[
-            "id"
-        ]
-
-    def get_all_playlists(self, offset=0):
-
-        headers = {
+        self.headers = headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.auth_token}",
         }
 
+
+    def get_user_id(self):
+
+
+        return requests.get("https://api.spotify.com/v1/me", headers=self.headers).json()[
+            "id"
+        ]
+
+    def get_all_playlists(self, offset=0):
+
+
         playlists = requests.get(
             "https://api.spotify.com/v1/me/playlists?"
             + "limit={}".format(self.limit)
             + "&offset={}".format(offset),
-            headers=headers,
+            headers=self.headers,
         ).json()["items"]
 
         playlists_id = [playlist["id"] for playlist in playlists]
@@ -41,15 +40,10 @@ class DataExtractor:
 
     def get_all_tracks(self, playlist):
 
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.auth_token}",
-        }
 
         response = requests.get(
             f"https://api.spotify.com/v1/playlists/{playlist}/tracks?fields=total%2Climit&limit={self.limit}",
-            headers=headers,
+            headers=self.headers,
         ).json()
 
         repeat = 1
@@ -62,7 +56,7 @@ class DataExtractor:
         for r in range(repeat):
             d = requests.get(
                 f"https://api.spotify.com/v1/playlists/{playlist}/tracks?fields=items(track(id,name,artists))&limit={self.limit}&offset={r * self.limit}",
-                headers=headers,
+                headers=self.headers,
             ).json()
             for track in d["items"]:
                 d_tracks = {
@@ -77,6 +71,11 @@ class DataExtractor:
         tracks_info = tracks_info.drop_duplicates(subset=["id"], keep="first")
 
         return tracks_info
+    
+
+    def get_all_saved_tracks(self):
+
+        pass
 
 
 
@@ -106,7 +105,6 @@ class DataExtractor:
             ],
         )
 
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
 
         tracks_ids = tracks["id"].to_list()
 
@@ -121,7 +119,7 @@ class DataExtractor:
                 "https://api.spotify.com/v1/audio-features?ids={}".format(
                     str(tracks)[1:-1].replace("'", "").replace(", ", ",")
                 ),
-                headers=headers,
+                headers=self.headers,
             ).json()["audio_features"]
 
             tracks_audio_ft = pd.concat([tracks_audio_ft,pd.DataFrame(response)], ignore_index=True)
