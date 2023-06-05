@@ -3,7 +3,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.csv
+*.json
 
+.vscode/
 # Flask stuff:
 instance/
 .webassets-cache

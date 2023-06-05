@@ -50,11 +50,12 @@ function adaptDataForChart(dataObj) {
     return datasets;
 }
 
-
-
 function updateChartProperty(property, chartObject, originalData) {
     // Check if the property is already present in the chart
     var isPropertyPresent = chartObject.data.labels.includes(property);
+
+
+    console.log(isPropertyPresent)
 
     if (isPropertyPresent) {
         // Remove the property from the chart
@@ -68,15 +69,31 @@ function updateChartProperty(property, chartObject, originalData) {
             return label !== property;
         });
 
-
-
         newData.push("cluster_name");
 
+        var filteredData = newData.reduce(function (obj, key) {
+            if (key in originalData) {
+                obj[key] = originalData[key];
+            }
+            return obj;
+        }, {});
+        // Adapt the updated data for the chart
+        var updatedDatasets = adaptDataForChart(filteredData);
+        chartObject.data.datasets = updatedDatasets;
+        chartObject.data.labels = newLabels;
 
 
 
-        console.log(chartObject.data.labels)
-        console.log(newLabels)
+    } else {
+
+        // Add the property to the chart
+        chartObject.data.labels.push(property)
+
+
+        var newData = chartObject.data.labels.slice()
+
+        newData.push("cluster_name")
+
 
 
         var filteredData = newData.reduce(function (obj, key) {
@@ -86,34 +103,21 @@ function updateChartProperty(property, chartObject, originalData) {
             return obj;
         }, {});
 
-        console.log(originalData)
-
-        console.log(filteredData)
-
-
-        // var dataObj = originalData;
-
-        // delete dataObj[property];
-
-
-        // Adapt the updated data for the chart
         var updatedDatasets = adaptDataForChart(filteredData);
-        chartObject.data.datasets = updatedDatasets;
-        chartObject.data.labels = newLabels;
 
-    } else {
-        // Add the property to the chart
-        var dataObj = originalData;
-        dataObj.radar[property] = [];
-        // You can populate the values for the new property here
 
-        // Adapt the updated data for the chart
-        var updatedDatasets = adaptDataForChart(dataObj);
         chartObject.data.datasets = updatedDatasets;
+
+
     }
 
-    // Update the chart
+
     chartObject.update();
+
+    console.log(chartObject.data.labels)
+    console.log(chartObject.data.datasets)
+
+    // Update the chart
 }
 
 var fetchNow = function () {
@@ -137,51 +141,19 @@ var fetchNow = function () {
                 var ctx_radar = document.getElementById('radarChart').getContext('2d');
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
 
-                var dataPlots = {
-                    labels: data['plots']['radar_chart']['categories'].slice(0, 4),
-                    datasets: []
-                };
 
 
-                var originalData = data['plots']['radar_chart_test']
-
-
-                // Iterate over the data and generate datasets
-                for (var i = 0; i < Object.keys(data['plots']['radar_chart']).length - 1; i++) {
-                    var clusterLabel = 'Cluster ' + (i);
-                    var dataset = {
-                        label: clusterLabel,
-                        data: data['plots']['radar_chart'][clusterLabel].slice(0, 4),
-                        backgroundColor: colors[i % colors.length],
-                        borderColor: colors[i % colors.length].replace('0.2', '1'), // Increase opacity
-                        borderWidth: 2,
-                        pointBackgroundColor: colors[i % colors.length].replace('0.2', '1'),
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 1,
-                        pointRadius: 3
-                    };
-
-                    dataPlots.datasets.push(dataset);
-                }
+                var originalData = data['plots']['radar_chart']
 
 
 
                 var dataPieChart = {
                     labels: data['plots']['pie_chart']['cluster_name'],
                     datasets: [{
-                        data: data['plots']['pie_chart']['number_of_songs']
+                        data: data['plots']['pie_chart']['number_of_songs'],
+                        backgroundColor: colors
                     }]
                 }
-
-
-
-                // console.log(dataPlots)
-
-
-
-
-                // var datasetTest = adaptDataForChart(data['plots']['radar_chart_test']);
-                // console.log(datasetTest);
 
 
 
@@ -219,19 +191,24 @@ var fetchNow = function () {
                     }
                 };
 
+                var dataPlots = {
+                    labels: [],
+                    datasets: []
+                };
+
+                dataPlots.labels = Object.keys(originalData).filter(function (label) {
+                    return label !== "cluster_name";
+                });
+
+
+                dataPlots.datasets = adaptDataForChart(originalData);
+
                 // Create the charts  
                 var myRadarChart = new Chart(ctx_radar, {
                     type: 'radar',
                     data: dataPlots,
                     options: options
                 });
-
-                // var myRadarChartTest = new Chart(ctx_radar_test, {
-                //     type: 'radar',
-                //     data: dataPlotsTest,
-                //     options: options
-                // });
-
 
                 var myPieChart = new Chart(ctx_pie, {
                     type: 'pie',
@@ -240,19 +217,82 @@ var fetchNow = function () {
                 });
 
 
-                console.log(myRadarChart.data.labels)
-                console.log(myRadarChart.data.datasets)
 
+                var addButtonEnergy = document.getElementById('add-energy');
 
-                var addButton = document.getElementById('add-valence');
+                var addButtonTempo = document.getElementById('add-tempo');
 
-                addButton.addEventListener('click', function () {
+                var addButtonLiveness = document.getElementById('add-liveness');
+
+                var addButtonLoudness = document.getElementById('add-loudness');
+
+                var addButtonSpeechiness = document.getElementById('add-speechiness');
+
+                var addButtonDanceability = document.getElementById('add-danceability');
+
+                var addButtonAcousticness = document.getElementById('add-acousticness');
+
+                addButtonEnergy.addEventListener('click', function () {
                     var property = 'energy'; // Replace with the desired property
                     var chartObject = myRadarChart; // Replace with your actual chart object
 
 
                     updateChartProperty(property, chartObject, originalData);
                 });
+
+                addButtonTempo.addEventListener('click', function () {
+                    var property = 'tempo'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+
+
+                addButtonLiveness.addEventListener('click', function () {
+                    var property = 'liveness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonLoudness.addEventListener('click', function () {
+                    var property = 'loudness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonSpeechiness.addEventListener('click', function () {
+                    var property = 'speechiness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonDanceability.addEventListener('click', function () {
+                    var property = 'danceability'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+                addButtonAcousticness.addEventListener('click', function () {
+                    var property = 'acousticness'; // Replace with the desired property
+                    var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+                    updateChartProperty(property, chartObject, originalData);
+                });
+
+
+
+
 
             }
             else {

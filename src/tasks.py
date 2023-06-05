@@ -22,9 +22,9 @@ def get_tracks(self, auth_token, playlist):
 
     user_id = data_extractor.get_user_id()
 
-    tracks = data_extractor.get_all_tracks_v2(playlist)
+    tracks = data_extractor.get_all_tracks(playlist)
 
-    tracks_audio_ft = data_extractor.get_all_audio_features_v2(tracks)
+    tracks_audio_ft = data_extractor.get_all_audio_features(tracks)
 
     transform = TransformDataFrame(tracks, tracks_audio_ft)
 
@@ -91,7 +91,7 @@ def create_plots(self, clusters_info):
 
     radar_chart = plot.radar_chart(clusters_stats)
 
-    radar_chart_test = plot.radar_chart_test(clusters_stats)
+    # radar_chart_test = plot.radar_chart_test(clusters_stats)
 
     pie_chart = plot.pie_chart(clusters)
 
@@ -100,7 +100,6 @@ def create_plots(self, clusters_info):
     return {
         "plots": {
             "radar_chart": radar_chart,
-            "radar_chart_test" : radar_chart_test,
             "pie_chart": pie_chart,
             "number_of_tracks": clusters.shape[0],
             "number_of_clusters": len(clusters.cluster_name.unique()),

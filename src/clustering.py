@@ -20,14 +20,11 @@ class Clustering:
         self.fit_features = ["danceability", "energy", "instrumentalness","valence","tempo"]
         self.n_clusters = 4
         self.df_all_tracks = all_tracks
-        # self.json_all_tracks = json_all_tracks
-        # self.df_all_tracks = self._json_to_df()
 
     def _json_to_df(self):
         return pd.read_json(self.all_data)
 
     def scale_features(self, all_tracks):
-        print(all_tracks.columns)
 
         scaler = MinMaxScaler()
 
@@ -38,9 +35,7 @@ class Clustering:
     def k_means_clustering(self, scaled_df):
         fit_features_df = pd.DataFrame(scaled_df)
 
-        print(fit_features_df)
 
-        # fit_features_df = scaled_df.iloc[:, self.fit_features]
 
         fit_features_df = scaled_df[self.fit_features]
 

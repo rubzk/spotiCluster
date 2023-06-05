@@ -11,7 +11,6 @@ class TransformDataFrame:
         self.df_tracks.reset_index(drop=True, inplace=True)
         self.df_audio_ft.reset_index(drop=True, inplace=True)
 
-        # df_join = pd.concat([self.df_tracks, self.df_audio_ft], axis=1) OLD WAY
 
         df_join = self.df_tracks.merge(self.df_audio_ft, on="id", how="inner")
 

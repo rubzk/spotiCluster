@@ -16,7 +16,6 @@ from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
 from celery import current_app, chord
 
-# from flask_assets import Environment, Bundle
 
 
 app = Flask(__name__)
@@ -106,7 +105,6 @@ def taskstatus(task_id):
 
         return {"status": task.state}
 
-    # Render the template for normal browser request
     return render_template("plot.html", task_id=task_id)
 
 
