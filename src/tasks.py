@@ -136,3 +136,20 @@ def save_data_in_postgres(self, result):
         "clusters": cluster_data.to_dict("list"),
         "cluster_stats": cluster_stats.to_dict("list"),
     }
+
+
+@shared_task(bind=True, name="GET LIKED TRACKS AND AUDIO FEATURES")
+def get_saved_tracks(self, auth_token):
+    data_extractor = DataExtractor(auth_token)
+
+    saved_tracks = data_extractor.get_all_saved_tracks()
+
+    saved_tracks.to_csv("saved_tracks.csv")
+
+    saved_tracks_audio_ft = data_extractor.get_all_audio_features(
+        tracks=saved_tracks["id"].to_list()
+    )
+
+    saved_tracks_audio_ft.to_csv("saved_aft.csv")
+
+    return
