@@ -38,19 +38,29 @@ def get_tracks(self, auth_token, playlist):
 
     result = transform.rename_and_reindex_columns(result)
 
-    return json.dumps(result.to_dict("list"))
+    return {"tracks": result.to_dict("list")}
 
 
 @shared_task(bind=True, name="Append all the results")
 def append_results(self, results):
     result = pd.DataFrame()
 
-    for tracks in results:
-        result = result.append(pd.read_json(tracks))
+    saved_tracks_result = pd.DataFrame()
+
+    for r in results:
+        if list(r.keys()) == ["tracks"]:
+            result = pd.concat(
+                [result, pd.read_json(json.dumps(r["tracks"]))], ignore_index=True
+            )
+
+        else:
+            saved_tracks_result = pd.read_json(json.dumps(r["saved_tracks"]))
 
     result = result.dropna(axis=0, how="any", subset=["song_id"])
 
     result = result.drop_duplicates(subset=["song_id"])
+
+    saved_tracks_result.to_csv("appended_saved_tracks.csv")
 
     return json.dumps(result.to_dict("list"))
 
@@ -144,12 +154,8 @@ def get_saved_tracks(self, auth_token):
 
     saved_tracks = data_extractor.get_all_saved_tracks()
 
-    saved_tracks.to_csv("saved_tracks.csv")
+    saved_tracks_audio_ft = data_extractor.get_all_audio_features(tracks=saved_tracks)
 
-    saved_tracks_audio_ft = data_extractor.get_all_audio_features(
-        tracks=saved_tracks["id"].to_list()
-    )
+    saved_tracks = pd.concat([saved_tracks, saved_tracks_audio_ft], axis=1)
 
-    saved_tracks_audio_ft.to_csv("saved_aft.csv")
-
-    return
+    return {"saved_tracks": saved_tracks.to_dict("list")}

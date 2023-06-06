@@ -1,6 +1,15 @@
 import json
 import os
-from flask import Flask, render_template, redirect, url_for, request, jsonify, session,make_response
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    url_for,
+    request,
+    jsonify,
+    session,
+    make_response,
+)
 import requests
 import configparser
 from utils.flask_celery import make_celery
@@ -10,12 +19,12 @@ from src.tasks import (
     cluster_results,
     create_plots,
     save_data_in_postgres,
+    get_saved_tracks,
 )
 from src.extract import DataExtractor
 from src.auth import Authenticator
 from urllib.parse import urlencode, quote_plus
 from celery import current_app, chord
-
 
 
 app = Flask(__name__)
@@ -67,18 +76,17 @@ def auth():
 
     res.set_cookie(
         "username",
-        value=user_id,
+        # value=user_id,
+        value="carlos",
         expires=None,
         path="/",
-        secure=True,
-        httponly=True,
-        domain='127.0.0.1'
     )
 
     playlists = extractor.get_all_playlists()
 
-    total_tracks = [get_tracks.s(auth.auth_token, playlist) for playlist in playlists]
-
+    total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
+        get_tracks.s(auth.auth_token, playlist) for playlist in playlists
+    ]
 
     task = chord(total_tracks)(
         append_results.s()
@@ -90,12 +98,17 @@ def auth():
     return redirect(url_for("taskstatus", task_id=task.id))
 
 
-
 @app.route("/status/<task_id>", methods=["GET"])
 def taskstatus(task_id):
     task = celery.AsyncResult(task_id)
 
     app.logger.info(f"status: {task.state}")
+
+    print("test usuario")
+
+    app.logger.info("test usuario")
+
+    app.logger.info(request.cookies.get("username"))
 
     if "application/json" in request.headers.get("Content-Type", ""):
         if task.state == "SUCCESS":
@@ -106,7 +119,6 @@ def taskstatus(task_id):
         return {"status": task.state}
 
     return render_template("plot.html", task_id=task_id)
-
 
 
 @app.route("/tasks/", methods=["GET"])
