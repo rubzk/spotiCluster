@@ -129,7 +129,7 @@ var fetchNow = function () {
             if (data['plots']) {
                 console.log(data['plots'])
 
-                document.getElementById("loading-text").style.display = 'none';
+                document.getElementById("loading-div").style.display = 'none';
 
                 document.getElementById("done-text").innerHTML = "We analyzed " + data['plots']['number_of_tracks'] + " tracks and created " + data['plots']['number_of_clusters'] + " clusters"
 
