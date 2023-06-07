@@ -62,14 +62,17 @@ def append_results(self, results):
 
     saved_tracks_result.to_csv("appended_saved_tracks.csv")
 
-    return json.dumps(result.to_dict("list"))
+    return {
+        "saved_tracks": saved_tracks_result.to_dict("list"),
+        "tracks": json.dumps(result.to_dict("list")),
+    }
 
 
 @shared_task(bind=True, name="Cluster all the results")
 def cluster_results(self, result):
-    result = pd.read_json(result)
+    tracks = pd.read_json(result["tracks"])
 
-    clustering = Clustering(result)
+    clustering = Clustering(tracks)
 
     scaled_df = clustering.scale_features(clustering.df_all_tracks)
 
@@ -80,6 +83,7 @@ def cluster_results(self, result):
     return {
         "clusters": df_cluster.to_dict("list"),
         "cluster_stats": df_cluster_stats.to_dict("list"),
+        "saved_tracks": result["saved_tracks"],
     }
 
 
@@ -127,6 +131,7 @@ def create_plots(self, clusters_info):
                     "tempo",
                 ]
             ].to_dict("list"),
+            "saved_tracks": clusters_info["saved_tracks"],
         }
     }
 
@@ -145,6 +150,7 @@ def save_data_in_postgres(self, result):
     return {
         "clusters": cluster_data.to_dict("list"),
         "cluster_stats": cluster_stats.to_dict("list"),
+        "saved_tracks": result["saved_tracks"],
     }
 
 
