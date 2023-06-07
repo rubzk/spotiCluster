@@ -140,7 +140,7 @@ var fetchNow = function () {
 
                 var ctx_radar = document.getElementById('radarChart').getContext('2d');
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
-
+                var ctx_area = document.getElementById('areaChart').getContext('2d');
 
 
                 var originalData = data['plots']['radar_chart']
@@ -196,6 +196,17 @@ var fetchNow = function () {
                     datasets: []
                 };
 
+                var dataArea = {
+                    labels: data['plots']['saved_tracks']['yyyy-mm'],
+                    datasets: [{
+                        label: 'Energy',
+                        data: data['plots']['saved_tracks']['energy'],
+                        borderColor: colors[0],
+                        backgroundColor: colors[0].replace('0.2', '1'),
+                        fill: true
+                    }]
+                }
+
                 dataPlots.labels = Object.keys(originalData).filter(function (label) {
                     return label !== "cluster_name";
                 });
@@ -213,6 +224,12 @@ var fetchNow = function () {
                 var myPieChart = new Chart(ctx_pie, {
                     type: 'pie',
                     data: dataPieChart,
+                    options: options
+                });
+
+                var myAreaChart = new Chart(ctx_area, {
+                    type: 'line',
+                    data: dataArea,
                     options: options
                 });
 
