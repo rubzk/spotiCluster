@@ -3,14 +3,11 @@ import numpy as np
 import json
 
 
-
 class Plot:
     def __init__(self, audio_df):
         self.audio_ft = audio_df
 
-
-    def radar_chart(self,cluster_stats):
-
+    def radar_chart(self, cluster_stats):
         plot = {}
 
         for c in cluster_stats.columns:
@@ -27,10 +24,43 @@ class Plot:
         )
 
         return df_pie_chart.to_dict("list")
-    
+
     def top_3_artist(self, clusters):
-        gb = clusters.groupby('cluster_name')['artist'].value_counts().groupby(level=0).head(3).sort_values(ascending=False).to_frame('counts').reset_index()
+        gb = (
+            clusters.groupby("cluster_name")["artist"]
+            .value_counts()
+            .groupby(level=0)
+            .head(3)
+            .sort_values(ascending=False)
+            .to_frame("counts")
+            .reset_index()
+        )
 
         return gb.sort_values(by="cluster_name", ascending=False).to_dict("list")
 
+    def saved_tracks_timeline(self, saved_tracks):
+        saved_tracks["added_at"] = saved_tracks["added_at"].apply(
+            lambda x: pd.Timestamp(x)
+        )
 
+        saved_tracks["yyyy-mm"] = saved_tracks["added_at"].dt.strftime("%Y-%m")
+
+        timeline = (
+            saved_tracks.groupby(["yyyy-mm"])
+            .agg(
+                {
+                    "energy": "mean",
+                    "danceability": "mean",
+                    "loudness": "mean",
+                    "speechiness": "mean",
+                    "acousticness": "mean",
+                    "instrumentalness": "mean",
+                    "liveness": "mean",
+                    "valence": "mean",
+                    "tempo": "mean",
+                }
+            )
+            .reset_index()
+        )
+
+        return timeline.to_dict("list")

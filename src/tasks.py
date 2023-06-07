@@ -109,6 +109,15 @@ def create_plots(self, clusters_info):
 
     pie_chart = plot.pie_chart(clusters)
 
+    # with open("saved_tracks.json", "w") as f:
+    #     f.write(clusters_info["saved_tracks"])
+
+    # saved_test =
+
+    timeline = plot.saved_tracks_timeline(
+        pd.read_json(json.dumps(clusters_info["saved_tracks"], default=str))
+    )
+
     top_3_artist = plot.top_3_artist(clusters)
 
     return {
@@ -131,7 +140,7 @@ def create_plots(self, clusters_info):
                     "tempo",
                 ]
             ].to_dict("list"),
-            "saved_tracks": clusters_info["saved_tracks"],
+            "saved_tracks": timeline,
         }
     }
 
@@ -163,5 +172,7 @@ def get_saved_tracks(self, auth_token):
     saved_tracks_audio_ft = data_extractor.get_all_audio_features(tracks=saved_tracks)
 
     saved_tracks = pd.concat([saved_tracks, saved_tracks_audio_ft], axis=1)
+
+    saved_tracks["added_at"] = saved_tracks["added_at"].astype("str")
 
     return {"saved_tracks": saved_tracks.to_dict("list")}
