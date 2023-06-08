@@ -96,10 +96,8 @@ def create_plots(self, clusters_info):
         audio_df=[
             "danceability",
             "energy",
-            "tempo",
             "instrumentalness",
             "valence",
-            "loudness",
         ]
     )
 
