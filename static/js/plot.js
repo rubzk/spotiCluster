@@ -50,6 +50,47 @@ function adaptDataForChart(dataObj) {
     return datasets;
 }
 
+
+function createAreaChart(dataObj) {
+
+    var dataPlots = {
+        labels: [],
+        datasets: []
+    };
+
+    dataPlots.labels = dataObj["yyyy-mm"]
+
+    var label_ds = Object.keys(dataObj)
+
+
+    for (var [key, value] of Object.entries(dataObj)) { /// change colors of each feature
+
+        if (key != "yyyy-mm") {
+
+            var dataset = {
+                label: key,
+                data: value,
+                backgroundColor: colors[0 % colors.length],
+                borderColor: colors[0 % colors.length].replace('0.2', '1'), // Increase opacity
+                borderWidth: 2,
+                pointBackgroundColor: colors[0 % colors.length].replace('0.2', '1'),
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1,
+                pointRadius: 3
+
+            }
+
+            dataPlots.datasets.push(dataset)
+
+        }
+
+    }
+
+
+    return dataPlots
+
+}
+
 function updateChartProperty(property, chartObject, originalData) {
     // Check if the property is already present in the chart
     var isPropertyPresent = chartObject.data.labels.includes(property);
@@ -196,16 +237,7 @@ var fetchNow = function () {
                     datasets: []
                 };
 
-                var dataArea = {
-                    labels: data['plots']['saved_tracks']['yyyy-mm'],
-                    datasets: [{
-                        label: 'Energy',
-                        data: data['plots']['saved_tracks']['energy'],
-                        borderColor: colors[0],
-                        backgroundColor: colors[0].replace('0.2', '1'),
-                        fill: true
-                    }]
-                }
+                var dataArea = createAreaChart(data['plots']['saved_tracks'])
 
                 dataPlots.labels = Object.keys(originalData).filter(function (label) {
                     return label !== "cluster_name";
