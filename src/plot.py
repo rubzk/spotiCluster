@@ -45,22 +45,6 @@ class Plot:
 
         saved_tracks["yyyy-mm"] = saved_tracks["added_at"].dt.strftime("%Y-%m")
 
-        timeline = (
-            saved_tracks.groupby(["yyyy-mm"])
-            .agg(
-                {
-                    "energy": "mean",
-                    "danceability": "mean",
-                    "loudness": "mean",
-                    "speechiness": "mean",
-                    "acousticness": "mean",
-                    "instrumentalness": "mean",
-                    "liveness": "mean",
-                    "valence": "mean",
-                    "tempo": "mean",
-                }
-            )
-            .reset_index()
-        )
+        timeline = saved_tracks.groupby(["yyyy-mm"])[self.audio_ft].mean().reset_index()
 
         return timeline.to_dict("list")
