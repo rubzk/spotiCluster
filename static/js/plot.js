@@ -76,7 +76,8 @@ function createAreaChart(dataObj) {
                 pointBackgroundColor: colors[0 % colors.length].replace('0.2', '1'),
                 pointBorderColor: '#fff',
                 pointBorderWidth: 1,
-                pointRadius: 3
+                pointRadius: 1,
+                fill: true
 
             }
 
