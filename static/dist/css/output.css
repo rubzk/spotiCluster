@@ -559,6 +559,13 @@ video {
   position: relative;
 }
 
+.inset-0 {
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -668,6 +675,10 @@ video {
 
 .flex-col {
   flex-direction: column;
+}
+
+.place-items-center {
+  place-items: center;
 }
 
 .content-center {
@@ -833,6 +844,10 @@ video {
   padding-top: 0.125rem;
 }
 
+.pt-12 {
+  padding-top: 3rem;
+}
+
 .align-middle {
   vertical-align: middle;
 }
@@ -899,6 +914,10 @@ video {
 
 .duration-500 {
   transition-duration: 500ms;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
 }
 
 .hover\:bg-zinc-200:hover {
