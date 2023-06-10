@@ -15,7 +15,7 @@ from celery import shared_task, chord
 
 
 @shared_task(
-    bind=True, name="Get tracks", propagate=False, max_retries=3, default_retry_delay=10
+    bind=True, name="Get tracks", propagate=False, max_retries=10, default_retry_delay=4
 )
 def get_tracks(self, auth_token, playlist):
     try:
@@ -48,28 +48,28 @@ def get_tracks(self, auth_token, playlist):
     bind=True, name="Append all the results", max_retries=3, default_retry_delay=10
 )
 def append_results(self, results):
-    result = pd.DataFrame()
+    tracks = pd.DataFrame()
 
     saved_tracks_result = pd.DataFrame()
 
     for r in results:
         if list(r.keys()) == ["tracks"]:
-            result = pd.concat(
-                [result, pd.read_json(json.dumps(r["tracks"]))], ignore_index=True
+            tracks = pd.concat(
+                [tracks, pd.read_json(json.dumps(r["tracks"]))], ignore_index=True
             )
 
         else:
             saved_tracks_result = pd.read_json(json.dumps(r["saved_tracks"]))
 
-    result = result.dropna(axis=0, how="any", subset=["song_id"])
+    tracks = tracks.dropna(axis=0, how="any", subset=["song_id"])
 
-    result = result.drop_duplicates(subset=["song_id"])
+    tracks = tracks.drop_duplicates(subset=["song_id"])
 
     saved_tracks_result.to_csv("appended_saved_tracks.csv")
 
     return {
         "saved_tracks": saved_tracks_result.to_dict("list"),
-        "tracks": json.dumps(result.to_dict("list")),
+        "tracks": json.dumps(tracks.to_dict("list")),
     }
 
 
