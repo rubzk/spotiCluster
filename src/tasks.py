@@ -18,27 +18,30 @@ from celery import shared_task, chord
     bind=True, name="Get tracks", propagate=False, max_retries=3, default_retry_delay=10
 )
 def get_tracks(self, auth_token, playlist):
-    data_extractor = DataExtractor(auth_token)
+    try:
+        data_extractor = DataExtractor(auth_token)
 
-    user_id = data_extractor.get_user_id()
+        user_id = data_extractor.get_user_id()
 
-    tracks = data_extractor.get_all_tracks(playlist)
+        tracks = data_extractor.get_all_tracks(playlist)
 
-    tracks_audio_ft = data_extractor.get_all_audio_features(tracks)
+        tracks_audio_ft = data_extractor.get_all_audio_features(tracks)
 
-    transform = TransformDataFrame(tracks, tracks_audio_ft)
+        transform = TransformDataFrame(tracks, tracks_audio_ft)
 
-    tracks = transform.concat_data()
+        tracks = transform.concat_data()
 
-    tracks = tracks.dropna(axis=0, how="any")
+        tracks = tracks.dropna(axis=0, how="any")
 
-    tracks["spotify_user_id"] = user_id
+        tracks["spotify_user_id"] = user_id
 
-    tracks["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        tracks["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-    tracks = transform.rename_and_reindex_columns(tracks)
+        tracks = transform.rename_and_reindex_columns(tracks)
 
-    return {"tracks": tracks.to_dict("list")}
+        return {"tracks": tracks.to_dict("list")}
+    except KeyError as e:
+        raise self.retry(exc=e)
 
 
 @shared_task(
