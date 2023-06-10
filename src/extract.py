@@ -4,6 +4,9 @@ import base64
 from utils.code_tools import transform_to_64, split_list
 import requests
 import json
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class DataExtractor:
@@ -40,6 +43,8 @@ class DataExtractor:
             headers=self.headers,
         ).json()
 
+        log.warning(response)
+
         repeat = 1
 
         tracks_info = pd.DataFrame([], columns=["id", "name", "artist"])
@@ -52,6 +57,8 @@ class DataExtractor:
                 f"https://api.spotify.com/v1/playlists/{playlist}/tracks?fields=items(track(id,name,artists))&limit={self.limit}&offset={r * self.limit}",
                 headers=self.headers,
             ).json()
+
+            log.warning(d)
             for track in d["items"]:
                 d_tracks = {
                     "id": track["track"]["id"],
