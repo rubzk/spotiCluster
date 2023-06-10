@@ -28,20 +28,22 @@ def get_tracks(self, auth_token, playlist):
 
     transform = TransformDataFrame(tracks, tracks_audio_ft)
 
-    result = transform.concat_data()
+    tracks = transform.concat_data()
 
-    result = result.dropna(axis=0, how="any")
+    tracks = tracks.dropna(axis=0, how="any")
 
-    result["spotify_user_id"] = user_id
+    tracks["spotify_user_id"] = user_id
 
-    result["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    tracks["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-    result = transform.rename_and_reindex_columns(result)
+    tracks = transform.rename_and_reindex_columns(tracks)
 
-    return {"tracks": result.to_dict("list")}
+    return {"tracks": tracks.to_dict("list")}
 
 
-@shared_task(bind=True, name="Append all the results")
+@shared_task(
+    bind=True, name="Append all the results", max_retries=3, default_retry_delay=10
+)
 def append_results(self, results):
     result = pd.DataFrame()
 
@@ -68,7 +70,9 @@ def append_results(self, results):
     }
 
 
-@shared_task(bind=True, name="Cluster all the results")
+@shared_task(
+    bind=True, name="Cluster all the results", max_retries=3, default_retry_delay=10
+)
 def cluster_results(self, result):
     tracks = pd.read_json(result["tracks"])
 
@@ -87,7 +91,7 @@ def cluster_results(self, result):
     }
 
 
-@shared_task(bind=True, name="Create the plots")
+@shared_task(bind=True, name="Create the plots", max_retries=3, default_retry_delay=10)
 def create_plots(self, clusters_info):
     clusters_stats = pd.read_json(json.dumps(clusters_info["cluster_stats"]))
     clusters = pd.read_json(json.dumps(clusters_info["clusters"]))
@@ -143,7 +147,12 @@ def create_plots(self, clusters_info):
     }
 
 
-@shared_task(bind=True, name="SAVE CLUSTER DATA IN POSTGRES")
+@shared_task(
+    bind=True,
+    name="SAVE CLUSTER DATA IN POSTGRES",
+    max_retries=3,
+    default_retry_delay=10,
+)
 def save_data_in_postgres(self, result):
     cluster_data = pd.read_json(json.dumps(result["clusters"]))
     cluster_stats = pd.read_json(json.dumps(result["cluster_stats"]))
@@ -161,7 +170,12 @@ def save_data_in_postgres(self, result):
     }
 
 
-@shared_task(bind=True, name="GET LIKED TRACKS AND AUDIO FEATURES")
+@shared_task(
+    bind=True,
+    name="GET LIKED TRACKS AND AUDIO FEATURES",
+    max_retries=3,
+    default_retry_delay=10,
+)
 def get_saved_tracks(self, auth_token):
     data_extractor = DataExtractor(auth_token)
 
