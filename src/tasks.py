@@ -116,14 +116,7 @@ def create_plots(self, clusters_info):
 
     radar_chart = plot.radar_chart(clusters_stats)
 
-    # radar_chart_test = plot.radar_chart_test(clusters_stats)
-
     pie_chart = plot.pie_chart(clusters)
-
-    # with open("saved_tracks.json", "w") as f:
-    #     f.write(clusters_info["saved_tracks"])
-
-    # saved_test =
 
     timeline = plot.saved_tracks_timeline(
         pd.read_json(json.dumps(clusters_info["saved_tracks"], default=str))
