@@ -15,7 +15,11 @@ from celery import shared_task, chord
 
 
 @shared_task(
-    bind=True, name="Get tracks", propagate=False, max_retries=10, default_retry_delay=4
+    bind=True,
+    name="GET TRACKS FROM API",
+    propagate=False,
+    max_retries=10,
+    default_retry_delay=4,
 )
 def get_tracks(self, auth_token, playlist):
     try:
@@ -45,7 +49,7 @@ def get_tracks(self, auth_token, playlist):
 
 
 @shared_task(
-    bind=True, name="Append all the results", max_retries=3, default_retry_delay=10
+    bind=True, name="TRANSFORM ALL THE RESULTS", max_retries=3, default_retry_delay=10
 )
 def append_results(self, results):
     tracks = pd.DataFrame()
@@ -74,7 +78,7 @@ def append_results(self, results):
 
 
 @shared_task(
-    bind=True, name="Cluster all the results", max_retries=3, default_retry_delay=10
+    bind=True, name="CLUSTER THE RESULTS", max_retries=3, default_retry_delay=10
 )
 def cluster_results(self, result):
     tracks = pd.read_json(result["tracks"])
@@ -94,7 +98,9 @@ def cluster_results(self, result):
     }
 
 
-@shared_task(bind=True, name="Create the plots", max_retries=3, default_retry_delay=10)
+@shared_task(
+    bind=True, name="CREATE JSON FOR PLOTS", max_retries=3, default_retry_delay=10
+)
 def create_plots(self, clusters_info):
     clusters_stats = pd.read_json(json.dumps(clusters_info["cluster_stats"]))
     clusters = pd.read_json(json.dumps(clusters_info["clusters"]))
