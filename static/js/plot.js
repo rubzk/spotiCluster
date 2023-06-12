@@ -41,8 +41,6 @@ function adaptDataForChart(dataObj) {
             }
         }
 
-
-
         datasets.push(dataset);
     }
 
@@ -50,6 +48,14 @@ function adaptDataForChart(dataObj) {
     return datasets;
 }
 
+function createScatterChart(dataObj) {
+    var dataPlots = {
+        labels: [],
+        datasets: []
+    };
+
+
+}
 
 function createAreaChart(dataObj) {
 
@@ -63,17 +69,18 @@ function createAreaChart(dataObj) {
     var label_ds = Object.keys(dataObj)
 
 
-    for (var [key, value] of Object.entries(dataObj)) { /// change colors of each feature
+    for (var [key, value] of Object.entries(dataObj)) {
+        /// change colors of each feature
 
         if (key != "yyyy-mm") {
 
             var dataset = {
                 label: key,
                 data: value,
-                backgroundColor: colors[0 % colors.length],
-                borderColor: colors[0 % colors.length].replace('0.2', '1'), // Increase opacity
+                backgroundColor: colors[1 % colors.length],
+                borderColor: colors[1 % colors.length].replace('0.2', '1'), // Increase opacity
                 borderWidth: 2,
-                pointBackgroundColor: colors[0 % colors.length].replace('0.2', '1'),
+                pointBackgroundColor: colors[1 % colors.length].replace('0.2', '1'),
                 pointBorderColor: '#fff',
                 pointBorderWidth: 1,
                 pointRadius: 1,
@@ -96,8 +103,6 @@ function updateChartProperty(property, chartObject, originalData) {
     // Check if the property is already present in the chart
     var isPropertyPresent = chartObject.data.labels.includes(property);
 
-
-    console.log(isPropertyPresent)
 
     if (isPropertyPresent) {
         // Remove the property from the chart
@@ -156,8 +161,6 @@ function updateChartProperty(property, chartObject, originalData) {
 
     chartObject.update();
 
-    console.log(chartObject.data.labels)
-    console.log(chartObject.data.datasets)
 
     // Update the chart
 }
@@ -169,7 +172,8 @@ var fetchNow = function () {
         .then(res => res.json())
         .then(data => {
             if (data['plots']) {
-                console.log(data['plots'])
+
+                test = data['plots']
 
                 document.getElementById("loading-div").style.display = 'none';
 
