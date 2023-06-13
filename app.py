@@ -104,12 +104,6 @@ def taskstatus(task_id):
 
     app.logger.info(f"status: {task.state}")
 
-    print("test usuario")
-
-    app.logger.info("test usuario")
-
-    app.logger.info(request.cookies.get("username"))
-
     if "application/json" in request.headers.get("Content-Type", ""):
         if task.state == "SUCCESS":
             return {"status": task.state, "plots": task.info["plots"]}
