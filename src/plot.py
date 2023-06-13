@@ -48,3 +48,17 @@ class Plot:
         timeline = saved_tracks.groupby(["yyyy-mm"])[self.audio_ft].mean().reset_index()
 
         return timeline.to_dict("list")
+
+    def scatter_chart(self, tracks):
+        scatter_dict = {}
+
+        for cluster in list(tracks["cluster_name"].unique()):
+            scatter_dict.update(
+                {
+                    cluster: tracks[tracks.cluster_name == cluster][
+                        self.audio_ft
+                    ].to_dict("list")
+                }
+            )
+
+        return scatter_dict

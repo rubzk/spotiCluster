@@ -124,6 +124,8 @@ def create_plots(self, clusters_info):
 
     top_3_artist = plot.top_3_artist(clusters)
 
+    scatter_dict = plot.scatter_chart(clusters)
+
     return {
         "plots": {
             "radar_chart": radar_chart,
@@ -145,6 +147,7 @@ def create_plots(self, clusters_info):
                 ]
             ].to_dict("list"),
             "saved_tracks": timeline,
+            "scatter": scatter_dict,
         }
     }
 
