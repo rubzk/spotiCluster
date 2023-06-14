@@ -110,7 +110,9 @@ def taskstatus(task_id):
 
         app.logger.info(task.info)
 
-        return {"status": task.state}
+        return {
+            "status": task.state
+        }  ### Here One idea I have is to return the status of the task and Update front end with it
 
     return render_template("plot.html", task_id=task_id)
 
