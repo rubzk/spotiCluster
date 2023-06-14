@@ -50,9 +50,28 @@ function adaptDataForChart(dataObj) {
 
 function createScatterChart(dataObj) {
     var dataPlots = {
-        labels: [],
         datasets: []
     };
+
+
+    for (var [key, value] of Object.entries(dataObj)) {
+
+
+        var dataset = {
+            label: key,
+            data: {
+                x: value['energy'],
+                y: value['valence']
+            },
+            backgroundColor: colors[0 % colors.length],
+            borderColor: colors[0 % colors.length].replace('0.2', '5'), // Increase opacity
+        };
+
+        dataPlots.datasets.push(dataset);
+    }
+
+
+    return dataPlots
 
 
 }
@@ -187,6 +206,7 @@ var fetchNow = function () {
                 var ctx_radar = document.getElementById('radarChart').getContext('2d');
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
                 var ctx_area = document.getElementById('areaChart').getContext('2d');
+                var ctx_scatter = document.getElementById('scatterChart').getContext('2d');
 
 
                 var originalData = data['plots']['radar_chart']
@@ -244,6 +264,9 @@ var fetchNow = function () {
 
                 var dataArea = createAreaChart(data['plots']['saved_tracks'])
 
+                var dataScatter = createScatterChart(data['plots']['scatter'])
+
+
                 dataPlots.labels = Object.keys(originalData).filter(function (label) {
                     return label !== "cluster_name";
                 });
@@ -267,6 +290,12 @@ var fetchNow = function () {
                 var myAreaChart = new Chart(ctx_area, {
                     type: 'line',
                     data: dataArea,
+                    options: options
+                });
+
+                var myScatterChart = new Chart(ctx_scatter, {
+                    type: 'scatter',
+                    data: dataScatter,
                     options: options
                 });
 
