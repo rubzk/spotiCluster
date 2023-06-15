@@ -93,17 +93,20 @@ class DataExtractor:
                 headers=self.headers,
             ).json()
 
-            for track in d["items"]:
-                d_tracks = {
-                    "id": track["track"]["id"],
-                    "name": track["track"]["name"],
-                    "added_at": track["added_at"],
-                    "artist": track["track"]["artists"][0]["name"],
-                    "preview_url": track["track"]["preview_url"],
-                }
-                saved_tracks_info = pd.concat(
-                    [saved_tracks_info, pd.DataFrame([d_tracks])], ignore_index=True
-                )
+            if d != None:
+                for track in d["items"]:
+                    d_tracks = {
+                        "id": track["track"]["id"],
+                        "name": track["track"]["name"],
+                        "added_at": track["added_at"],
+                        "artist": track["track"]["artists"][0]["name"],
+                        "preview_url": track["track"]["preview_url"],
+                    }
+                    saved_tracks_info = pd.concat(
+                        [saved_tracks_info, pd.DataFrame([d_tracks])], ignore_index=True
+                    )
+            else:
+                continue
 
         return saved_tracks_info
 
@@ -147,8 +150,14 @@ class DataExtractor:
                 headers=self.headers,
             ).json()["audio_features"]
 
-            tracks_audio_ft = pd.concat(
-                [tracks_audio_ft, pd.DataFrame(response)], ignore_index=True
-            )
+            log.warning(response)
+            log.warning("FALLA AUDIO FEATURES")
+
+            if response != None:
+                tracks_audio_ft = pd.concat(
+                    [tracks_audio_ft, pd.DataFrame(response)], ignore_index=True
+                )
+            else:
+                continue
 
         return tracks_audio_ft

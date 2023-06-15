@@ -9,9 +9,12 @@ from src.plot import Plot
 
 from utils.postgres import df_to_db, PostgresDB
 
+import logging
 
 import pandas as pd
 from celery import shared_task, chord
+
+log = logging.getLogger(__name__)
 
 
 @shared_task(
@@ -44,7 +47,7 @@ def get_tracks(self, auth_token, playlist):
         tracks = transform.rename_and_reindex_columns(tracks)
 
         return {"tracks": tracks.to_dict("list")}
-    except KeyError as e:
+    except (KeyError, AttributeError) as e:
         raise self.retry(exc=e)
 
 
