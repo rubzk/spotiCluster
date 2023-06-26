@@ -90,7 +90,9 @@ def cluster_results(self, result):
 
     scaled_df = clustering.scale_features(clustering.df_all_tracks)
 
-    df_cluster = clustering.k_means_clustering(scaled_df)
+    n_clusters = clustering.determine_optimal_k(scaled_df=scaled_df, max_k=10)
+
+    df_cluster = clustering.k_means_clustering(scaled_df, n_clusters=n_clusters)
 
     df_cluster_stats = clustering.get_cluster_stats(df_cluster)
 

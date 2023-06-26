@@ -18,7 +18,7 @@ class Clustering:
             "tempo",
         ]
         self.fit_features = ["danceability", "energy", "instrumentalness", "valence"]
-        self.n_clusters = 4
+        # self.n_clusters = 4
         self.df_all_tracks = all_tracks
 
     def _json_to_df(self):
@@ -31,12 +31,14 @@ class Clustering:
 
         return all_tracks
 
-    def k_means_clustering(self, scaled_df):
+    def k_means_clustering(self, scaled_df, n_clusters):
         fit_features_df = pd.DataFrame(scaled_df)
 
         fit_features_df = scaled_df[self.fit_features]
 
-        kmeans = KMeans(n_clusters=self.n_clusters).fit(fit_features_df)
+        # kmeans = KMeans(n_clusters=self.n_clusters).fit(fit_features_df)
+
+        kmeans = KMeans(n_clusters=n_clusters).fit(fit_features_df)
 
         y_kmeans = kmeans.predict(fit_features_df)
 
@@ -46,7 +48,7 @@ class Clustering:
 
         cluster_names = {}
 
-        for cluster in range(0, self.n_clusters):
+        for cluster in range(0, n_clusters):
             cluster_names.update({str(cluster): f"Cluster {cluster}"})
 
         scaled_df["cluster_name"] = scaled_df["songs_cluster"].map(cluster_names)
@@ -60,7 +62,7 @@ class Clustering:
 
         return cluster_stats
 
-    def determine_optimal_k(self, max_k):
+    def determine_optimal_k(self, scaled_df, max_k):
         # Initialize a list to store the inertias for each value of k
         inertias = []
 
@@ -68,10 +70,14 @@ class Clustering:
         for k in range(1, max_k + 1):
             # Fit a K-means model with the current value of k
             model = KMeans(n_clusters=k)
-            model.fit(self.df_audio_ft[self.fit_features])
+            model.fit(scaled_df[self.fit_features])
 
             # Append the inertia for the current model to the list
             inertias.append(model.inertia_)
 
         # Return the value of k that has the smallest inertia
-        return inertias.index(min(inertias)) + 1
+
+        if inertias.index(min(inertias)) < 4:
+            return 4
+        else:
+            return inertias.index(min(inertias)) + 1
