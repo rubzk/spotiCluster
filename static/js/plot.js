@@ -48,23 +48,40 @@ function adaptDataForChart(dataObj) {
     return datasets;
 }
 
+function points(config, selectedX, selectedY) {
+    var xValues = config[selectedX];
+    var yValues = config[selectedY];
+
+    var data = [];
+
+    if (xValues && yValues) {
+        var length = Math.min(xValues.length, yValues.length);
+
+        for (var i = 0; i < length; i++) {
+            var x = xValues[i];
+            var y = yValues[i];
+
+            data.push({ x, y });
+        }
+    }
+
+    return data;
+}
+
 function createScatterChart(dataObj) {
     var dataPlots = {
         datasets: []
     };
 
 
-    for (var [key, value] of Object.entries(dataObj)) {
-
-
+    for (var [index, [key, value]] of Object.entries(Object.entries(dataObj))) {
         var dataset = {
             label: key,
-            data: {
-                x: value['energy'],
-                y: value['valence']
-            },
-            backgroundColor: colors[0 % colors.length],
-            borderColor: colors[0 % colors.length].replace('0.2', '5'), // Increase opacity
+            data: points(value, selectedX = "energy", selectedY = "valence"),
+            backgroundColor: colors[index % colors.length],
+            borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
+            fill: false,
+            showLine: false
         };
 
         dataPlots.datasets.push(dataset);
@@ -299,7 +316,18 @@ var fetchNow = function () {
                 var myScatterChart = new Chart(ctx_scatter, {
                     type: 'scatter',
                     data: dataScatter,
-                    options: options
+                    options: {
+                        scales: {
+                            y: {
+                                min: 0,
+                                max: 1
+                            },
+                            x: {
+                                min: 0,
+                                max: 1
+                            }
+                        }
+                    }
                 });
 
 
