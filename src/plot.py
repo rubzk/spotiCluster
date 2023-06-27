@@ -56,7 +56,7 @@ class Plot:
             scatter_dict.update(
                 {
                     cluster: tracks[tracks.cluster_name == cluster][
-                        self.audio_ft
+                        self.audio_ft + ["title"]
                     ].to_dict("list")
                 }
             )

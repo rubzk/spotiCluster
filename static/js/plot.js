@@ -48,7 +48,7 @@ function adaptDataForChart(dataObj) {
     return datasets;
 }
 
-function points(config, selectedX, selectedY) {
+function points(config, selectedX, selectedY, label) {
     var xValues = config[selectedX];
     var yValues = config[selectedY];
 
@@ -61,7 +61,8 @@ function points(config, selectedX, selectedY) {
             var x = xValues[i];
             var y = yValues[i];
 
-            data.push({ x, y });
+            // Include the name as part of the data object for each point
+            data.push({ x, y, label: name });
         }
     }
 
@@ -74,10 +75,11 @@ function createScatterChart(dataObj) {
     };
 
 
+
     for (var [index, [key, value]] of Object.entries(Object.entries(dataObj))) {
         var dataset = {
             label: key,
-            data: points(value, selectedX = "energy", selectedY = "valence"),
+            data: points(value, selectedX = "energy", selectedY = "valence", label = "title"),
             backgroundColor: colors[index % colors.length],
             borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
             fill: false,
@@ -87,8 +89,37 @@ function createScatterChart(dataObj) {
         dataPlots.datasets.push(dataset);
     }
 
+    var chartOptions = {
+        scales: {
+            y: {
+                min: 0,
+                max: 1
+            },
+            x: {
+                min: 0,
+                max: 1
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    title: function (tooltipItem) {
+                        // Display the name as the tooltip title
+                        return tooltipItem[0].label;
+                    }
+                }
+            }
+        }
+    }
 
-    return dataPlots
+    var chartConfig = {
+        type: 'scatter',
+        data: dataPlots,
+        options: chartOptions
+    };
+
+
+    return chartConfig
 
 
 }
@@ -313,22 +344,7 @@ var fetchNow = function () {
                     options: options
                 });
 
-                var myScatterChart = new Chart(ctx_scatter, {
-                    type: 'scatter',
-                    data: dataScatter,
-                    options: {
-                        scales: {
-                            y: {
-                                min: 0,
-                                max: 1
-                            },
-                            x: {
-                                min: 0,
-                                max: 1
-                            }
-                        }
-                    }
-                });
+                var myScatterChart = new Chart(ctx_scatter, dataScatter);
 
 
 
