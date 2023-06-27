@@ -88,18 +88,21 @@ function createAreaChart(dataObj) {
     var label_ds = Object.keys(dataObj)
 
 
-    for (var [key, value] of Object.entries(dataObj)) {
+    for (var [index, [key, value]] of Object.entries(Object.entries(dataObj))) {
+
+
         /// change colors of each feature
 
         if (key != "yyyy-mm") {
 
+
             var dataset = {
                 label: key,
                 data: value,
-                backgroundColor: colors[1 % colors.length],
-                borderColor: colors[1 % colors.length].replace('0.2', '1'), // Increase opacity
+                backgroundColor: colors[index % colors.length],
+                borderColor: colors[index % colors.length].replace('0.2', '1'), // Increase opacity
                 borderWidth: 2,
-                pointBackgroundColor: colors[1 % colors.length].replace('0.2', '1'),
+                pointBackgroundColor: colors[index % colors.length].replace('0.2', '1'),
                 pointBorderColor: '#fff',
                 pointBorderWidth: 1,
                 pointRadius: 1,
