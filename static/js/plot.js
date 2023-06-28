@@ -93,11 +93,29 @@ function createScatterChart(dataObj) {
         scales: {
             y: {
                 min: 0,
-                max: 1
+                max: 1,
+                title: {
+                    display: true,
+                    text: 'valence',
+                    font: {
+                        size: 24, // Customize the font size for X axis label
+                        color: 'white' // Customize the font color for X axis label
+                    }
+                    // Customize the X axis name
+                },
+
             },
             x: {
                 min: 0,
-                max: 1
+                max: 1,
+                title: {
+                    display: true,
+                    text: 'energy',
+                    font: {
+                        size: 24, // Customize the font size for X axis label
+                        color: 'white' // Customize the font color for X axis label
+                    } // Customize the X axis name
+                }
             }
         },
         plugins: {
