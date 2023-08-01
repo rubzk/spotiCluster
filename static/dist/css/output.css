@@ -671,10 +671,6 @@ video {
   justify-content: center;
 }
 
-.justify-between {
-  justify-content: space-between;
-}
-
 .justify-around {
   justify-content: space-around;
 }
@@ -900,6 +896,10 @@ video {
 
   .md\:w-3\/5 {
     width: 60%;
+  }
+
+  .md\:w-4\/5 {
+    width: 80%;
   }
 
   .md\:w-auto {
