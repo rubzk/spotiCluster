@@ -151,7 +151,6 @@ class DataExtractor:
             ).json()["audio_features"]
 
             log.warning(response)
-            log.warning("FALLA AUDIO FEATURES")
 
             if response != None:
                 tracks_audio_ft = pd.concat(
