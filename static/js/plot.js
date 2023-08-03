@@ -142,6 +142,83 @@ function createScatterChart(dataObj) {
 
 }
 
+function updateScatter(property, chartObject, originalData, axis) {
+    // Check if the property is already present in the chart
+    var isPropertyPresent = chartObject.data.labels.includes(property);
+
+
+    if (axis == 'x') {
+
+        var updatedDatasets = {
+            datasets: []
+        };
+
+        var currentY = chartObject.options.scales.y.title.text
+
+
+        for (var [index, [key, value]] of Object.entries(Object.entries(originalData))) {
+            var dataset = {
+                label: key,
+                data: points(value, selectedX = property, selectedY = currentY, label = "title"),
+                backgroundColor: colors[index % colors.length],
+                borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
+                fill: false,
+                showLine: false
+            };
+
+            updatedDatasets.push(dataset);
+        }
+
+        chartObject.options.scales.x.title.text = property
+
+        chartObject.data.datasets = updatedDatasets;
+
+
+    } if (axis == 'y') {
+
+        console.log(chartObject)
+
+        var updatedDatasets = {
+            datasets: []
+        };
+
+        var currentX = chartObject.options.scales.x.title.text
+
+
+        for (var [index, [key, value]] of Object.entries(Object.entries(originalData))) {
+            var dataset = {
+                label: key,
+                data: points(value, selectedX = currentX, selectedY = property, label = "title"),
+                backgroundColor: colors[index % colors.length],
+                borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
+                fill: false,
+                showLine: false
+            };
+
+            updatedDatasets.datasets.push(dataset);
+        }
+
+        chartObject.options.scales.x.title.text = property
+
+        chartObject.data.datasets = updatedDatasets;
+
+        console.log(chartObject.data)
+
+
+
+
+    }
+
+    console.log(chartObject.data)
+
+    chartObject.update();
+}
+
+
+
+// Update the chart
+
+
 function createAreaChart(dataObj) {
 
     var dataPlots = {
@@ -180,6 +257,36 @@ function createAreaChart(dataObj) {
 
         }
 
+    }
+
+    var chartOptions = {
+        scales: {
+            y: {
+                min: 0,
+                max: 1,
+                title: {
+                    display: true,
+                    text: 'Value from 0 to 1',
+                    font: {
+                        size: 24,
+                        color: 'white'
+                    }
+                },
+
+            },
+            x: {
+                min: 0,
+                max: 1,
+                title: {
+                    display: true,
+                    text: 'energy',
+                    font: {
+                        size: 24, // Customize the font size for X axis label
+                        color: 'white' // Customize the font color for X axis label
+                    } // Customize the X axis name
+                }
+            }
+        }
     }
 
 
@@ -335,6 +442,10 @@ var fetchNow = function () {
 
                 var dataScatter = createScatterChart(data['plots']['scatter'])
 
+                dataScatter_2 = createScatterChart(data['plots']['scatter'])
+
+
+
 
                 dataPlots.labels = Object.keys(originalData).filter(function (label) {
                     return label !== "cluster_name";
@@ -436,6 +547,18 @@ var fetchNow = function () {
 
 
                     updateChartProperty(property, chartObject, originalData);
+                });
+
+
+                var addEnergyScatterY = document.getElementById('add-energy-scatter-y');
+
+
+                addEnergyScatterY.addEventListener('click', function () {
+                    var property = 'energy'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, originalData, axis = "y");
                 });
 
 
