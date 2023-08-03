@@ -144,8 +144,6 @@ function createScatterChart(dataObj) {
 
 function updateScatter(property, chartObject, originalData, axis) {
     // Check if the property is already present in the chart
-    var isPropertyPresent = chartObject.data.labels.includes(property);
-
 
     if (axis == 'x') {
 
@@ -176,7 +174,7 @@ function updateScatter(property, chartObject, originalData, axis) {
 
     } if (axis == 'y') {
 
-        console.log(chartObject)
+        console.log(chartObject.data)
 
         var updatedDatasets = {
             datasets: []
@@ -558,7 +556,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, originalData, axis = "y");
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
                 });
 
 

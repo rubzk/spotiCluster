@@ -890,10 +890,6 @@ video {
 }
 
 @media (min-width: 768px) {
-  .md\:w-1\/5 {
-    width: 20%;
-  }
-
   .md\:w-3\/5 {
     width: 60%;
   }
