@@ -496,6 +496,12 @@ var fetchNow = function () {
 
                 var addEnergyScatterY = document.getElementById('add-energy-scatter-y');
 
+                var addValenceScatterY = document.getElementById('add-valence-scatter-y');
+
+                var addDanceabilityScatterY = document.getElementById('add-danceability-scatter-y');
+
+                var addInstrumentalnessScatterY = document.getElementById('add-instrumentalness-scatter-y');
+
 
                 addEnergyScatterY.addEventListener('click', function () {
                     var property = 'energy'; // Replace with the desired property
@@ -503,6 +509,72 @@ var fetchNow = function () {
 
 
                     updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                });
+
+                addValenceScatterY.addEventListener('click', function () {
+                    var property = 'valence'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                });
+
+                addDanceabilityScatterY.addEventListener('click', function () {
+                    var property = 'danceability'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                });
+
+                addInstrumentalnessScatterY.addEventListener('click', function () {
+                    var property = 'instrumentalness'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                });
+
+
+                var addEnergyScatterX = document.getElementById('add-energy-scatter-x');
+
+                var addValenceScatterX = document.getElementById('add-valence-scatter-x');
+
+                var addDanceabilityScatterX = document.getElementById('add-danceability-scatter-x');
+
+                var addInstrumentalnessScatterX = document.getElementById('add-instrumentalness-scatter-x');
+
+
+                addEnergyScatterX.addEventListener('click', function () {
+                    var property = 'energy'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
+                });
+
+                addValenceScatterX.addEventListener('click', function () {
+                    var property = 'valence'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
+                });
+
+                addDanceabilityScatterX.addEventListener('click', function () {
+                    var property = 'danceability'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
+                });
+
+                addInstrumentalnessScatterX.addEventListener('click', function () {
+                    var property = 'instrumentalness'; // Replace with the desired property
+                    var chartObject = myScatterChart; // Replace with your actual chart object
+
+
+                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
                 });
 
 
