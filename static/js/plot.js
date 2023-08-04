@@ -143,78 +143,24 @@ function createScatterChart(dataObj) {
 }
 
 function updateScatter(property, chartObject, originalData, axis) {
-    // Check if the property is already present in the chart
+    var currentX = chartObject.options.scales.x.title.text;
+    var currentY = chartObject.options.scales.y.title.text;
 
-    if (axis == 'x') {
-
-        var updatedDatasets = {
-            datasets: []
-        };
-
-        var currentY = chartObject.options.scales.y.title.text
-
-
-        for (var [index, [key, value]] of Object.entries(Object.entries(originalData))) {
-            var dataset = {
-                label: key,
-                data: points(value, selectedX = property, selectedY = currentY, label = "title"),
-                backgroundColor: colors[index % colors.length],
-                borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
-                fill: false,
-                showLine: false
-            };
-
-            updatedDatasets.push(dataset);
+    if (axis === 'x') {
+        for (var dataset of chartObject.data.datasets) {
+            dataset.data = points(originalData[dataset.label], property, currentY, "title");
         }
-
-        chartObject.options.scales.x.title.text = property
-
-        chartObject.data.datasets = updatedDatasets;
-
-
-    } if (axis == 'y') {
-
-        console.log(chartObject.data)
-
-        var updatedDatasets = {
-            datasets: []
-        };
-
-        var currentX = chartObject.options.scales.x.title.text
-
-
-        for (var [index, [key, value]] of Object.entries(Object.entries(originalData))) {
-            var dataset = {
-                label: key,
-                data: points(value, selectedX = currentX, selectedY = property, label = "title"),
-                backgroundColor: colors[index % colors.length],
-                borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
-                fill: false,
-                showLine: false
-            };
-
-            updatedDatasets.datasets.push(dataset);
-        }
-
-        chartObject.options.scales.x.title.text = property
-
-        chartObject.data.datasets = updatedDatasets;
-
-        console.log(chartObject.data)
-
-
-
-
+        chartObject.options.scales.x.title.text = property;
     }
-
-    console.log(chartObject.data)
+    else if (axis === 'y') {
+        for (var dataset of chartObject.data.datasets) {
+            dataset.data = points(originalData[dataset.label], currentX, property, "title");
+        }
+        chartObject.options.scales.y.title.text = property;
+    }
 
     chartObject.update();
 }
-
-
-
-// Update the chart
 
 
 function createAreaChart(dataObj) {
