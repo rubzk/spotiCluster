@@ -318,38 +318,38 @@ function createAreaChart(dataObj) {
 
     }
 
-    var chartOptions = {
-        scales: {
-            y: {
-                min: 0,
-                max: 1,
-                title: {
-                    display: true,
-                    text: 'Value from 0 to 1',
-                    font: {
-                        size: 24,
-                        color: 'white'
-                    }
-                },
+    var options = {
 
-            },
+        scales: {
             x: {
-                min: 0,
-                max: 1,
                 title: {
                     display: true,
-                    text: 'energy',
+                    text: 'Year - Month', // X axis title
                     font: {
-                        size: 24, // Customize the font size for X axis label
-                        color: 'white' // Customize the font color for X axis label
-                    } // Customize the X axis name
+                        size: 16, // Customize the font size for X axis title
+                    }
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Value', // Y axis title
+                    font: {
+                        size: 16, // Customize the font size for Y axis title
+                    }
                 }
             }
         }
+    };
+
+    var chartConfig = {
+        type: 'line',
+        data: dataPlots,
+        options: options
     }
 
 
-    return dataPlots
+    return chartConfig
 
 }
 
@@ -461,11 +461,7 @@ var fetchNow = function () {
                 var myPieChart = new Chart(ctx_pie, dataPieChart);
 
 
-                var myAreaChart = new Chart(ctx_area, {
-                    type: 'line',
-                    data: dataArea,
-                    options: options
-                });
+                var myAreaChart = new Chart(ctx_area, dataArea);
 
                 var myScatterChart = new Chart(ctx_scatter, dataScatter);
 
