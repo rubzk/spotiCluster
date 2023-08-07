@@ -107,11 +107,18 @@ function createScatterChart(dataObj) {
                     display: true,
                     text: 'valence',
                     font: {
-                        size: 24, // Customize the font size for X axis label
-                        color: 'white' // Customize the font color for X axis label
-                    }
-                    // Customize the X axis name
+                        size: 24,
+
+                    },
+                    color: 'white'
+
                 },
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: 'white'
+                }
 
             },
             x: {
@@ -121,9 +128,16 @@ function createScatterChart(dataObj) {
                     display: true,
                     text: 'energy',
                     font: {
-                        size: 24, // Customize the font size for X axis label
-                        color: 'white' // Customize the font color for X axis label
-                    } // Customize the X axis name
+                        size: 24,
+
+                    },
+                    color: 'white'
+                },
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: 'white'
                 }
             }
         },
@@ -221,21 +235,21 @@ function createPieChart(dataObj) {
 function createRadarChart(dataObj) {
 
     var options = {
-        scale: {
-            angleLines: {
-                color: 'white'
-            },
-            gridLines: {
-                color: 'rgba(255, 255, 255, 0.2)'
-            },
-            ticks: {
-                beginAtZero: true,
-                max: 1,
-                fontColor: 'white'
-            },
-            pointcluster_name: {
-                fontSize: 14,
-                fontColor: 'white'
+        scales: {
+            r: {
+                grid: {
+                    color: 'gray'
+                },
+                angleLines: {
+                    color: 'gray'
+                },
+                ticks: {
+                    display: false
+                },
+                pointLabels: {
+                    color: 'white'
+                }
+
             }
         },
         legend: {
@@ -318,6 +332,7 @@ function createAreaChart(dataObj) {
 
     }
 
+
     var options = {
 
         scales: {
@@ -327,7 +342,15 @@ function createAreaChart(dataObj) {
                     text: 'Year - Month', // X axis title
                     font: {
                         size: 16, // Customize the font size for X axis title
-                    }
+                    },
+                    color: 'white'
+                },
+                ticks: {
+                    color: 'white'
+                },
+                grid: {
+                    borderDash: [10, 10], // This creates dashed lines
+                    drawBorder: true
                 }
             },
             y: {
@@ -336,10 +359,18 @@ function createAreaChart(dataObj) {
                     text: 'Value', // Y axis title
                     font: {
                         size: 16, // Customize the font size for Y axis title
-                    }
+                    },
+                    color: 'white'
+                },
+                ticks: {
+                    color: 'white'
                 }
             }
-        }
+        },
+        border: {
+            display: true,
+            color: 'white'
+        },
     };
 
     var chartConfig = {
