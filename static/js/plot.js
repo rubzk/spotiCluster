@@ -218,6 +218,65 @@ function createPieChart(dataObj) {
 
 }
 
+function createRadarChart(dataObj) {
+
+    var options = {
+        scale: {
+            angleLines: {
+                color: 'white'
+            },
+            gridLines: {
+                color: 'rgba(255, 255, 255, 0.2)'
+            },
+            ticks: {
+                beginAtZero: true,
+                max: 1,
+                fontColor: 'white'
+            },
+            pointcluster_name: {
+                fontSize: 14,
+                fontColor: 'white'
+            }
+        },
+        legend: {
+            position: 'top',
+            cluster_name: {
+                fontColor: 'white'
+            }
+        },
+        title: {
+            display: true,
+            text: 'Audio Features by Cluster',
+            fontColor: 'white'
+        },
+        pointcluster_name: {
+            fontColor: 'white'
+        }
+    };
+
+    var dataPlots = {
+        labels: [],
+        datasets: []
+    };
+
+    dataPlots.labels = Object.keys(dataObj).filter(function (label) {
+        return label !== "cluster_name";
+    });
+
+
+    dataPlots.datasets = adaptDataForChart(dataObj);
+
+    var chartConfig = {
+        type: 'radar',
+        data: dataPlots,
+        options: options
+
+    };
+
+    return chartConfig;
+
+}
+
 
 function createAreaChart(dataObj) {
 
@@ -388,7 +447,27 @@ var fetchNow = function () {
                 var originalData = data['plots']['radar_chart']
 
 
+                var dataArea = createAreaChart(data['plots']['saved_tracks'])
 
+                var dataScatter = createScatterChart(data['plots']['scatter'])
+
+                var dataPieChart = createPieChart(data['plots']['pie_chart'])
+
+                var dataRadarChart = createRadarChart(originalData)
+
+
+                var myRadarChart = new Chart(ctx_radar, dataRadarChart);
+
+                var myPieChart = new Chart(ctx_pie, dataPieChart);
+
+
+                var myAreaChart = new Chart(ctx_area, {
+                    type: 'line',
+                    data: dataArea,
+                    options: options
+                });
+
+                var myScatterChart = new Chart(ctx_scatter, dataScatter);
 
                 var options = {
                     scale: {
@@ -423,47 +502,6 @@ var fetchNow = function () {
                         fontColor: 'white'
                     }
                 };
-
-                var dataPlots = {
-                    labels: [],
-                    datasets: []
-                };
-
-                var dataArea = createAreaChart(data['plots']['saved_tracks'])
-
-                var dataScatter = createScatterChart(data['plots']['scatter'])
-
-                var dataPieChart = createPieChart(data['plots']['pie_chart'])
-
-
-
-
-
-
-                dataPlots.labels = Object.keys(originalData).filter(function (label) {
-                    return label !== "cluster_name";
-                });
-
-
-                dataPlots.datasets = adaptDataForChart(originalData);
-
-                // Create the charts  
-                var myRadarChart = new Chart(ctx_radar, {
-                    type: 'radar',
-                    data: dataPlots,
-                    options: options
-                });
-
-                var myPieChart = new Chart(ctx_pie, dataPieChart);
-
-
-                var myAreaChart = new Chart(ctx_area, {
-                    type: 'line',
-                    data: dataArea,
-                    options: options
-                });
-
-                var myScatterChart = new Chart(ctx_scatter, dataScatter);
 
 
 
