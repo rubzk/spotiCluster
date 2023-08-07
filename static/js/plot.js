@@ -465,41 +465,6 @@ var fetchNow = function () {
 
                 var myScatterChart = new Chart(ctx_scatter, dataScatter);
 
-                var options = {
-                    scale: {
-                        angleLines: {
-                            color: 'white'
-                        },
-                        gridLines: {
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        },
-                        ticks: {
-                            beginAtZero: true,
-                            max: 1,
-                            fontColor: 'white'
-                        },
-                        pointcluster_name: {
-                            fontSize: 14,
-                            fontColor: 'white'
-                        }
-                    },
-                    legend: {
-                        position: 'top',
-                        cluster_name: {
-                            fontColor: 'white'
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Audio Features by Cluster',
-                        fontColor: 'white'
-                    },
-                    pointcluster_name: {
-                        fontColor: 'white'
-                    }
-                };
-
-
 
                 var addButtonEnergy = document.getElementById('add-energy');
 
