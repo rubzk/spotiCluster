@@ -12,6 +12,15 @@ var colors = [
     'rgba(255, 159, 64, 0.2)'     // Orange
 ];
 
+var PieColors = [
+    'rgba(255, 99, 132, 1)',   // Red
+    'rgba(54, 162, 235, 1)',    // Blue
+    'rgba(255, 206, 86, 1)',    // Yellow
+    'rgba(75, 192, 192, 1)',    // Green
+    'rgba(153, 102, 255, 1)',   // Purple
+    'rgba(255, 159, 64, 1)'     // Orange
+];
+
 var headers = new Headers();
 headers.append('Content-Type', 'application/json');
 
@@ -160,6 +169,53 @@ function updateScatter(property, chartObject, originalData, axis) {
     }
 
     chartObject.update();
+}
+
+function createPieChart(dataObj) {
+
+
+
+    var dataPieChart = {
+        labels: dataObj['cluster_name'],
+        datasets: [{
+            data: dataObj['number_of_songs'],
+            backgroundColor: colors,
+            borderColor: PieColors,
+            hoverOffset: 8
+        }]
+
+    }
+
+
+    var chartOptions = {
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        var label = context.label || ''; // Label for the current segment
+                        var value = context.parsed || 0; // Parsed numerical value of the segment
+                        return label + ': ' + value;
+                    }
+                }
+            }
+        }
+    };
+
+
+    var chartConfig = {
+        type: 'pie',
+        data: dataPieChart,
+        options: chartOptions
+
+    };
+
+    return chartConfig;
+
+
 }
 
 
@@ -333,15 +389,6 @@ var fetchNow = function () {
 
 
 
-                var dataPieChart = {
-                    labels: data['plots']['pie_chart']['cluster_name'],
-                    datasets: [{
-                        data: data['plots']['pie_chart']['number_of_songs'],
-                        backgroundColor: colors
-                    }]
-                }
-
-
 
                 var options = {
                     scale: {
@@ -386,7 +433,9 @@ var fetchNow = function () {
 
                 var dataScatter = createScatterChart(data['plots']['scatter'])
 
-                dataScatter_2 = createScatterChart(data['plots']['scatter'])
+                var dataPieChart = createPieChart(data['plots']['pie_chart'])
+
+
 
 
 
@@ -405,11 +454,8 @@ var fetchNow = function () {
                     options: options
                 });
 
-                var myPieChart = new Chart(ctx_pie, {
-                    type: 'pie',
-                    data: dataPieChart,
-                    options: options
-                });
+                var myPieChart = new Chart(ctx_pie, dataPieChart);
+
 
                 var myAreaChart = new Chart(ctx_area, {
                     type: 'line',

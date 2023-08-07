@@ -609,6 +609,22 @@ video {
   width: max-content;
 }
 
+.w-4\/5 {
+  width: 80%;
+}
+
+.w-3\/5 {
+  width: 60%;
+}
+
+.w-2\/5 {
+  width: 40%;
+}
+
+.w-1\/5 {
+  width: 20%;
+}
+
 @keyframes bounce {
   0%, 100% {
     transform: translateY(-25%);
