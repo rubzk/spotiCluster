@@ -28,25 +28,29 @@ def get_tracks(self, auth_token, playlist):
     try:
         data_extractor = DataExtractor(auth_token)
 
-        user_id = data_extractor.get_user_id()
+        log.warning(playlist)
 
-        tracks = data_extractor.get_all_tracks(playlist)
+        playlist = data_extractor.get_all_tracks(playlist)
 
-        tracks_audio_ft = data_extractor.get_all_audio_features(tracks)
+        playlist = data_extractor.get_all_audio_features(playlist)
 
-        transform = TransformDataFrame(tracks, tracks_audio_ft)
+        log.warning(playlist)
 
-        tracks = transform.concat_data()
+        # transform = TransformDataFrame(tracks, tracks_audio_ft)
 
-        tracks = tracks.dropna(axis=0, how="any")
+        # tracks = transform.concat_data()
 
-        tracks["spotify_user_id"] = user_id
+        # tracks = tracks.dropna(axis=0, how="any")
 
-        tracks["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        # tracks["spotify_user_id"] = user_id
 
-        tracks = transform.rename_and_reindex_columns(tracks)
+        # tracks["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-        return {"tracks": tracks.to_dict("list")}
+        # tracks = transform.rename_and_reindex_columns(tracks)
+
+        print(playlist)
+
+        return playlist
     except (KeyError, AttributeError) as e:
         raise self.retry(exc=e)
 

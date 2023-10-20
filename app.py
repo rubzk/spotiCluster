@@ -72,7 +72,7 @@ def auth():
 
     extractor = DataExtractor(auth.auth_token)
 
-    user_id = extractor.get_user_id()
+    user_data = extractor.get_user_id()
 
     res.set_cookie(
         "username",
@@ -82,10 +82,14 @@ def auth():
         path="/",
     )
 
-    playlists = extractor.get_all_playlists()
+    user_data = extractor.get_all_playlists(user_data)
 
-    total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
-        get_tracks.s(auth.auth_token, playlist) for playlist in playlists
+    # total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
+    #     get_tracks.s(auth.auth_token, playlist) for playlist in user_data.playlists
+    # ]
+
+    total_tracks = [
+        get_tracks.s(auth.auth_token, playlist) for playlist in user_data.playlists
     ]
 
     task = chord(total_tracks)(
@@ -95,12 +99,12 @@ def auth():
         | create_plots.s()
     )
 
-    return redirect(url_for("taskstatus", task_id=task.id))
+    return redirect(url_for("taskstatus", celery_task=task.id))
 
 
 @app.route("/status/<task_id>", methods=["GET"])
-def taskstatus(task_id):
-    task = celery.AsyncResult(task_id)
+def taskstatus(celery_task_id):
+    task = celery.AsyncResult(celery_task_id)
 
     app.logger.info(f"status: {task.state}")
 

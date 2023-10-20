@@ -28,7 +28,7 @@ class AudioFeatures(BaseModel):
 class Track(BaseModel):
     id: str
     name: str
-    artist: List[Artist]
+    artists: List[Artist]
     features: Optional[AudioFeatures] = Field(default_factory=dict)
 
 

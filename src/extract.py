@@ -6,6 +6,8 @@ import requests
 import json
 import logging
 
+from .models import UserData, Playlist, Artist, Track, AudioFeatures
+
 log = logging.getLogger(__name__)
 
 
@@ -21,25 +23,40 @@ class DataExtractor:
         # self.test = self.get_all_saved_tracks()
 
     def get_user_id(self):
-        return requests.get(
-            "https://api.spotify.com/v1/me", headers=self.headers
-        ).json()["id"]
+        log.warning(
+            requests.get("https://api.spotify.com/v1/me", headers=self.headers).json()
+        )
 
-    def get_all_playlists(self, offset=0):
-        playlists = requests.get(
+        response = requests.get(
+            "https://api.spotify.com/v1/me", headers=self.headers
+        ).json()
+
+        user_data = UserData(id=response["id"], playlists=[])
+
+        return user_data
+
+    def get_all_playlists(self, user_data, offset=0):
+        response = requests.get(
             "https://api.spotify.com/v1/me/playlists?"
             + "limit={}".format(self.limit)
             + "&offset={}".format(offset),
             headers=self.headers,
         ).json()["items"]
 
-        playlists_id = [playlist["id"] for playlist in playlists]
+        for p in response:
+            user_data.playlists.append(
+                Playlist(id=p["id"], type=p["type"], public=p["public"], tracks=[])
+            )
 
-        return playlists_id
+        # playlists_id = [playlist["id"] for playlist in response]
+
+        log.warning(user_data)
+
+        return user_data
 
     def get_all_tracks(self, playlist):
         response = requests.get(
-            f"https://api.spotify.com/v1/playlists/{playlist}/tracks?fields=total%2Climit&limit={self.limit}",
+            f"https://api.spotify.com/v1/playlists/{playlist.id}/tracks?fields=total%2Climit&limit={self.limit}",
             headers=self.headers,
         ).json()
 
@@ -53,27 +70,29 @@ class DataExtractor:
             repeat = (response["total"] // self.limit) + 1
 
         for r in range(repeat):
-            d = requests.get(
+            response = requests.get(
                 f"https://api.spotify.com/v1/playlists/{playlist}/tracks?fields=items(track(id,name,artists))&limit={self.limit}&offset={r * self.limit}",
                 headers=self.headers,
             ).json()
 
             log.warning(d)
-            for track in d["items"]:
-                d_tracks = {
-                    "id": track["track"]["id"],
-                    "name": track["track"]["name"],
-                    "artist": track["track"]["artists"][0]["name"],
-                }
-                tracks_info = pd.concat(
-                    [tracks_info, pd.DataFrame([d_tracks])], ignore_index=True
-                )
 
-        tracks_info = tracks_info.dropna(how="any", subset=["id"])
+            for t in response["items"]:
+                track_name = t["track"]["name"]
+                track_id = t["track"]["id"]
+                track = Track(id=track_id, name=track_name, artist=[])
 
-        tracks_info = tracks_info.drop_duplicates(subset=["id"], keep="first")
+                for artist in t["track"]["artist"]:
+                    artist_id = artist["id"]
+                    artist_name = artist["name"]
+                    artist_type = artist["type"]
+                    track.artist.append(
+                        Artist(id=artist_id, name=artist_name, type=artist_type)
+                    )
 
-        return tracks_info
+                playlist.tracks.append(track)
+
+        return playlist
 
     def get_all_saved_tracks(self):
         response = requests.get(
@@ -93,6 +112,9 @@ class DataExtractor:
                 headers=self.headers,
             ).json()
 
+            with open("all_saved_response.json", "w") as json_file:
+                json.dump(d, json_file)
+
             if d != None:
                 for track in d["items"]:
                     d_tracks = {
@@ -110,53 +132,46 @@ class DataExtractor:
 
         return saved_tracks_info
 
-    def get_all_audio_features(self, tracks):
-        tracks_audio_ft = pd.DataFrame(
-            [],
-            columns=[
-                "danceability",
-                "energy",
-                "key",
-                "loudness",
-                "mode",
-                "speechiness",
-                "acousticness",
-                "instrumentalness",
-                "liveness",
-                "valence",
-                "tempo",
-                "type",
-                "id",
-                "uri",
-                "track_href",
-                "analysis_url",
-                "duration_ms",
-                "time_signature",
-            ],
-        )
-
-        tracks_ids = tracks["id"].to_list()
-
-        if len(tracks_ids) > 100:
-            list_of_ids = split_list(tracks_ids, round(len(tracks_ids) / 100) + 1)
+    def get_all_audio_features(self, playlist):
+        if len(playlist.tracks) > 100:
+            splitted_list = split_list(
+                playlist.tracks, round(len(playlist.tracks) / 100) + 1
+            )
         else:
-            list_of_ids = split_list(tracks_ids, 1)
+            splitted_list = split_list(playlist.tracks, 1)
 
-        for tracks in list_of_ids:
+        for track_list in splitted_list:
+            track_ids = [track.id for track in track_list]
             response = requests.get(
                 "https://api.spotify.com/v1/audio-features?ids={}".format(
-                    str(tracks)[1:-1].replace("'", "").replace(", ", ",")
+                    str(track_ids)[1:-1].replace("'", "").replace(", ", ",")
                 ),
                 headers=self.headers,
             ).json()["audio_features"]
 
-            log.warning(response)
+            for track, audio_feature in zip(track_list, response):
+                ft_dict = {
+                    "danceability": audio_feature["danceability"],
+                    "energy": audio_feature["energy"],
+                    "key": audio_feature["key"],
+                    "loudness": audio_feature["loudness"],
+                    "mode": audio_feature["mode"],
+                    "speechiness": audio_feature["speechiness"],
+                    "acousticness": audio_feature["acousticness"],
+                    "instrumentalness": audio_feature["instrumentalness"],
+                    "liveness": audio_feature["liveness"],
+                    "valence": audio_feature["valence"],
+                    "tempo": audio_feature["tempo"],
+                    "track_id": audio_feature["id"],
+                    "duration_ms": audio_feature["duration_ms"],
+                    "time_signature": audio_feature["time_signature"],
+                }
 
-            if response != None:
-                tracks_audio_ft = pd.concat(
-                    [tracks_audio_ft, pd.DataFrame(response)], ignore_index=True
-                )
-            else:
-                continue
+                audio_features = AudioFeatures(**ft_dict)
+                track.features = audio_features
 
-        return tracks_audio_ft
+        tracks = [item for sublist in splitted_list for item in sublist]
+
+        playlist.tracks = tracks
+
+        return playlist
