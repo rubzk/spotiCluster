@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from datetime import datetime
 
 
 class Artist(BaseModel):
@@ -32,6 +33,18 @@ class Track(BaseModel):
     features: Optional[AudioFeatures] = Field(default_factory=dict)
 
 
+class SavedTrack(BaseModel):
+    added_at: datetime
+    artists: List[Artist]
+    id: str
+    name: str
+    popularity: int
+    features: Optional[AudioFeatures] = Field(default_factory=dict)
+
+    class Config:
+        json_encoders = {datetime: lambda v: v.timestamp()}
+
+
 class Playlist(BaseModel):
     id: str
     type: str
@@ -39,6 +52,11 @@ class Playlist(BaseModel):
     tracks: List[Track]
 
 
+class SavedTracks(BaseModel):
+    tracks: List[SavedTrack]
+
+
 class UserData(BaseModel):
     id: int
     playlists: List[Playlist]
+    saved_tracks: Optional[SavedTracks] = Field(default=None)

@@ -88,7 +88,7 @@ def auth():
     #     get_tracks.s(auth.auth_token, playlist) for playlist in user_data.playlists
     # ]
 
-    total_tracks = [
+    total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
         get_tracks.s(auth.auth_token, playlist.dict())
         for playlist in user_data.playlists
     ]

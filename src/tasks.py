@@ -13,7 +13,7 @@ import logging
 
 import pandas as pd
 from celery import shared_task, chord
-from .models import Playlist, UserData
+from .models import Playlist, UserData, SavedTracks
 
 log = logging.getLogger(__name__)
 
@@ -47,9 +47,30 @@ def get_tracks(self, auth_token, playlist_dict):
 
         # tracks = transform.rename_and_reindex_columns(tracks)
 
-        return playlist.dict()
+        with open("playlist_model.json", "w") as json_file:
+            json.dump({"playlist_model": playlist.dict()}, json_file)
+
+        return {"playlist_model": playlist.dict()}
     except (KeyError, AttributeError) as e:
         raise self.retry(exc=e)
+
+
+@shared_task(
+    bind=True,
+    name="GET LIKED TRACKS AND AUDIO FEATURES",
+    max_retries=3,
+    default_retry_delay=10,
+)
+def get_saved_tracks(self, auth_token):
+    data_extractor = DataExtractor(auth_token)
+
+    saved_tracks = data_extractor.get_all_saved_tracks()
+
+    saved_tracks = data_extractor.get_all_audio_features(saved_tracks)
+
+    log.warning(saved_tracks)
+
+    return saved_tracks.json()
 
 
 @shared_task(
@@ -58,36 +79,22 @@ def get_tracks(self, auth_token, playlist_dict):
 def append_results(self, results, user):
     user_data = UserData(**user)
 
-    user_data.playlists = [Playlist(**r) for r in results]
+    for r in results:
+        if "saved_tracks_model" in r:
+            with open("saved_tracks_model.json", "w") as json_file:
+                json.dump(r, json_file)
 
-    # with open("final_user_model.json", "w") as json_file:
-    #     json.dump(user_data.dict(), json_file)
+            saved_tracks = SavedTracks.parse_obj(r["saved_tracks_model"])
+            user_data.saved_tracks = saved_tracks
+        elif "playlist_model" in r:
+            user_data.playlists.append(Playlist.parse_obj(r["playlist_model"]))
+
+    with open("final_user_model.json", "w") as json_file:
+        json.dump(user_data.dict(), json_file)
 
     log.warning(user_data)
 
-    tracks = pd.DataFrame()
-
-    saved_tracks_result = pd.DataFrame()
-
-    for r in results:
-        if list(r.keys()) == ["tracks"]:
-            tracks = pd.concat(
-                [tracks, pd.read_json(json.dumps(r["tracks"]))], ignore_index=True
-            )
-
-        else:
-            saved_tracks_result = pd.read_json(json.dumps(r["saved_tracks"]))
-
-    tracks = tracks.dropna(axis=0, how="any", subset=["song_id"])
-
-    tracks = tracks.drop_duplicates(subset=["song_id"])
-
-    saved_tracks_result.to_csv("appended_saved_tracks.csv")
-
-    return {
-        "saved_tracks": saved_tracks_result.to_dict("list"),
-        "tracks": json.dumps(tracks.to_dict("list")),
-    }
+    return {None}
 
 
 @shared_task(
@@ -188,23 +195,3 @@ def save_data_in_postgres(self, result):
         "cluster_stats": cluster_stats.to_dict("list"),
         "saved_tracks": result["saved_tracks"],
     }
-
-
-@shared_task(
-    bind=True,
-    name="GET LIKED TRACKS AND AUDIO FEATURES",
-    max_retries=3,
-    default_retry_delay=10,
-)
-def get_saved_tracks(self, auth_token):
-    data_extractor = DataExtractor(auth_token)
-
-    saved_tracks = data_extractor.get_all_saved_tracks()
-
-    saved_tracks_audio_ft = data_extractor.get_all_audio_features(tracks=saved_tracks)
-
-    saved_tracks = pd.concat([saved_tracks, saved_tracks_audio_ft], axis=1)
-
-    saved_tracks["added_at"] = saved_tracks["added_at"].astype("str")
-
-    return {"saved_tracks": saved_tracks.to_dict("list")}

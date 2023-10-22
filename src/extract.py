@@ -6,7 +6,15 @@ import requests
 import json
 import logging
 
-from .models import UserData, Playlist, Artist, Track, AudioFeatures
+from .models import (
+    UserData,
+    Playlist,
+    Artist,
+    Track,
+    AudioFeatures,
+    SavedTracks,
+    SavedTrack,
+)
 
 log = logging.getLogger(__name__)
 
@@ -101,35 +109,45 @@ class DataExtractor:
         if response["total"] > self.limit:
             repeat = (response["total"] // self.limit) + 1
 
-        saved_tracks_info = pd.DataFrame(
-            [], columns=["id", "name", "added_at", "artist", "preview_url"]
-        )
+        saved_tracks = SavedTracks(tracks=[])
 
         for r in range(repeat):
-            d = requests.get(
+            response = requests.get(
                 f"https://api.spotify.com/v1/me/tracks?limit{self.limit}&offset={r * self.limit}",
                 headers=self.headers,
             ).json()
 
-            with open("all_saved_response.json", "w") as json_file:
-                json.dump(d, json_file)
+            # with open("all_saved_response.json", "w") as json_file:
+            #     json.dump(d, json_file)
 
-            if d != None:
-                for track in d["items"]:
-                    d_tracks = {
-                        "id": track["track"]["id"],
-                        "name": track["track"]["name"],
-                        "added_at": track["added_at"],
-                        "artist": track["track"]["artists"][0]["name"],
-                        "preview_url": track["track"]["preview_url"],
-                    }
-                    saved_tracks_info = pd.concat(
-                        [saved_tracks_info, pd.DataFrame([d_tracks])], ignore_index=True
+            if r != None:
+                for t in response["items"]:
+                    track_name = t["track"]["name"]
+                    track_id = t["track"]["id"]
+                    added_at = t["added_at"]
+                    popularity = t["track"]["popularity"]
+                    log.warning(t)
+                    track = SavedTrack(
+                        id=track_id,
+                        name=track_name,
+                        artists=[],
+                        added_at=added_at,
+                        popularity=popularity,
                     )
+
+                    for artist in t["track"]["artists"]:
+                        artist_id = artist["id"]
+                        artist_name = artist["name"]
+                        artist_type = artist["type"]
+                        track.artists.append(
+                            Artist(id=artist_id, name=artist_name, type=artist_type)
+                        )
+
+                saved_tracks.tracks.append(track)
             else:
                 continue
 
-        return saved_tracks_info
+        return saved_tracks
 
     def get_all_audio_features(self, playlist):
         if len(playlist.tracks) > 100:
