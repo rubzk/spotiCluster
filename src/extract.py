@@ -71,22 +71,21 @@ class DataExtractor:
 
         for r in range(repeat):
             response = requests.get(
-                f"https://api.spotify.com/v1/playlists/{playlist}/tracks?fields=items(track(id,name,artists))&limit={self.limit}&offset={r * self.limit}",
+                f"https://api.spotify.com/v1/playlists/{playlist.id}/tracks?fields=items(track(id,name,artists))&limit={self.limit}&offset={r * self.limit}",
                 headers=self.headers,
             ).json()
-
-            log.warning(d)
 
             for t in response["items"]:
                 track_name = t["track"]["name"]
                 track_id = t["track"]["id"]
-                track = Track(id=track_id, name=track_name, artist=[])
+                log.warning(t)
+                track = Track(id=track_id, name=track_name, artists=[])
 
-                for artist in t["track"]["artist"]:
+                for artist in t["track"]["artists"]:
                     artist_id = artist["id"]
                     artist_name = artist["name"]
                     artist_type = artist["type"]
-                    track.artist.append(
+                    track.artists.append(
                         Artist(id=artist_id, name=artist_name, type=artist_type)
                     )
 

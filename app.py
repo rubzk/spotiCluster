@@ -89,20 +89,21 @@ def auth():
     # ]
 
     total_tracks = [
-        get_tracks.s(auth.auth_token, playlist) for playlist in user_data.playlists
+        get_tracks.s(auth.auth_token, playlist.dict())
+        for playlist in user_data.playlists
     ]
 
-    task = chord(total_tracks)(
+    task = chord(total_tracks[:5])(
         append_results.s()
         | cluster_results.s()
         | save_data_in_postgres.s()
         | create_plots.s()
     )
 
-    return redirect(url_for("taskstatus", celery_task=task.id))
+    return redirect(url_for("taskstatus", celery_task_id=task.id))
 
 
-@app.route("/status/<task_id>", methods=["GET"])
+@app.route("/status/<celery_task_id>", methods=["GET"])
 def taskstatus(celery_task_id):
     task = celery.AsyncResult(celery_task_id)
 
@@ -118,7 +119,7 @@ def taskstatus(celery_task_id):
             "status": task.state
         }  ### Here One idea I have is to return the status of the task and Update front end with it
 
-    return render_template("plot.html", task_id=task_id)
+    return render_template("plot.html", task_id=celery_task_id)
 
 
 @app.route("/tasks/", methods=["GET"])

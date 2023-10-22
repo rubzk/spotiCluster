@@ -13,6 +13,7 @@ import logging
 
 import pandas as pd
 from celery import shared_task, chord
+from .models import Playlist
 
 log = logging.getLogger(__name__)
 
@@ -24,17 +25,15 @@ log = logging.getLogger(__name__)
     max_retries=10,
     default_retry_delay=4,
 )
-def get_tracks(self, auth_token, playlist):
+def get_tracks(self, auth_token, playlist_dict):
     try:
         data_extractor = DataExtractor(auth_token)
 
-        log.warning(playlist)
+        playlist = Playlist(**playlist_dict)
 
         playlist = data_extractor.get_all_tracks(playlist)
 
         playlist = data_extractor.get_all_audio_features(playlist)
-
-        log.warning(playlist)
 
         # transform = TransformDataFrame(tracks, tracks_audio_ft)
 
@@ -48,9 +47,10 @@ def get_tracks(self, auth_token, playlist):
 
         # tracks = transform.rename_and_reindex_columns(tracks)
 
-        print(playlist)
+        with open("playlists.json", "w") as json_file:
+            json.dump(playlist.dict(), json_file)
 
-        return playlist
+        return playlist.dict()
     except (KeyError, AttributeError) as e:
         raise self.retry(exc=e)
 
