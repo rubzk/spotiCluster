@@ -13,7 +13,7 @@ import logging
 
 import pandas as pd
 from celery import shared_task, chord
-from .models import Playlist
+from .models import Playlist, UserData
 
 log = logging.getLogger(__name__)
 
@@ -47,9 +47,6 @@ def get_tracks(self, auth_token, playlist_dict):
 
         # tracks = transform.rename_and_reindex_columns(tracks)
 
-        with open("playlists.json", "w") as json_file:
-            json.dump(playlist.dict(), json_file)
-
         return playlist.dict()
     except (KeyError, AttributeError) as e:
         raise self.retry(exc=e)
@@ -58,7 +55,16 @@ def get_tracks(self, auth_token, playlist_dict):
 @shared_task(
     bind=True, name="TRANSFORM ALL THE RESULTS", max_retries=3, default_retry_delay=10
 )
-def append_results(self, results):
+def append_results(self, results, user):
+    user_data = UserData(**user)
+
+    user_data.playlists = [Playlist(**r) for r in results]
+
+    # with open("final_user_model.json", "w") as json_file:
+    #     json.dump(user_data.dict(), json_file)
+
+    log.warning(user_data)
+
     tracks = pd.DataFrame()
 
     saved_tracks_result = pd.DataFrame()

@@ -93,12 +93,14 @@ def auth():
         for playlist in user_data.playlists
     ]
 
-    task = chord(total_tracks[:5])(
-        append_results.s()
-        | cluster_results.s()
-        | save_data_in_postgres.s()
-        | create_plots.s()
-    )
+    # task = chord(total_tracks[:5])(
+    #     append_results.s(user=user_data.dict())
+    #     | cluster_results.s()
+    #     | save_data_in_postgres.s()
+    #     | create_plots.s()
+    # )
+
+    task = chord(total_tracks[:5])(append_results.s(user=user_data.dict()))
 
     return redirect(url_for("taskstatus", celery_task_id=task.id))
 
