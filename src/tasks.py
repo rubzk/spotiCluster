@@ -15,6 +15,8 @@ import pandas as pd
 from celery import shared_task, chord
 from .models import Playlist, UserData, SavedTracks
 
+from fastapi.encoders import jsonable_encoder
+
 log = logging.getLogger(__name__)
 
 
@@ -68,9 +70,9 @@ def get_saved_tracks(self, auth_token):
 
     saved_tracks = data_extractor.get_all_audio_features(saved_tracks)
 
-    log.warning(saved_tracks)
+    log.warning(saved_tracks.dict())
 
-    return saved_tracks.json()
+    return jsonable_encoder(saved_tracks)
 
 
 @shared_task(
@@ -80,17 +82,14 @@ def append_results(self, results, user):
     user_data = UserData(**user)
 
     for r in results:
-        if "saved_tracks_model" in r:
-            with open("saved_tracks_model.json", "w") as json_file:
-                json.dump(r, json_file)
-
-            saved_tracks = SavedTracks.parse_obj(r["saved_tracks_model"])
-            user_data.saved_tracks = saved_tracks
-        elif "playlist_model" in r:
+        if "playlist_model" in r:
             user_data.playlists.append(Playlist.parse_obj(r["playlist_model"]))
+        else:
+            saved_tracks = SavedTracks.parse_obj(r)
+            user_data.saved_tracks = saved_tracks
 
     with open("final_user_model.json", "w") as json_file:
-        json.dump(user_data.dict(), json_file)
+        json.dump(jsonable_encoder(user_data), json_file)
 
     log.warning(user_data)
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator
 from typing import List, Optional
 from datetime import datetime
 
@@ -41,8 +41,15 @@ class SavedTrack(BaseModel):
     popularity: int
     features: Optional[AudioFeatures] = Field(default_factory=dict)
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.timestamp()}
+    # @root_validator(pre=True)
+    # def _set_added_at_to_date(cls, values):
+    #     added_at = values.get("added_at")
+    #     if isinstance(added_at, str):
+    #         # Parse the string to a datetime object
+    #         values["added_at"] = datetime.fromisoformat(added_at)
+    #     elif added_at:
+    #         values["added_at"] = added_at.date()  # Set it to date (year, month, day)
+    #     return values
 
 
 class Playlist(BaseModel):
