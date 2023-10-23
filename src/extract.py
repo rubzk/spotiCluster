@@ -143,7 +143,7 @@ class DataExtractor:
                             Artist(id=artist_id, name=artist_name, type=artist_type)
                         )
 
-                saved_tracks.tracks.append(track)
+                    saved_tracks.tracks.append(track)
             else:
                 continue
 
