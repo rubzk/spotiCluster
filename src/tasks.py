@@ -93,13 +93,15 @@ def append_results(self, results, user):
 
     log.warning(user_data)
 
-    return {None}
+    return jsonable_encoder(user_data)
 
 
 @shared_task(
     bind=True, name="CLUSTER THE RESULTS", max_retries=3, default_retry_delay=10
 )
-def cluster_results(self, result):
+def cluster_results(self, user_data):
+    user_data = UserData(**user_data)
+
     tracks = pd.read_json(result["tracks"])
 
     clustering = Clustering(tracks)

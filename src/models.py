@@ -2,6 +2,8 @@ from pydantic import BaseModel, Field, root_validator
 from typing import List, Optional
 from datetime import datetime
 
+from sklearn.preprocessing import MinMaxScaler
+
 
 class Artist(BaseModel):
     id: str
@@ -32,6 +34,15 @@ class Track(BaseModel):
     artists: List[Artist]
     features: Optional[AudioFeatures] = Field(default_factory=dict)
 
+    def scale_features(self):
+        scaler = MinMaxScaler()
+
+        scaled_audio_ft = AudioFeatures()
+
+        return Track(
+            id=self.id, name=self.name, artists=self.artists, features=scaled_audio_ft
+        )
+
 
 class SavedTrack(BaseModel):
     added_at: datetime
@@ -40,16 +51,6 @@ class SavedTrack(BaseModel):
     name: str
     popularity: int
     features: Optional[AudioFeatures] = Field(default_factory=dict)
-
-    # @root_validator(pre=True)
-    # def _set_added_at_to_date(cls, values):
-    #     added_at = values.get("added_at")
-    #     if isinstance(added_at, str):
-    #         # Parse the string to a datetime object
-    #         values["added_at"] = datetime.fromisoformat(added_at)
-    #     elif added_at:
-    #         values["added_at"] = added_at.date()  # Set it to date (year, month, day)
-    #     return values
 
 
 class Playlist(BaseModel):
