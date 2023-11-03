@@ -50,34 +50,6 @@ class Track(BaseModel):
     artists: List[Artist]
     features: Optional[AudioFeatures] = Field(default_factory=dict)
 
-    def scale_features(self):
-        scaler = MinMaxScaler()
-
-        scaled_values = scaler.fit_transform(
-            [[self.features.danceability, self.features.energy, self.features.valence]]
-        )
-
-        scaled_audio_ft = AudioFeatures(
-            track_id=self.features.track_id,
-            danceability=scaled_values[0],
-            energy=scaled_values[1],
-            valence=scaled_values[2],
-            key=self.features.key,
-            loudness=self.features.loudness,
-            mode=self.features.mode,
-            speechiness=self.features.speechiness,
-            acousticness=self.features.acousticness,
-            instrumentalness=self.features.instrumentalness,
-            liveness=self.features.liveness,
-            tempo=self.features.tempo,
-            duration_ms=self.features.duration_ms,
-            time_signature=self.features.time_signature,
-        )
-
-        return Track(
-            id=self.id, name=self.name, artists=self.artists, features=scaled_audio_ft
-        )
-
 
 class SavedTrack(BaseModel):
     added_at: datetime
