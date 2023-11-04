@@ -4,7 +4,7 @@ import configparser
 from src.auth import Authenticator
 from src.extract import DataExtractor
 from src.transform import TransformDataFrame
-from src.clustering import Clustering, k_means_clustering_v2, prepare_df_tracks_
+from src.clustering import k_means_clustering, prepare_df_tracks_
 from src.plot import Plot
 
 from utils.postgres import df_to_db, PostgresDB
@@ -36,14 +36,6 @@ def get_tracks(self, auth_token, playlist_dict):
         playlist = data_extractor.get_all_tracks(playlist)
 
         playlist = data_extractor.get_all_audio_features(playlist)
-
-        # transform = TransformDataFrame(tracks, tracks_audio_ft)
-
-        # tracks = transform.concat_data()
-
-        # tracks = tracks.dropna(axis=0, how="any")
-
-        # tracks["spotify_user_id"] = user_id
 
         # tracks["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
@@ -118,30 +110,34 @@ def cluster_results(self, user_data):
 
     df_tracks_features = prepare_df_tracks_(user_data)
 
-    clustered_df = k_means_clustering_v2(
+    clustered_df = k_means_clustering(
         df_tracks_features,
         fit_features=["danceability", "energy", "instrumentalness", "valence"],
     )
 
+    clustered_df.to_csv("./output/pydantic_tracks_clustes.csv")
+
     log.warning(clustered_df.head())
 
-    tracks = pd.read_json(result["tracks"])
+    # tracks = pd.read_json(result["tracks"])
 
-    clustering = Clustering(tracks)
+    # clustering = Clustering(tracks)
 
-    scaled_df = clustering.scale_features(clustering.df_all_tracks)
+    # scaled_df = clustering.scale_features(clustering.df_all_tracks)
 
-    n_clusters = clustering.determine_optimal_k(scaled_df=scaled_df, max_k=5)
+    # n_clusters = clustering.determine_optimal_k(scaled_df=scaled_df, max_k=5)
 
-    df_cluster = clustering.k_means_clustering(scaled_df, n_clusters=n_clusters)
+    # df_cluster = clustering.k_means_clustering(scaled_df, n_clusters=n_clusters)
 
-    df_cluster_stats = clustering.get_cluster_stats(df_cluster)
+    # df_cluster_stats = clustering.get_cluster_stats(df_cluster)
 
-    return {
-        "clusters": df_cluster.to_dict("list"),
-        "cluster_stats": df_cluster_stats.to_dict("list"),
-        "saved_tracks": result["saved_tracks"],
-    }
+    # return {
+    #     "clusters": df_cluster.to_dict("list"),
+    #     "cluster_stats": df_cluster_stats.to_dict("list"),
+    #     "saved_tracks": result["saved_tracks"],
+    # }
+
+    return {None}
 
 
 @shared_task(
