@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
 
 
@@ -23,13 +22,6 @@ class Clustering:
 
     def _json_to_df(self):
         return pd.read_json(self.all_data)
-
-    def scale_features(self, all_tracks):
-        scaler = MinMaxScaler()
-
-        all_tracks[self.audio_ft] = scaler.fit_transform(all_tracks[self.audio_ft])
-
-        return all_tracks
 
     def k_means_clustering(self, scaled_df, n_clusters):
         fit_features_df = pd.DataFrame(scaled_df)
@@ -81,3 +73,38 @@ class Clustering:
             return 4
         else:
             return inertias.index(min(inertias)) + 1
+
+
+def prepare_df_tracks_(user_data):
+    data = []
+
+    for playlist in user_data.playlists:
+        if playlist.tracks:
+            for track in playlist.tracks:
+                if track.features:
+                    data.append([track.features.model_dump()])
+
+    df_ = pd.DataFrame(data, columns=["data"])
+
+    return pd.json_normalize(df_["data"])
+
+
+def k_means_clustering_v2(scaled_df, fit_features, n_clusters=5):
+    fit_features_df = scaled_df[fit_features]
+
+    kmeans = KMeans(n_clusters=n_clusters).fit(fit_features_df)
+
+    y_kmeans = kmeans.predict(fit_features_df)
+
+    scaled_df["track_cluster"] = y_kmeans
+
+    scaled_df["track_cluster"] = scaled_df["track_cluster"].astype("str")
+
+    cluster_names = {}
+
+    for cluster in range(0, n_clusters):
+        cluster_names.update({str(cluster): f"Cluster {cluster + 1 }"})
+
+    scaled_df["cluster_name"] = scaled_df["track_cluster"].map(cluster_names)
+
+    return scaled_df
