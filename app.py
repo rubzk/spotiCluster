@@ -100,7 +100,14 @@ def auth():
     #     | create_plots.s()
     # )
 
-    task = chord(total_tracks[:5])(append_results.s(user=user_data.dict()))
+    task = chord(total_tracks[:15])(
+        append_results.s(user=user_data.dict()) | cluster_results.s()
+    )
+
+    # task = (
+    #     chord(total_tracks[:15])(append_results.s(user=user_data.dict()))
+    #     | cluster_results.s()
+    # )
 
     return redirect(url_for("taskstatus", celery_task_id=task.id))
 
