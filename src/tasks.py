@@ -4,7 +4,7 @@ import configparser
 from src.auth import Authenticator
 from src.extract import DataExtractor
 from src.transform import TransformDataFrame
-from src.clustering import Clustering
+from src.clustering import Clustering, k_means_clustering_v2, prepare_df_tracks_
 from src.plot import Plot
 
 from utils.postgres import df_to_db, PostgresDB
@@ -93,6 +93,20 @@ def append_results(self, results, user):
 
     log.warning(user_data)
 
+    playlist_wo_tracks = []
+
+    playlist_with_tracks = []
+
+    for playlist in user_data.playlists:
+        if playlist.tracks:
+            playlist_with_tracks.append(playlist.id)
+        else:
+            playlist_wo_tracks.append(playlist.id)
+
+    log.warning(
+        f"Playlist with Tracks: {len(playlist_with_tracks)} \n Playlist wo Tracks: {len(playlist_wo_tracks)}"
+    )
+
     return jsonable_encoder(user_data)
 
 
@@ -101,6 +115,15 @@ def append_results(self, results, user):
 )
 def cluster_results(self, user_data):
     user_data = UserData(**user_data)
+
+    df_tracks_features = prepare_df_tracks_(user_data)
+
+    clustered_df = k_means_clustering_v2(
+        df_tracks_features,
+        fit_features=["danceability", "energy", "instrumentalness", "valence"],
+    )
+
+    log.warning(clustered_df.head())
 
     tracks = pd.read_json(result["tracks"])
 

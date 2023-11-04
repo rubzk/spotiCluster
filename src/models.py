@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, root_validator
 from typing import List, Optional
 from datetime import datetime
-
+import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 
