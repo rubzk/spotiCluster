@@ -86,7 +86,11 @@ def prepare_df_tracks_(user_data):
 
     df_ = pd.DataFrame(data, columns=["data"])
 
-    return pd.json_normalize(df_["data"])
+    df = pd.json_normalize(df_["data"])
+
+    df.drop_duplicates(subset=["track_id"], keep="first", inplace=True)
+
+    return df
 
 
 def k_means_clustering_v2(scaled_df, fit_features, n_clusters=5):
