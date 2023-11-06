@@ -13,7 +13,7 @@ import logging
 
 import pandas as pd
 from celery import shared_task, chord
-from .models import Playlist, UserData, SavedTracks
+from .models import Playlist, UserData, SavedTracks, TracksClustered
 
 from fastapi.encoders import jsonable_encoder
 
@@ -83,21 +83,15 @@ def append_results(self, results, user):
     with open("final_user_model.json", "w") as json_file:
         json.dump(jsonable_encoder(user_data), json_file)
 
-    log.warning(user_data)
+    # for playlist in user_data.playlists:
+    #     if playlist.tracks:
+    #         playlist_with_tracks.append(playlist.id)
+    #     else:
+    #         playlist_wo_tracks.append(playlist.id)
 
-    playlist_wo_tracks = []
-
-    playlist_with_tracks = []
-
-    for playlist in user_data.playlists:
-        if playlist.tracks:
-            playlist_with_tracks.append(playlist.id)
-        else:
-            playlist_wo_tracks.append(playlist.id)
-
-    log.warning(
-        f"Playlist with Tracks: {len(playlist_with_tracks)} \n Playlist wo Tracks: {len(playlist_wo_tracks)}"
-    )
+    # log.warning(
+    #     f"Playlist with Tracks: {len(playlist_with_tracks)} \n Playlist wo Tracks: {len(playlist_wo_tracks)}"
+    # )
 
     return jsonable_encoder(user_data)
 
@@ -115,29 +109,13 @@ def cluster_results(self, user_data):
         fit_features=["danceability", "energy", "instrumentalness", "valence"],
     )
 
-    clustered_df.to_csv("./output/pydantic_tracks_clustes.csv")
+    clustered_dict_ = clustered_df.to_dict(orient="records")
 
-    log.warning(clustered_df.head())
+    user_data.clustered_tracks = [
+        TracksClustered(**record) for record in clustered_dict_
+    ]
 
-    # tracks = pd.read_json(result["tracks"])
-
-    # clustering = Clustering(tracks)
-
-    # scaled_df = clustering.scale_features(clustering.df_all_tracks)
-
-    # n_clusters = clustering.determine_optimal_k(scaled_df=scaled_df, max_k=5)
-
-    # df_cluster = clustering.k_means_clustering(scaled_df, n_clusters=n_clusters)
-
-    # df_cluster_stats = clustering.get_cluster_stats(df_cluster)
-
-    # return {
-    #     "clusters": df_cluster.to_dict("list"),
-    #     "cluster_stats": df_cluster_stats.to_dict("list"),
-    #     "saved_tracks": result["saved_tracks"],
-    # }
-
-    return {None}
+    return jsonable_encoder(user_data)
 
 
 @shared_task(
