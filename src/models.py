@@ -71,14 +71,13 @@ class SavedTracks(BaseModel):
     tracks: List[SavedTrack]
 
 
+class TracksClustered(AudioFeatures):
+    track_cluster: int
+    cluster_name: str
+
+
 class UserData(BaseModel):
     id: int
     playlists: List[Playlist]
     saved_tracks: Optional[SavedTracks] = Field(default=None)
-
-
-class TracksClustered(BaseModel):
-    id: int
-    features: AudioFeatures
-    cluster_id: int
-    cluster_label: str
+    clustered_tracks: Optional[List[TracksClustered]] = Field(default=None)
