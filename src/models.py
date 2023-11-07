@@ -29,6 +29,13 @@ class AudioFeatures(BaseModel):
     key_mapped: Optional[str] = None
 
     def model_post_init(self, __context) -> None:
+        """
+        Initialize audio features object and perform scaling on selected fields.
+
+        :param __context: A context object.
+        :type __context: Any
+        """
+
         key_mapping = {
             0: "C",
             1: "C#",

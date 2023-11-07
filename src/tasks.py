@@ -34,6 +34,23 @@ log = logging.getLogger(__name__)
     default_retry_delay=4,
 )
 def get_tracks(self, auth_token, playlist_dict):
+    """
+    Retrieve tracks and audio features for a playlist.
+
+    This task fetches track data and audio features for a given playlist using the Spotify API.
+
+    :param auth_token: The user's authentication token for Spotify.
+    :type auth_token: str
+
+    :param playlist_dict: A dictionary representing the playlist to fetch tracks for.
+    :type playlist_dict: dict
+
+    :return: A dictionary containing the playlist's model data.
+    :rtype: dict
+
+    :raises KeyError, AttributeError: If there are issues with data extraction.
+    """
+
     try:
         data_extractor = DataExtractor(auth_token)
 
@@ -50,11 +67,23 @@ def get_tracks(self, auth_token, playlist_dict):
 
 @shared_task(
     bind=True,
-    name="GET LIKED TRACKS AND AUDIO FEATURES",
+    name="GET LIKED TRACKS",
     max_retries=3,
     default_retry_delay=10,
 )
 def get_saved_tracks(self, auth_token):
+    """
+    Retrieve liked (saved) tracks and their audio features.
+
+    This task fetches liked tracks and their audio features for a user using the Spotify API.
+
+    :param auth_token: The user's authentication token for Spotify.
+    :type auth_token: str
+
+    :return: A dictionary containing liked tracks and their audio features.
+    :rtype: dict
+    """
+
     data_extractor = DataExtractor(auth_token)
 
     saved_tracks = data_extractor.get_all_saved_tracks()
@@ -70,6 +99,21 @@ def get_saved_tracks(self, auth_token):
     bind=True, name="TRANSFORM ALL THE RESULTS", max_retries=3, default_retry_delay=10
 )
 def append_results(self, results, user):
+    """
+    Combine and transform results into a user data model.
+
+    This task combines and transforms the results of fetching playlists and liked tracks into a user data model.
+
+    :param results: A list of results, including playlist models and liked tracks.
+    :type results: list
+
+    :param user: A dictionary representing the user's data.
+    :type user: dict
+
+    :return: A JSON-serializable user data model.
+    :rtype: dict
+    """
+
     user_data = UserData(**user)
 
     for r in results:
@@ -86,6 +130,18 @@ def append_results(self, results, user):
     bind=True, name="CLUSTER THE RESULTS", max_retries=3, default_retry_delay=10
 )
 def cluster_results(self, user_data):
+    """
+    Perform K-means clustering on user data.
+
+    This task applies K-means clustering to the provided user data, generating cluster labels and cluster names.
+
+    :param user_data: The user's data including playlists and liked tracks.
+    :type user_data: dict
+
+    :return: A JSON-serializable user data model with clustering results.
+    :rtype: dict
+    """
+
     user_data = UserData(**user_data)
 
     df_tracks_features = prepare_df_tracks_(user_data)
@@ -111,6 +167,18 @@ def cluster_results(self, user_data):
     bind=True, name="CREATE JSON FOR PLOTS", max_retries=3, default_retry_delay=10
 )
 def create_plots(self, user_data):
+    """
+    Generate JSON data for various plots and charts.
+
+    This task generates JSON data for radar charts, pie charts, scatter charts, and more, based on user data.
+
+    :param user_data: The user's data model.
+    :type user_data: dict
+
+    :return: JSON data for various plots and charts.
+    :rtype: dict
+    """
+
     user_data = UserData(**user_data)
 
     radar_chart = generate_radar_chart(user_data)

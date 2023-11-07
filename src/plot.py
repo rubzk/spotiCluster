@@ -8,10 +8,49 @@ from .models import UserData
 
 
 class Plot(BaseModel):
+    """
+    Data model for a plot.
+
+    This class represents a plot data model that contains a dictionary of data.
+
+    :param data: A dictionary of data for the plot.
+    :type data: Dict
+    """
+
     data: Dict
 
 
 class Plots(BaseModel):
+    """
+    Data model for multiple plots.
+
+    This class represents a data model for multiple plots, including radar charts, pie charts, scatter charts, and more.
+
+    :param number_of_tracks: The number of tracks in the user's data.
+    :type number_of_tracks: int
+
+    :param number_of_clusters: The number of clusters in the user's data.
+    :type number_of_clusters: int
+
+    :param radar_chart: Radar chart data.
+    :type radar_chart: Optional[Plot]
+
+    :param pie_chart: Pie chart data.
+    :type pie_chart: Optional[Plot]
+
+    :param scatter_chart: Scatter chart data.
+    :type scatter_chart: Optional[Plot]
+
+    :param top_3_artist: Data for the top 3 artists in each cluster.
+    :type top_3_artist: Optional[Plot]
+
+    :param saved_tracks_timeline: Timeline data for saved tracks.
+    :type saved_tracks_timeline: Optional[Plot]
+
+    :param user_model: The user data model.
+    :type user_model: UserData
+    """
+
     number_of_tracks: int
     number_of_clusters: int
     radar_chart: Optional[Plot]
@@ -23,6 +62,18 @@ class Plots(BaseModel):
 
 
 def generate_radar_chart(user_data):
+    """
+    Generate radar chart data based on user data.
+
+    This function calculates cluster statistics and generates radar chart data.
+
+    :param user_data: The user's data model.
+    :type user_data: UserData
+
+    :return: Radar chart data.
+    :rtype: Plot
+    """
+
     _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
 
     cluster_stats = _df.groupby("cluster_name").mean().reset_index()
@@ -36,6 +87,18 @@ def generate_radar_chart(user_data):
 
 
 def generate_pie_chart(user_data):
+    """
+    Generate pie chart data based on user data.
+
+    This function calculates the number of tracks in each cluster and generates pie chart data.
+
+    :param user_data: The user's data model.
+    :type user_data: UserData
+
+    :return: Pie chart data.
+    :rtype: Plot
+    """
+
     _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
 
     _df_gb = (
@@ -49,6 +112,18 @@ def generate_pie_chart(user_data):
 
 
 def generate_top_3_artist(user_data):
+    """
+    Generate data for the top 3 artists in each cluster.
+
+    This function identifies the top 3 artists in each cluster based on user data.
+
+    :param user_data: The user's data model.
+    :type user_data: UserData
+
+    :return: Data for the top 3 artists in each cluster.
+    :rtype: Plot
+    """
+
     def get_top_artists(group):
         return group["artist_name"].value_counts().nlargest(3)
 
@@ -80,6 +155,18 @@ def generate_top_3_artist(user_data):
 
 
 def generate_saved_tracks_timeline(user_data):
+    """
+    Generate a timeline of audio features for saved tracks.
+
+    This function creates a timeline of audio features for saved tracks in user data.
+
+    :param user_data: The user's data model.
+    :type user_data: UserData
+
+    :return: Timeline data for saved tracks.
+    :rtype: Plot
+    """
+
     features = [
         "danceability",
         "energy",
@@ -108,6 +195,18 @@ def generate_saved_tracks_timeline(user_data):
 
 
 def generate_scatter_chart(user_data):
+    """
+    Generate scatter chart data based on user data.
+
+    This function generates scatter chart data for selected audio features in each cluster.
+
+    :param user_data: The user's data model.
+    :type user_data: UserData
+
+    :return: Scatter chart data.
+    :rtype: Plot
+    """
+
     _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
 
     features = [
