@@ -101,8 +101,8 @@ def cluster_results(self, user_data):
         TracksClustered(**record) for record in clustered_dict_
     ]
 
-    with open("./output/final_user_data_v1.json", "w") as file:
-        json.dump(user_data, file)
+    # with open("./output/final_user_data_v1.json", "w") as file:
+    #     json.dump(jsonable_encoder(user_data), file)
 
     return jsonable_encoder(user_data)
 
@@ -140,8 +140,8 @@ def create_plots(self, user_data):
         user_model=user_data,
     )
 
-    with open("./output/final_user_data.json", "w") as json_file:
-        json.dump(jsonable_encoder(user_data), json_file)
+    with open("./output/final_plots_data.json", "w") as json_file:
+        json.dump(jsonable_encoder(plots), json_file)
 
     return jsonable_encoder(plots)
 
