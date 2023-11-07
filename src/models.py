@@ -26,8 +26,26 @@ class AudioFeatures(BaseModel):
     tempo: float
     duration_ms: int
     time_signature: int
+    key_mapped: Optional[str] = None
 
     def model_post_init(self, __context) -> None:
+        key_mapping = {
+            0: "C",
+            1: "C#",
+            2: "D",
+            3: "D#",
+            4: "E",
+            5: "F",
+            6: "F#",
+            7: "G",
+            8: "G#",
+            9: "A",
+            10: "A#",
+            11: "B",
+        }
+
+        setattr(self, "key_mapped", key_mapping.get(getattr(self, "key")))
+
         scaler = MinMaxScaler()
 
         # Define the fields to scale

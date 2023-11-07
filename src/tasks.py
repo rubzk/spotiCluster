@@ -3,7 +3,6 @@ import configparser
 
 from src.auth import Authenticator
 from src.extract import DataExtractor
-from src.transform import TransformDataFrame
 from src.clustering import k_means_clustering, prepare_df_tracks_
 from src.plot import Plot
 
