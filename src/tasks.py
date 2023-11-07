@@ -4,7 +4,12 @@ import configparser
 from src.auth import Authenticator
 from src.extract import DataExtractor
 from src.clustering import k_means_clustering, prepare_df_tracks_
-from src.plot import Plot
+from src.plot import (
+    Plots,
+    generate_radar_chart,
+    generate_pie_chart,
+    generate_scatter_chart,
+)
 
 from utils.postgres import df_to_db, PostgresDB
 
@@ -35,13 +40,6 @@ def get_tracks(self, auth_token, playlist_dict):
         playlist = data_extractor.get_all_tracks(playlist)
 
         playlist = data_extractor.get_all_audio_features(playlist)
-
-        # tracks["created"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-
-        # tracks = transform.rename_and_reindex_columns(tracks)
-
-        with open("playlist_model.json", "w") as json_file:
-            json.dump({"playlist_model": playlist.dict()}, json_file)
 
         return {"playlist_model": playlist.dict()}
     except (KeyError, AttributeError) as e:
@@ -79,19 +77,6 @@ def append_results(self, results, user):
             saved_tracks = SavedTracks.parse_obj(r)
             user_data.saved_tracks = saved_tracks
 
-    with open("final_user_model.json", "w") as json_file:
-        json.dump(jsonable_encoder(user_data), json_file)
-
-    # for playlist in user_data.playlists:
-    #     if playlist.tracks:
-    #         playlist_with_tracks.append(playlist.id)
-    #     else:
-    #         playlist_wo_tracks.append(playlist.id)
-
-    # log.warning(
-    #     f"Playlist with Tracks: {len(playlist_with_tracks)} \n Playlist wo Tracks: {len(playlist_wo_tracks)}"
-    # )
-
     return jsonable_encoder(user_data)
 
 
@@ -120,55 +105,31 @@ def cluster_results(self, user_data):
 @shared_task(
     bind=True, name="CREATE JSON FOR PLOTS", max_retries=3, default_retry_delay=10
 )
-def create_plots(self, clusters_info):
-    clusters_stats = pd.read_json(json.dumps(clusters_info["cluster_stats"]))
-    clusters = pd.read_json(json.dumps(clusters_info["clusters"]))
+def create_plots(self, user_data):
+    user_data = UserData(**user_data)
 
-    plot = Plot(
-        audio_df=[
-            "danceability",
-            "energy",
-            "instrumentalness",
-            "valence",
-        ]
+    radar_chart = generate_radar_chart(user_data)
+
+    pie_chart = generate_pie_chart(user_data)
+
+    scatter_chart = generate_scatter_chart(user_data)
+
+    number_of_tracks = len(user_data.clustered_tracks)
+
+    number_of_clusters = len(
+        set([track.cluster_name for track in user_data.clustered_tracks])
     )
 
-    radar_chart = plot.radar_chart(clusters_stats)
-
-    pie_chart = plot.pie_chart(clusters)
-
-    timeline = plot.saved_tracks_timeline(
-        pd.read_json(json.dumps(clusters_info["saved_tracks"], default=str))
+    plots = Plots(
+        number_of_tracks=number_of_tracks,
+        number_of_clusters=number_of_clusters,
+        radar_chart=radar_chart,
+        pie_chart=pie_chart,
+        scatter_chart=scatter_chart,
+        user_model=user_data,
     )
 
-    top_3_artist = plot.top_3_artist(clusters)
-
-    scatter_dict = plot.scatter_chart(clusters)
-
-    return {
-        "plots": {
-            "radar_chart": radar_chart,
-            "pie_chart": pie_chart,
-            "number_of_tracks": clusters.shape[0],
-            "number_of_clusters": len(clusters.cluster_name.unique()),
-            "top_3_artist": top_3_artist,
-            "songs": clusters[
-                [
-                    "cluster_name",
-                    "song_name",
-                    "artist",
-                    "title",
-                    "danceability",
-                    "energy",
-                    "instrumentalness",
-                    "valence",
-                    "tempo",
-                ]
-            ].to_dict("list"),
-            "saved_tracks": timeline,
-            "scatter": scatter_dict,
-        }
-    }
+    return jsonable_encoder(plots)
 
 
 @shared_task(
