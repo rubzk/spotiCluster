@@ -192,7 +192,7 @@ function createPieChart(dataObj) {
     var dataPieChart = {
         labels: dataObj['cluster_name'],
         datasets: [{
-            data: dataObj['number_of_songs'],
+            data: dataObj['number_of_tracks'],
             backgroundColor: colors,
             borderColor: PieColors,
             hoverOffset: 8

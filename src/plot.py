@@ -25,10 +25,12 @@ class Plots(BaseModel):
 def generate_radar_chart(user_data):
     _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
 
+    cluster_stats = _df.groupby("cluster_name").mean().reset_index()
+
     _plot = {}
 
-    for c in _df.columns:
-        _plot[c] = _df[c].to_list()
+    for c in cluster_stats.columns:
+        _plot[c] = cluster_stats[c].to_list()
 
     return Plot(data=_plot)
 
