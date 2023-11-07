@@ -4,6 +4,23 @@ from sklearn.cluster import KMeans
 
 
 def determine_optimal_k(self, scaled_df, max_k):
+    """
+    Determine the optimal number of clusters (k) using the K-means algorithm.
+
+    This function calculates the optimal number of clusters for K-means clustering by evaluating different values
+    of k and choosing the value that minimizes the inertia.
+
+    :param scaled_df: The scaled DataFrame containing the data for clustering.
+    :type scaled_df: pandas.DataFrame
+
+    :param max_k: The maximum number of clusters to consider.
+    :type max_k: int
+
+    :return: The optimal number of clusters (k) based on inertia.
+    :rtype: int
+
+    :raises ValueError: If no suitable number of clusters is found.
+    """
     # Initialize a list to store the inertias for each value of k
     inertias = []
 
@@ -25,6 +42,18 @@ def determine_optimal_k(self, scaled_df, max_k):
 
 
 def prepare_df_tracks_(user_data):
+    """
+    Prepare a DataFrame for clustering from user data.
+
+    This function extracts and formats data from user playlists and tracks to create a DataFrame suitable for clustering.
+
+    :param user_data: The user's data containing playlists and tracks.
+    :type user_data: UserData
+
+    :return: A DataFrame with features for clustering.
+    :rtype: pandas.DataFrame
+    """
+
     data = []
 
     for playlist in user_data.playlists:
@@ -43,6 +72,24 @@ def prepare_df_tracks_(user_data):
 
 
 def k_means_clustering(scaled_df, fit_features, n_clusters=5):
+    """
+    Perform K-means clustering on a DataFrame.
+
+    This function applies K-means clustering to the provided DataFrame and returns the results, including cluster labels and names.
+
+    :param scaled_df: The scaled DataFrame for clustering.
+    :type scaled_df: pandas.DataFrame
+
+    :param fit_features: The features used for clustering.
+    :type fit_features: list
+
+    :param n_clusters: The number of clusters to create (default is 5).
+    :type n_clusters: int
+
+    :return: The DataFrame with added cluster labels and cluster names.
+    :rtype: pandas.DataFrame
+    """
+
     fit_features_df = scaled_df[fit_features]
 
     kmeans = KMeans(n_clusters=n_clusters).fit(fit_features_df)
