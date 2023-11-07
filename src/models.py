@@ -49,7 +49,13 @@ class AudioFeatures(BaseModel):
         scaler = MinMaxScaler()
 
         # Define the fields to scale
-        fields_to_scale = ["danceability", "energy", "instrumentalness", "valence"]
+        fields_to_scale = [
+            "danceability",
+            "energy",
+            "acousticness",
+            "instrumentalness",
+            "valence",
+        ]
 
         # Create a list of values for scaling
         values_to_scale = [getattr(self, field) for field in fields_to_scale]

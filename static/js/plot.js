@@ -83,6 +83,7 @@ function createScatterChart(dataObj) {
         datasets: []
     };
 
+    var { key, tempo, time_signature, track_cluster, duration_ms, mode, liveness, loudness, speechiness, acousticness, ...dataObj } = dataObj;
 
 
     for (var [index, [key, value]] of Object.entries(Object.entries(dataObj))) {
@@ -234,6 +235,9 @@ function createPieChart(dataObj) {
 
 function createRadarChart(dataObj) {
 
+
+    var { key, tempo, time_signature, track_cluster, duration_ms, mode, ...dataObj } = dataObj;
+
     var options = {
         scales: {
             r: {
@@ -293,6 +297,9 @@ function createRadarChart(dataObj) {
 
 
 function createAreaChart(dataObj) {
+
+
+    var { key, tempo, time_signature, track_cluster, duration_ms, mode, liveness, loudness, speechiness, acousticness, ...dataObj } = dataObj;
 
     var dataPlots = {
         labels: [],
@@ -482,7 +489,7 @@ var fetchNow = function () {
 
                 var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'])
 
-                var dataPieChart = createPieChart(data['plots']['pie_chart'])
+                var dataPieChart = createPieChart(data['plots']['pie_chart']['data'])
 
                 var dataRadarChart = createRadarChart(data['plots']['radar_chart']['data'])
 
@@ -584,7 +591,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
                 });
 
                 addValenceScatterY.addEventListener('click', function () {
@@ -592,7 +599,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
                 });
 
                 addDanceabilityScatterY.addEventListener('click', function () {
@@ -600,7 +607,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
                 });
 
                 addInstrumentalnessScatterY.addEventListener('click', function () {
@@ -608,7 +615,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "y");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
                 });
 
 
@@ -626,7 +633,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
                 });
 
                 addValenceScatterX.addEventListener('click', function () {
@@ -634,7 +641,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
                 });
 
                 addDanceabilityScatterX.addEventListener('click', function () {
@@ -642,7 +649,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
                 });
 
                 addInstrumentalnessScatterX.addEventListener('click', function () {
@@ -650,7 +657,7 @@ var fetchNow = function () {
                     var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                    updateScatter(property, chartObject, data['plots']['scatter'], axis = "x");
+                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
                 });
 
 

@@ -110,11 +110,18 @@ def generate_saved_tracks_timeline(user_data):
 def generate_scatter_chart(user_data):
     _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
 
+    features = [
+        "danceability",
+        "energy",
+        "instrumentalness",
+        "valence",
+    ]
+
     _scatter_dict = {}
 
     for cluster in _df["cluster_name"].unique():
         _scatter_dict.update(
-            {cluster: _df[_df.cluster_name == cluster].to_dict("list")}
+            {cluster: _df[_df.cluster_name == cluster][features].to_dict("list")}
         )
 
     return Plot(data=_scatter_dict)
