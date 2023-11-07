@@ -77,25 +77,26 @@ class DataExtractor:
 
         for r in range(repeat):
             response = requests.get(
-                f"https://api.spotify.com/v1/playlists/{playlist.id}/tracks?fields=items(track(id,name,artists))&limit={self.limit}&offset={r * self.limit}",
+                f"https://api.spotify.com/v1/playlists/{playlist.id}/tracks?fields=items(is_local,track(id,name,artists))&limit={self.limit}&offset={r * self.limit}",
                 headers=self.headers,
             ).json()
 
             for t in response["items"]:
-                track_name = t["track"]["name"]
-                track_id = t["track"]["id"]
-                log.warning(t)
-                track = Track(id=track_id, name=track_name, artists=[])
+                if t["is_local"] == False:
+                    track_name = t["track"]["name"]
+                    track_id = t["track"]["id"]
+                    log.warning(t)
+                    track = Track(id=track_id, name=track_name, artists=[])
 
-                for artist in t["track"]["artists"]:
-                    artist_id = artist["id"]
-                    artist_name = artist["name"]
-                    artist_type = artist["type"]
-                    track.artists.append(
-                        Artist(id=artist_id, name=artist_name, type=artist_type)
-                    )
+                    for artist in t["track"]["artists"]:
+                        artist_id = artist["id"]
+                        artist_name = artist["name"]
+                        artist_type = artist["type"]
+                        track.artists.append(
+                            Artist(id=artist_id, name=artist_name, type=artist_type)
+                        )
 
-                playlist.tracks.append(track)
+                    playlist.tracks.append(track)
 
         return playlist
 
