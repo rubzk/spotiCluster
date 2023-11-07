@@ -31,9 +31,7 @@ class DataExtractor:
         # self.test = self.get_all_saved_tracks()
 
     def get_user_id(self):
-        log.warning(
-            requests.get("https://api.spotify.com/v1/me", headers=self.headers).json()
-        )
+        log.warning(requests.get("https://api.spotify.com/v1/me", headers=self.headers))
 
         response = requests.get(
             "https://api.spotify.com/v1/me", headers=self.headers

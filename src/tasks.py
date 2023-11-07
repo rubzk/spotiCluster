@@ -9,6 +9,8 @@ from src.plot import (
     generate_radar_chart,
     generate_pie_chart,
     generate_scatter_chart,
+    generate_saved_tracks_timeline,
+    generate_top_3_artist,
 )
 
 from utils.postgres import df_to_db, PostgresDB
@@ -74,8 +76,8 @@ def append_results(self, results, user):
         if "playlist_model" in r:
             user_data.playlists.append(Playlist.parse_obj(r["playlist_model"]))
         else:
-            saved_tracks = SavedTracks.parse_obj(r)
-            user_data.saved_tracks = saved_tracks
+            # saved_tracks = SavedTracks.parse_obj(r)
+            user_data.saved_tracks = r
 
     return jsonable_encoder(user_data)
 
@@ -99,6 +101,9 @@ def cluster_results(self, user_data):
         TracksClustered(**record) for record in clustered_dict_
     ]
 
+    with open("./output/final_user_data_v1.json", "w") as file:
+        json.dump(user_data, file)
+
     return jsonable_encoder(user_data)
 
 
@@ -114,6 +119,10 @@ def create_plots(self, user_data):
 
     scatter_chart = generate_scatter_chart(user_data)
 
+    top_3_artist = generate_top_3_artist(user_data)
+
+    saved_tracks_timeline = generate_saved_tracks_timeline(user_data)
+
     number_of_tracks = len(user_data.clustered_tracks)
 
     number_of_clusters = len(
@@ -126,8 +135,13 @@ def create_plots(self, user_data):
         radar_chart=radar_chart,
         pie_chart=pie_chart,
         scatter_chart=scatter_chart,
+        top_3_artist=top_3_artist,
+        saved_tracks_timeline=saved_tracks_timeline,
         user_model=user_data,
     )
+
+    with open("./output/final_user_data.json", "w") as json_file:
+        json.dump(jsonable_encoder(user_data), json_file)
 
     return jsonable_encoder(plots)
 
