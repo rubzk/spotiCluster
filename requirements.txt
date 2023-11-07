@@ -10,3 +10,6 @@ sqlalchemy==2.0.13
 psycopg2==2.8.6
 importlib-metadata==4.13.0
 fsspec==2023.5.0
+pydantic==2.4
+Werkzeug==2.2.2
+fastapi==0.104.0

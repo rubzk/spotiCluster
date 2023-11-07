@@ -72,7 +72,7 @@ def auth():
 
     extractor = DataExtractor(auth.auth_token)
 
-    user_id = extractor.get_user_id()
+    user_data = extractor.get_user_id()
 
     res.set_cookie(
         "username",
@@ -82,31 +82,39 @@ def auth():
         path="/",
     )
 
-    playlists = extractor.get_all_playlists()
+    user_data = extractor.get_all_playlists(user_data)
 
     total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
-        get_tracks.s(auth.auth_token, playlist) for playlist in playlists
+        get_tracks.s(auth.auth_token, playlist.dict())
+        for playlist in user_data.playlists
     ]
 
+    # task = chord(total_tracks[:5])(
+    #     append_results.s(user=user_data.dict())
+    #     | cluster_results.s()
+    #     | save_data_in_postgres.s()
+    #     | create_plots.s()
+    # )
+
     task = chord(total_tracks)(
-        append_results.s()
-        | cluster_results.s()
-        | save_data_in_postgres.s()
-        | create_plots.s()
+        append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
 
-    return redirect(url_for("taskstatus", task_id=task.id))
+    return redirect(url_for("taskstatus", celery_task_id=task.id))
 
 
-@app.route("/status/<task_id>", methods=["GET"])
-def taskstatus(task_id):
-    task = celery.AsyncResult(task_id)
+@app.route("/status/<celery_task_id>", methods=["GET"])
+def taskstatus(celery_task_id):
+    task = celery.AsyncResult(celery_task_id)
 
     app.logger.info(f"status: {task.state}")
 
     if "application/json" in request.headers.get("Content-Type", ""):
         if task.state == "SUCCESS":
-            return {"status": task.state, "plots": task.info["plots"]}
+            # with open("./output/task_info.json", "w") as json_file:
+            #     json.dump(task.info, json_file)
+
+            return {"plots": task.info}
 
         app.logger.info(task.info)
 
@@ -114,7 +122,7 @@ def taskstatus(task_id):
             "status": task.state
         }  ### Here One idea I have is to return the status of the task and Update front end with it
 
-    return render_template("plot.html", task_id=task_id)
+    return render_template("plot.html", task_id=celery_task_id)
 
 
 @app.route("/tasks/", methods=["GET"])

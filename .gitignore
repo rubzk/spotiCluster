@@ -22,3 +22,4 @@ celerybeat.pid
 node_modules/
 config.cfg
 output.csv
+/output

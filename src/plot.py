@@ -2,63 +2,126 @@ import pandas as pd
 import numpy as np
 import json
 
+from pydantic import BaseModel, Field, root_validator
+from typing import List, Optional, Any, Dict
+from .models import UserData
 
-class Plot:
-    def __init__(self, audio_df):
-        self.audio_ft = audio_df
 
-    def radar_chart(self, cluster_stats):
-        plot = {}
+class Plot(BaseModel):
+    data: Dict
 
-        for c in cluster_stats.columns:
-            plot[c] = cluster_stats[c].to_list()
 
-        return plot
+class Plots(BaseModel):
+    number_of_tracks: int
+    number_of_clusters: int
+    radar_chart: Optional[Plot]
+    pie_chart: Optional[Plot]
+    scatter_chart: Optional[Plot]
+    top_3_artist: Optional[Plot]
+    saved_tracks_timeline: Optional[Plot]
+    user_model: UserData
 
-    def pie_chart(self, clusters):
-        df_pie_chart = (
-            clusters.groupby("cluster_name")[["spotify_user_id"]]
-            .count()
-            .reset_index()
-            .rename(columns={"spotify_user_id": "number_of_songs"})
+
+def generate_radar_chart(user_data):
+    _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
+
+    cluster_stats = _df.groupby("cluster_name").mean().reset_index()
+
+    _plot = {}
+
+    for c in cluster_stats.columns:
+        _plot[c] = cluster_stats[c].to_list()
+
+    return Plot(data=_plot)
+
+
+def generate_pie_chart(user_data):
+    _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
+
+    _df_gb = (
+        _df.groupby("cluster_name")[["track_id"]]
+        .count()
+        .reset_index()
+        .rename(columns={"track_id": "number_of_tracks"})
+    )
+
+    return Plot(data=_df_gb.to_dict("list"))
+
+
+def generate_top_3_artist(user_data):
+    def get_top_artists(group):
+        return group["artist_name"].value_counts().nlargest(3)
+
+    _tracks_clustered = pd.DataFrame(
+        [track.model_dump() for track in user_data.clustered_tracks]
+    )
+
+    _data = []
+
+    for playlist in user_data.playlists:
+        if playlist.tracks:
+            for track in playlist.tracks:
+                for artist in track.artists:
+                    _data.append([track.id, artist.name])
+
+    _artist_tracks = pd.DataFrame(_data, columns=["track_id", "artist_name"])
+
+    _artist_tracks = _artist_tracks.merge(_tracks_clustered, how="left", on="track_id")
+
+    top_artists_per_cluster = (
+        _artist_tracks.groupby("cluster_name").apply(get_top_artists).reset_index()
+    )
+
+    top_artists_per_cluster.columns = ["cluster_name", "artist_name", "count"]
+
+    top_artists_per_cluster = top_artists_per_cluster.to_dict("list")
+
+    return Plot(data=top_artists_per_cluster)
+
+
+def generate_saved_tracks_timeline(user_data):
+    features = [
+        "danceability",
+        "energy",
+        "loudness",
+        "speechiness",
+        "acousticness",
+        "instrumentalness",
+        "liveness",
+        "valence",
+        "tempo",
+    ]
+
+    _df = pd.DataFrame([track.model_dump() for track in user_data.saved_tracks.tracks])
+
+    _df = pd.concat([_df, pd.json_normalize(_df["features"])], axis=1)
+
+    _df["added_at"] = _df["added_at"].apply(lambda x: pd.Timestamp(x))
+
+    _df["yyyy-mm"] = _df["added_at"].dt.strftime("%Y-%m")
+
+    _timeline = _df.groupby(["yyyy-mm"])[features].mean().reset_index()
+
+    _timeline = _timeline.to_dict("list")
+
+    return Plot(data=_timeline)
+
+
+def generate_scatter_chart(user_data):
+    _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
+
+    features = [
+        "danceability",
+        "energy",
+        "instrumentalness",
+        "valence",
+    ]
+
+    _scatter_dict = {}
+
+    for cluster in _df["cluster_name"].unique():
+        _scatter_dict.update(
+            {cluster: _df[_df.cluster_name == cluster][features].to_dict("list")}
         )
 
-        return df_pie_chart.to_dict("list")
-
-    def top_3_artist(self, clusters):
-        gb = (
-            clusters.groupby("cluster_name")["artist"]
-            .value_counts()
-            .groupby(level=0)
-            .head(3)
-            .sort_values(ascending=False)
-            .to_frame("counts")
-            .reset_index()
-        )
-
-        return gb.sort_values(by="cluster_name", ascending=False).to_dict("list")
-
-    def saved_tracks_timeline(self, saved_tracks):
-        saved_tracks["added_at"] = saved_tracks["added_at"].apply(
-            lambda x: pd.Timestamp(x)
-        )
-
-        saved_tracks["yyyy-mm"] = saved_tracks["added_at"].dt.strftime("%Y-%m")
-
-        timeline = saved_tracks.groupby(["yyyy-mm"])[self.audio_ft].mean().reset_index()
-
-        return timeline.to_dict("list")
-
-    def scatter_chart(self, tracks):
-        scatter_dict = {}
-
-        for cluster in list(tracks["cluster_name"].unique()):
-            scatter_dict.update(
-                {
-                    cluster: tracks[tracks.cluster_name == cluster][
-                        self.audio_ft + ["title"]
-                    ].to_dict("list")
-                }
-            )
-
-        return scatter_dict
+    return Plot(data=_scatter_dict)
