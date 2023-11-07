@@ -84,10 +84,6 @@ def auth():
 
     user_data = extractor.get_all_playlists(user_data)
 
-    # total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
-    #     get_tracks.s(auth.auth_token, playlist) for playlist in user_data.playlists
-    # ]
-
     total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
         get_tracks.s(auth.auth_token, playlist.dict())
         for playlist in user_data.playlists
@@ -120,7 +116,10 @@ def taskstatus(celery_task_id):
 
     if "application/json" in request.headers.get("Content-Type", ""):
         if task.state == "SUCCESS":
-            return {"status": task.state, "plots": task.info["plots"]}
+            # with open("./output/task_info.json", "w") as json_file:
+            #     json.dump(task.info, json_file)
+
+            return {"plots": task.info}
 
         app.logger.info(task.info)
 
