@@ -2,18 +2,39 @@ import pandas as pd
 import numpy as np
 import json
 
+from pydantic import BaseModel, Field, root_validator
+from typing import List, Optional, Dict
+from models import UserData
+
+
+class Plot(BaseModel):
+    data: Field[Dict]
+
+
+class Plots(BaseModel):
+    number_of_tracks: int
+    number_of_clusters: int
+    radar_chart: Plot
+    pie_chart: Plot
+    top_artist: Plot
+    saved_tracks_timeline: Plot
+    scatter_chart: Plot
+    user_model: UserData
+
 
 class Plot:
     def __init__(self, audio_df):
         self.audio_ft = audio_df
 
-    def radar_chart(self, cluster_stats):
-        plot = {}
+    def radar_chart(self, user_data):
+        _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
 
-        for c in cluster_stats.columns:
-            plot[c] = cluster_stats[c].to_list()
+        _plot = {}
 
-        return plot
+        for c in _df.columns:
+            _plot[c] = _df[c].to_list()
+
+        return _plot
 
     def pie_chart(self, clusters):
         df_pie_chart = (
