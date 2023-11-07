@@ -101,7 +101,7 @@ def auth():
     # )
 
     task = chord(total_tracks[:15])(
-        append_results.s(user=user_data.dict()) | cluster_results.s()
+        append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
 
     # task = (
