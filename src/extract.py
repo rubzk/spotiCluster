@@ -20,6 +20,26 @@ log = logging.getLogger(__name__)
 
 
 class DataExtractor:
+
+    """
+    A class for extracting data from the Spotify API.
+
+    This class provides methods to interact with the Spotify API and extract user information, playlists, tracks, saved tracks,
+    and audio features for tracks in a playlist.
+
+    Attributes:
+    - auth_token (str): The Spotify API authentication token.
+    - limit (int): The default limit for API requests.
+    - headers (dict): The headers used for API requests.
+
+    Methods:
+    - get_user_id(): Get the user ID from the Spotify API.
+    - get_all_playlists(user_data, offset=0): Get all playlists for the user from the Spotify API.
+    - get_all_tracks(playlist): Get all tracks from a playlist using the Spotify API.
+    - get_all_saved_tracks(): Get all saved tracks from the Spotify API.
+    - get_all_audio_features(playlist): Get audio features for all tracks in a playlist from the Spotify API.
+    """
+
     def __init__(self, auth_token):
         self.auth_token = auth_token
         self.limit = 50
@@ -31,6 +51,18 @@ class DataExtractor:
         # self.test = self.get_all_saved_tracks()
 
     def get_user_id(self):
+        """
+        Get the user ID from the Spotify API.
+
+        This function makes a request to the Spotify API to fetch the user's ID using the provided headers.
+
+        :return: A `UserData` object containing the user's ID and an empty list of playlists.
+        :rtype: UserData
+
+        :raises requests.exceptions.RequestException: If there's an issue with the API request.
+        :raises KeyError: If the response JSON does not contain the expected 'id' field.
+
+        """
         log.warning(requests.get("https://api.spotify.com/v1/me", headers=self.headers))
 
         response = requests.get(
@@ -42,6 +74,24 @@ class DataExtractor:
         return user_data
 
     def get_all_playlists(self, user_data, offset=0):
+        """
+        Get all playlists for the user from the Spotify API.
+
+        This function makes a request to the Spotify API to retrieve a list of the user's playlists.
+
+        :param user_data: The `UserData` object representing the user's data.
+        :type user_data: UserData
+
+        :param offset: The offset for pagination (default is 0).
+        :type offset: int
+
+        :return: The updated `UserData` object with the user's playlists added to it.
+        :rtype: UserData
+
+        :raises requests.exceptions.RequestException: If there's an issue with the API request.
+        :raises KeyError: If the response JSON does not contain the expected 'items' field.
+        """
+
         response = requests.get(
             "https://api.spotify.com/v1/me/playlists?"
             + "limit={}".format(self.limit)
@@ -54,10 +104,6 @@ class DataExtractor:
                 Playlist(id=p["id"], type=p["type"], public=p["public"], tracks=[])
             )
 
-        # playlists_id = [playlist["id"] for playlist in response]
-
-        log.warning(user_data)
-
         return user_data
 
     def get_all_tracks(self, playlist):
@@ -66,11 +112,7 @@ class DataExtractor:
             headers=self.headers,
         ).json()
 
-        log.warning(response)
-
         repeat = 1
-
-        tracks_info = pd.DataFrame([], columns=["id", "name", "artist"])
 
         if response["total"] > self.limit:
             repeat = (response["total"] // self.limit) + 1
@@ -101,6 +143,21 @@ class DataExtractor:
         return playlist
 
     def get_all_saved_tracks(self):
+        """
+        Get all tracks from a playlist using the Spotify API.
+
+        This function makes requests to the Spotify API to retrieve all tracks from a given playlist.
+
+        :param playlist: The `Playlist` object representing the playlist.
+        :type playlist: Playlist
+
+        :return: The updated `Playlist` object with all tracks added to it.
+        :rtype: Playlist
+
+        :raises requests.exceptions.RequestException: If there's an issue with the API request.
+        :raises KeyError: If the response JSON does not contain the expected fields.
+
+        """
         response = requests.get(
             "https://api.spotify.com/v1/me/tracks?", headers=self.headers
         ).json()
@@ -115,9 +172,6 @@ class DataExtractor:
                 f"https://api.spotify.com/v1/me/tracks?limit{self.limit}&offset={r * self.limit}",
                 headers=self.headers,
             ).json()
-
-            # with open("all_saved_response.json", "w") as json_file:
-            #     json.dump(d, json_file)
 
             if r != None:
                 for t in response["items"]:
@@ -149,6 +203,21 @@ class DataExtractor:
         return saved_tracks
 
     def get_all_audio_features(self, playlist):
+        """
+        Get audio features for all tracks in a playlist from the Spotify API.
+
+        This function retrieves audio features (e.g., danceability, energy, tempo) for all tracks in the playlist from the Spotify API.
+
+        :param playlist: The `Playlist` object representing the playlist.
+        :type playlist: Playlist
+
+        :return: The updated `Playlist` object with audio features added to each track.
+        :rtype: Playlist
+
+        :raises requests.exceptions.RequestException: If there's an issue with the API request.
+        :raises KeyError: If the response JSON does not contain the expected fields.
+
+        """
         if len(playlist.tracks) > 100:
             splitted_list = split_list(
                 playlist.tracks, round(len(playlist.tracks) / 100) + 1
