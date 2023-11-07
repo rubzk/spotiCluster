@@ -475,16 +475,16 @@ var fetchNow = function () {
                 var ctx_scatter = document.getElementById('scatterChart').getContext('2d');
 
 
-                var originalData = data['plots']['radar_chart']
+                var originalData = data['plots']['radar_chart']['data']
 
 
-                var dataArea = createAreaChart(data['plots']['saved_tracks'])
+                var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
 
-                var dataScatter = createScatterChart(data['plots']['scatter'])
+                var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'])
 
                 var dataPieChart = createPieChart(data['plots']['pie_chart'])
 
-                var dataRadarChart = createRadarChart(originalData)
+                var dataRadarChart = createRadarChart(data['plots']['radar_chart']['data'])
 
 
                 var myRadarChart = new Chart(ctx_radar, dataRadarChart);
