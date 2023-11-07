@@ -3,14 +3,6 @@ import numpy as np
 from sklearn.cluster import KMeans
 
 
-def get_cluster_stats(self, df_cluster):
-    cluster_stats = (
-        df_cluster.groupby("cluster_name")[self.audio_ft].mean().reset_index()
-    )
-
-    return cluster_stats
-
-
 def determine_optimal_k(self, scaled_df, max_k):
     # Initialize a list to store the inertias for each value of k
     inertias = []
