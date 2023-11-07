@@ -107,6 +107,21 @@ class DataExtractor:
         return user_data
 
     def get_all_tracks(self, playlist):
+        """
+        Retrieve all tracks from a playlist on Spotify.
+
+        This method makes requests to the Spotify API to fetch all tracks from a given playlist.
+
+        :param playlist: The `Playlist` object representing the playlist to retrieve tracks from.
+        :type playlist: Playlist
+
+        :return: The updated `Playlist` object with tracks added to it.
+        :rtype: Playlist
+
+        :raises requests.exceptions.RequestException: If there's an issue with the API request.
+        :raises KeyError: If the response JSON does not contain the expected fields.
+        """
+
         response = requests.get(
             f"https://api.spotify.com/v1/playlists/{playlist.id}/tracks?fields=total%2Climit&limit={self.limit}",
             headers=self.headers,
