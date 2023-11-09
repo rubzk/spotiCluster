@@ -24,10 +24,10 @@ from src.extract import DataExtractor
 config = configparser.RawConfigParser()
 config.read(r"config.cfg")
 
-cel_bp = Blueprint("celery_tasks", __name__)
+celery_bp = Blueprint("celery_bp", __name__)
 
 
-@cel_bp.route("/auth_ok/")
+@celery_bp.route("/auth_ok/")
 def auth():
     auth_code = request.args.get("code")
     # app.logger.info(f"auth_code: {auth_code}")
@@ -73,10 +73,10 @@ def auth():
         append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
 
-    return redirect(url_for("celery_tasks.taskstatus", celery_task_id=task.id))
+    return redirect(url_for("celery_bp.taskstatus", celery_task_id=task.id))
 
 
-@cel_bp.route("/status/<celery_task_id>", methods=["GET"])
+@celery_bp.route("/status/<celery_task_id>", methods=["GET"])
 def taskstatus(celery_task_id):
     task = current_app.celery.AsyncResult(celery_task_id)
 
