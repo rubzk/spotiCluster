@@ -18,7 +18,7 @@ from src.tasks import (
     save_data_in_postgres,
     get_saved_tracks,
 )
-from celery import current_app, chord
+from celery import chord
 from src.extract import DataExtractor
 
 config = configparser.RawConfigParser()
@@ -73,7 +73,7 @@ def auth():
         append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
 
-    return redirect(url_for("taskstatus", celery_task_id=task.id))
+    return redirect(url_for("celery_tasks.taskstatus", celery_task_id=task.id))
 
 
 @cel_bp.route("/status/<celery_task_id>", methods=["GET"])
