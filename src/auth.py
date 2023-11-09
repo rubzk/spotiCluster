@@ -1,9 +1,5 @@
-import pandas as pd
 import requests
-import numpy as np
-import base64
-from utils.code_tools import transform_to_64, split_list
-import json
+from utils.code_tools import transform_to_64
 
 
 class Authenticator:

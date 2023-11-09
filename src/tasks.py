@@ -1,7 +1,5 @@
 import json
-import configparser
 
-from src.auth import Authenticator
 from src.extract import DataExtractor
 from src.clustering import k_means_clustering, prepare_df_tracks_
 from src.plot import (
@@ -18,8 +16,8 @@ from utils.postgres import df_to_db, PostgresDB
 import logging
 
 import pandas as pd
-from celery import shared_task, chord
-from .models import Playlist, UserData, SavedTracks, TracksClustered
+from celery import shared_task
+from .models import Playlist, UserData, TracksClustered
 
 from fastapi.encoders import jsonable_encoder
 
