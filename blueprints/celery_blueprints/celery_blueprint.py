@@ -96,3 +96,14 @@ def taskstatus(celery_task_id):
         }  ### Here One idea I have is to return the status of the task and Update front end with it
 
     return render_template("plot.html", task_id=celery_task_id)
+
+
+# @app.route("/tasks/", methods=["GET"])
+# def get_tasks_celery():
+#     current_app.loader.import_default_modules()
+
+#     tasks = list(
+#         sorted(name for name in current_app.tasks if not name.startswith("celery."))
+#     )
+
+#     return jsonify(tasks)
