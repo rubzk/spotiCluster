@@ -295,6 +295,71 @@ function createRadarChart(dataObj) {
 
 }
 
+function createBarChart(dataObj) {
+
+
+
+    var options = {
+        indexAxis: 'y',
+        scales: {
+            r: {
+                grid: {
+                    color: 'gray'
+                },
+                angleLines: {
+                    color: 'gray'
+                },
+                ticks: {
+                    display: false
+                },
+                pointLabels: {
+                    color: 'white'
+                }
+
+            }
+        },
+        legend: {
+            position: 'top',
+            cluster_name: {
+                fontColor: 'white'
+            }
+        },
+        title: {
+            display: true,
+            text: 'Audio Features by Cluster',
+            fontColor: 'white'
+        },
+        pointcluster_name: {
+            fontColor: 'white'
+        }
+    };
+
+
+    var dataPlots = {
+        labels: dataObj['cluster_name'],
+        datasets: []
+    };
+
+
+    dataPlots.datasets = [{
+        label: 'Tempo',
+        data: dataObj['tempo'],
+        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Background color for bars
+        borderColor: 'rgba(75, 192, 192, 1)', // Border color for bars
+        borderWidth: 1 // Border width for bars
+    }]
+
+    var chartConfig = {
+        type: 'bar',
+        data: dataPlots,
+        options: options
+
+    };
+
+    return chartConfig;
+
+}
+
 
 function createAreaChart(dataObj) {
 
@@ -480,10 +545,10 @@ var fetchNow = function () {
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
                 var ctx_area = document.getElementById('areaChart').getContext('2d');
                 var ctx_scatter = document.getElementById('scatterChart').getContext('2d');
+                var ctx_bar = document.getElementById('barChart').getContext('2d');
 
 
                 var originalData = data['plots']['radar_chart']['data']
-
 
                 var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
 
@@ -492,6 +557,8 @@ var fetchNow = function () {
                 var dataPieChart = createPieChart(data['plots']['pie_chart']['data'])
 
                 var dataRadarChart = createRadarChart(data['plots']['radar_chart']['data'])
+
+                var dataBarChart = createBarChart(data['plots']['radar_chart']['data'])
 
 
                 var myRadarChart = new Chart(ctx_radar, dataRadarChart);
@@ -502,6 +569,8 @@ var fetchNow = function () {
                 var myAreaChart = new Chart(ctx_area, dataArea);
 
                 var myScatterChart = new Chart(ctx_scatter, dataScatter);
+
+                var myBarChart = new Chart(ctx_bar, dataBarChart)
 
 
                 var addButtonEnergy = document.getElementById('add-energy');
