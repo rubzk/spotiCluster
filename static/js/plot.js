@@ -204,17 +204,18 @@ function createPieChart(dataObj) {
 
     var chartOptions = {
         plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        var label = context.label || ''; // Label for the current segment
-                        var value = context.parsed || 0; // Parsed numerical value of the segment
-                        return label + ': ' + value;
-                    }
+            datalabels: {
+                font: {
+                    size: 24,
+                    family: 'Helvetica',
+                    weight: 'bold'
+                },
+                align: 'start',
+                anchor: 'center',
+                color: 'white',
+                formatter: function (value, context) {
+                    return value; // You can customize the format as needed
+
                 }
             }
         }
@@ -224,7 +225,8 @@ function createPieChart(dataObj) {
     var chartConfig = {
         type: 'pie',
         data: dataPieChart,
-        options: chartOptions
+        options: chartOptions,
+        plugins: [ChartDataLabels],
 
     };
 
@@ -294,6 +296,104 @@ function createRadarChart(dataObj) {
     return chartConfig;
 
 }
+
+function createBarChart(dataObj) {
+
+
+
+    var options = {
+        indexAxis: 'y',
+        scales: {
+            y: {
+                title: {
+                    font: {
+                        size: 24,
+                    },
+                    color: 'white'
+                },
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: 'white'
+                }
+            },
+            x: {
+                title: {
+                    font: {
+                        size: 24,
+                    },
+                    color: 'white'
+                },
+                grid: {
+                    display: true
+                },
+                ticks: {
+                    display: false,
+                    font: {
+                        size: 24
+                    }
+                }
+            },
+        },
+        legend: {
+            display: false,
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+            datalabels: {
+                font: {
+                    size: 24,
+                    family: 'Helvetica',
+                    weight: 'bold'
+                },
+                anchor: 'end',
+                align: function (context) {
+                    if (context.dataset.data[context.dataIndex] < 0) {
+                        return 'start'
+                    }
+                    return 'end'
+                },
+                color: 'white',
+                formatter: function (value, context) {
+                    // return value; // You can customize the format as needed
+                    if (value < 1) {
+                        return (parseFloat(value).toFixed(2));
+                    }
+                    return Math.round(value);
+                }
+            }
+        }
+    };
+
+
+    var dataPlots = {
+        labels: dataObj['cluster_name'],
+        datasets: []
+    };
+
+
+    dataPlots.datasets = [{
+        label: 'tempo',
+        data: dataObj['tempo'],
+        backgroundColor: 'rgba(0, 163, 108, 0.5)', // Background color for bars
+        borderColor: 'rgba(0, 163, 108, 1)', // Border color for bars
+        borderWidth: 1 // Border width for bars
+    }]
+
+    var chartConfig = {
+        type: 'bar',
+        data: dataPlots,
+        options: options,
+        plugins: [ChartDataLabels],
+    };
+
+    return chartConfig;
+
+}
+
 
 
 function createAreaChart(dataObj) {
@@ -378,12 +478,14 @@ function createAreaChart(dataObj) {
             display: true,
             color: 'white'
         },
+
     };
 
     var chartConfig = {
         type: 'line',
         data: dataPlots,
-        options: options
+        options: options,
+
     }
 
 
@@ -457,6 +559,30 @@ function updateChartProperty(property, chartObject, originalData) {
     // Update the chart
 }
 
+function updateBarChart(property, chartObject, dataObj) {
+
+
+
+    var isPropertyPresent = chartObject.data.labels.includes(property);
+
+    if (!isPropertyPresent) {
+        // If the property is not present, replace existing labels and datasets
+
+        chartObject.data.datasets = [{
+            label: property,
+            data: dataObj[property],
+            backgroundColor: 'rgba(0, 163, 108, 0.5)',
+            borderColor: 'rgba(0, 163, 108, 1)',
+            borderWidth: 1
+        }];
+
+        // Update the chart
+        chartObject.update();
+    }
+
+}
+
+
 var fetchNow = function () {
     fetch('/status/' + taskId, {
         headers: headers
@@ -480,10 +606,10 @@ var fetchNow = function () {
                 var ctx_pie = document.getElementById('pieChart').getContext('2d');
                 var ctx_area = document.getElementById('areaChart').getContext('2d');
                 var ctx_scatter = document.getElementById('scatterChart').getContext('2d');
+                var ctx_bar = document.getElementById('barChart').getContext('2d');
 
 
                 var originalData = data['plots']['radar_chart']['data']
-
 
                 var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
 
@@ -492,6 +618,8 @@ var fetchNow = function () {
                 var dataPieChart = createPieChart(data['plots']['pie_chart']['data'])
 
                 var dataRadarChart = createRadarChart(data['plots']['radar_chart']['data'])
+
+                var dataBarChart = createBarChart(data['plots']['radar_chart']['data'])
 
 
                 var myRadarChart = new Chart(ctx_radar, dataRadarChart);
@@ -502,6 +630,8 @@ var fetchNow = function () {
                 var myAreaChart = new Chart(ctx_area, dataArea);
 
                 var myScatterChart = new Chart(ctx_scatter, dataScatter);
+
+                var myBarChart = new Chart(ctx_bar, dataBarChart)
 
 
                 var addButtonEnergy = document.getElementById('add-energy');
@@ -659,6 +789,82 @@ var fetchNow = function () {
 
                     updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
                 });
+
+
+
+
+                var addEnergyBarChart = document.getElementById('add-energy-bar');
+
+                var addTempoBarChart = document.getElementById('add-tempo-bar');
+
+                var addDanceabilityBarChart = document.getElementById('add-danceability-bar');
+
+                var addInstrumentalnessBarChart = document.getElementById('add-instrumentalness-bar');
+
+                var addLoudnessBarChart = document.getElementById('add-loudness-bar');
+
+                var addValenceBarChart = document.getElementById('add-valence-bar');
+
+                var addSpeechinessBarChart = document.getElementById('add-speechiness-bar');
+
+                addEnergyBarChart.addEventListener('click', function () {
+                    var property = 'energy'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addTempoBarChart.addEventListener('click', function () {
+                    var property = 'tempo'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addDanceabilityBarChart.addEventListener('click', function () {
+                    var property = 'danceability'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addInstrumentalnessBarChart.addEventListener('click', function () {
+                    var property = 'instrumentalness'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addLoudnessBarChart.addEventListener('click', function () {
+                    var property = 'loudness'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addValenceBarChart.addEventListener('click', function () {
+                    var property = 'valence'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addSpeechinessBarChart.addEventListener('click', function () {
+                    var property = 'speechiness'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+
+
 
 
 

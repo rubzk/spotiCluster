@@ -159,7 +159,7 @@ def cluster_results(self, user_data):
         ],
     )
 
-    clustered_df.to_csv("clustered.csv", index=False)
+    clustered_dict_ = clustered_df.to_dict(orient="records")
 
     user_data.clustered_tracks = [
         TracksClustered(**record) for record in clustered_dict_
