@@ -204,17 +204,18 @@ function createPieChart(dataObj) {
 
     var chartOptions = {
         plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        var label = context.label || ''; // Label for the current segment
-                        var value = context.parsed || 0; // Parsed numerical value of the segment
-                        return label + ': ' + value;
-                    }
+            datalabels: {
+                font: {
+                    size: 24,
+                    family: 'Helvetica',
+                    weight: 'bold'
+                },
+                align: 'start',
+                anchor: 'center',
+                color: 'white',
+                formatter: function (value, context) {
+                    return value; // You can customize the format as needed
+
                 }
             }
         }
@@ -224,7 +225,8 @@ function createPieChart(dataObj) {
     var chartConfig = {
         type: 'pie',
         data: dataPieChart,
-        options: chartOptions
+        options: chartOptions,
+        plugins: [ChartDataLabels],
 
     };
 
@@ -473,12 +475,14 @@ function createAreaChart(dataObj) {
             display: true,
             color: 'white'
         },
+
     };
 
     var chartConfig = {
         type: 'line',
         data: dataPlots,
-        options: options
+        options: options,
+
     }
 
 
