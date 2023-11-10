@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import MinMaxScaler
 
 
 def determine_optimal_k(self, scaled_df, max_k):
@@ -71,7 +72,7 @@ def prepare_df_tracks_(user_data):
     return df
 
 
-def k_means_clustering(scaled_df, fit_features, n_clusters=5):
+def k_means_clustering(_df, fit_features, n_clusters=5):
     """
     Perform K-means clustering on a DataFrame.
 
@@ -90,21 +91,23 @@ def k_means_clustering(scaled_df, fit_features, n_clusters=5):
     :rtype: pandas.DataFrame
     """
 
-    fit_features_df = scaled_df[fit_features]
+    scaler = MinMaxScaler()
 
-    kmeans = KMeans(n_clusters=n_clusters).fit(fit_features_df)
+    scaled_df = scaler.fit_transform(_df[fit_features])
 
-    y_kmeans = kmeans.predict(fit_features_df)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42).fit(scaled_df)
 
-    scaled_df["track_cluster"] = y_kmeans
+    y_kmeans = kmeans.predict(scaled_df)
 
-    scaled_df["track_cluster"] = scaled_df["track_cluster"].astype("str")
+    _df["track_cluster"] = y_kmeans
+
+    _df["track_cluster"] = _df["track_cluster"].astype("str")
 
     cluster_names = {}
 
     for cluster in range(0, n_clusters):
         cluster_names.update({str(cluster): f"Cluster {cluster + 1 }"})
 
-    scaled_df["cluster_name"] = scaled_df["track_cluster"].map(cluster_names)
+    _df["cluster_name"] = _df["track_cluster"].map(cluster_names)
 
-    return scaled_df
+    return _df

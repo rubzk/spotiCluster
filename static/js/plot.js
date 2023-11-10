@@ -236,7 +236,7 @@ function createPieChart(dataObj) {
 function createRadarChart(dataObj) {
 
 
-    var { key, tempo, time_signature, track_cluster, duration_ms, mode, ...dataObj } = dataObj;
+    var { key, tempo, time_signature, track_cluster, duration_ms, mode, loudness, ...dataObj } = dataObj;
 
     var options = {
         scales: {

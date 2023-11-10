@@ -53,26 +53,26 @@ class AudioFeatures(BaseModel):
 
         setattr(self, "key_mapped", key_mapping.get(getattr(self, "key")))
 
-        scaler = MinMaxScaler()
+        # scaler = MinMaxScaler()
 
-        # Define the fields to scale
-        fields_to_scale = [
-            "danceability",
-            "energy",
-            "acousticness",
-            "instrumentalness",
-            "valence",
-        ]
+        # # Define the fields to scale
+        # fields_to_scale = [
+        #     "danceability",
+        #     "energy",
+        #     "acousticness",
+        #     "instrumentalness",
+        #     "valence",
+        # ]
 
-        # Create a list of values for scaling
-        values_to_scale = [getattr(self, field) for field in fields_to_scale]
+        # # Create a list of values for scaling
+        # values_to_scale = [getattr(self, field) for field in fields_to_scale]
 
-        # Perform scaling
-        scaled_values = scaler.fit_transform(np.array([values_to_scale]).T)
+        # # Perform scaling
+        # scaled_values = scaler.fit_transform(np.array([values_to_scale]).T)
 
-        # Update the corresponding fields with scaled values
-        for field, scaled_value in zip(fields_to_scale, scaled_values):
-            setattr(self, field, scaled_value[0])
+        # # Update the corresponding fields with scaled values
+        # for field, scaled_value in zip(fields_to_scale, scaled_values):
+        #     setattr(self, field, scaled_value[0])
 
 
 class Track(BaseModel):

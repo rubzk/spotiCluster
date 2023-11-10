@@ -146,17 +146,24 @@ def cluster_results(self, user_data):
 
     clustered_df = k_means_clustering(
         df_tracks_features,
-        fit_features=["danceability", "energy", "instrumentalness", "valence"],
+        fit_features=[
+            "danceability",
+            "energy",
+            # "key",
+            # "loudness",
+            # "mode",
+            "acousticness",
+            "valence",
+            "tempo",
+            "instrumentalness",
+        ],
     )
 
-    clustered_dict_ = clustered_df.to_dict(orient="records")
+    clustered_df.to_csv("clustered.csv", index=False)
 
     user_data.clustered_tracks = [
         TracksClustered(**record) for record in clustered_dict_
     ]
-
-    # with open("./output/final_user_data_v1.json", "w") as file:
-    #     json.dump(jsonable_encoder(user_data), file)
 
     return jsonable_encoder(user_data)
 
