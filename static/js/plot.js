@@ -340,6 +340,9 @@ function createBarChart(dataObj) {
             display: false,
         },
         plugins: {
+            legend: {
+                display: false,
+            },
             datalabels: {
                 font: {
                     size: 24,
