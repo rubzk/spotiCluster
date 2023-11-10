@@ -302,32 +302,64 @@ function createBarChart(dataObj) {
     var options = {
         indexAxis: 'y',
         scales: {
-            r: {
+            y: {
+                title: {
+                    font: {
+                        size: 24,
+                    },
+                    color: 'white'
+                },
                 grid: {
-                    color: 'gray'
-                },
-                angleLines: {
-                    color: 'gray'
-                },
-                ticks: {
                     display: false
                 },
-                pointLabels: {
+                ticks: {
                     color: 'white'
                 }
-
-            }
+            },
+            x: {
+                title: {
+                    font: {
+                        size: 24,
+                    },
+                    color: 'white'
+                },
+                grid: {
+                    display: true
+                },
+                ticks: {
+                    display: false,
+                    font: {
+                        size: 24
+                    }
+                }
+            },
         },
         legend: {
             display: false,
         },
-        title: {
-            display: true,
-            text: 'Audio Features by Cluster',
-            fontColor: 'white'
-        },
-        pointcluster_name: {
-            fontColor: 'white'
+        plugins: {
+            datalabels: {
+                font: {
+                    size: 24,
+                    family: 'Helvetica',
+                    weight: 'bold'
+                },
+                anchor: 'end',
+                align: function (context) {
+                    if (context.dataset.data[context.dataIndex] < 0) {
+                        return 'start'
+                    }
+                    return 'end'
+                },
+                color: 'white',
+                formatter: function (value, context) {
+                    // return value; // You can customize the format as needed
+                    if (value < 1) {
+                        return (parseFloat(value).toFixed(2));
+                    }
+                    return Math.round(value);
+                }
+            }
         }
     };
 
@@ -349,8 +381,8 @@ function createBarChart(dataObj) {
     var chartConfig = {
         type: 'bar',
         data: dataPlots,
-        options: options
-
+        options: options,
+        plugins: [ChartDataLabels],
     };
 
     return chartConfig;
@@ -523,7 +555,6 @@ function updateChartProperty(property, chartObject, originalData) {
 function updateBarChart(property, chartObject, dataObj) {
 
 
-    console.log(chartObject)
 
     var isPropertyPresent = chartObject.data.labels.includes(property);
 
@@ -759,6 +790,16 @@ var fetchNow = function () {
 
                 var addTempoBarChart = document.getElementById('add-tempo-bar');
 
+                var addDanceabilityBarChart = document.getElementById('add-danceability-bar');
+
+                var addInstrumentalnessBarChart = document.getElementById('add-instrumentalness-bar');
+
+                var addLoudnessBarChart = document.getElementById('add-loudness-bar');
+
+                var addValenceBarChart = document.getElementById('add-valence-bar');
+
+                var addSpeechinessBarChart = document.getElementById('add-speechiness-bar');
+
                 addEnergyBarChart.addEventListener('click', function () {
                     var property = 'energy'; // Replace with the desired property
                     var chartObject = myBarChart; // Replace with your actual chart object
@@ -775,7 +816,48 @@ var fetchNow = function () {
                     updateBarChart(property, chartObject, originalData);
                 });
 
-                console.log(myBarChart)
+                addDanceabilityBarChart.addEventListener('click', function () {
+                    var property = 'danceability'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addInstrumentalnessBarChart.addEventListener('click', function () {
+                    var property = 'instrumentalness'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addLoudnessBarChart.addEventListener('click', function () {
+                    var property = 'loudness'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addValenceBarChart.addEventListener('click', function () {
+                    var property = 'valence'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addSpeechinessBarChart.addEventListener('click', function () {
+                    var property = 'speechiness'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+
+
 
 
 
