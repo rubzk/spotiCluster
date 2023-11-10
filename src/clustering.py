@@ -95,7 +95,7 @@ def k_means_clustering(_df, fit_features, n_clusters=5):
 
     scaled_df = scaler.fit_transform(_df[fit_features])
 
-    kmeans = KMeans(n_clusters=n_clusters).fit(scaled_df)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42).fit(scaled_df)
 
     y_kmeans = kmeans.predict(scaled_df)
 
