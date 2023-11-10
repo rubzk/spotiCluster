@@ -319,10 +319,7 @@ function createBarChart(dataObj) {
             }
         },
         legend: {
-            position: 'top',
-            cluster_name: {
-                fontColor: 'white'
-            }
+            display: false,
         },
         title: {
             display: true,
@@ -342,10 +339,10 @@ function createBarChart(dataObj) {
 
 
     dataPlots.datasets = [{
-        label: 'Tempo',
+        label: 'tempo',
         data: dataObj['tempo'],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Background color for bars
-        borderColor: 'rgba(75, 192, 192, 1)', // Border color for bars
+        backgroundColor: 'rgba(0, 163, 108, 0.5)', // Background color for bars
+        borderColor: 'rgba(0, 163, 108, 1)', // Border color for bars
         borderWidth: 1 // Border width for bars
     }]
 
@@ -359,6 +356,7 @@ function createBarChart(dataObj) {
     return chartConfig;
 
 }
+
 
 
 function createAreaChart(dataObj) {
@@ -521,6 +519,31 @@ function updateChartProperty(property, chartObject, originalData) {
 
     // Update the chart
 }
+
+function updateBarChart(property, chartObject, dataObj) {
+
+
+    console.log(chartObject)
+
+    var isPropertyPresent = chartObject.data.labels.includes(property);
+
+    if (!isPropertyPresent) {
+        // If the property is not present, replace existing labels and datasets
+
+        chartObject.data.datasets = [{
+            label: property,
+            data: dataObj[property],
+            backgroundColor: 'rgba(0, 163, 108, 0.5)',
+            borderColor: 'rgba(0, 163, 108, 1)',
+            borderWidth: 1
+        }];
+
+        // Update the chart
+        chartObject.update();
+    }
+
+}
+
 
 var fetchNow = function () {
     fetch('/status/' + taskId, {
@@ -728,6 +751,31 @@ var fetchNow = function () {
 
                     updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
                 });
+
+
+
+
+                var addEnergyBarChart = document.getElementById('add-energy-bar');
+
+                var addTempoBarChart = document.getElementById('add-tempo-bar');
+
+                addEnergyBarChart.addEventListener('click', function () {
+                    var property = 'energy'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                addTempoBarChart.addEventListener('click', function () {
+                    var property = 'tempo'; // Replace with the desired property
+                    var chartObject = myBarChart; // Replace with your actual chart object
+
+
+                    updateBarChart(property, chartObject, originalData);
+                });
+
+                console.log(myBarChart)
 
 
 
