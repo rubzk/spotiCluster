@@ -92,8 +92,8 @@ function createScatterChart(dataObj) {
         var dataset = {
             label: key,
             data: points(value, selectedX = "energy", selectedY = "valence", label = "track_title"),
-            backgroundColor: colors[index % colors.length],
-            borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
+            backgroundColor: PieColors[index % colors.length],
+            // borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
             fill: false,
             showLine: false
         };
@@ -149,9 +149,16 @@ function createScatterChart(dataObj) {
                 callbacks: {
                     label: function (context) {
                         var dataPoint = context.dataset.data[context.dataIndex];
-                        return `Track Title: ${dataPoint.track_title || 'N/A'} - X: ${context.parsed.x}, Y: ${context.parsed.y}`;
+                        return `${dataPoint.track_title || 'N/A'}`;
                     }
-                }
+                },
+                backgroundColor: 'rgba(0, 163, 108, 1)',
+                bodyFont: {
+                    font: {
+                        weight: 'bold',
+                        color: 'black'
+                    }
+                },
 
             }
 
