@@ -213,8 +213,6 @@ def create_plots(self, user_data):
         user_model=user_data,
     )
 
-    with open("./output/final_plots_data.json", "w") as json_file:
-        json.dump(jsonable_encoder(plots), json_file)
 
     return jsonable_encoder(plots)
 
