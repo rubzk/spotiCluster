@@ -4,24 +4,30 @@
 
 
 #table-container {
-    max-height: 320px;
+    max-height: 400px;
     overflow-y: auto;
-    /* Set the desired fixed height */
+    overflow-x: auto;
+
 }
 
 table {
-    @apply w-full border-collapse mt-4;
+    @apply w-full text-sm text-left rtl:text-right text-slate-50
 }
 
 th {
-    @apply bg-gray-200;
+    @apply uppercase text-xs font-bold text-gray-500
 }
 
-tr:nth-child(even) {
-    @apply bg-gray-100;
+td {
+    @apply px-3 py-6
 }
 
-td,
-th {
-    @apply border p-2;
+tr {
+    @apply border-b border-zinc-400;
+}
+
+
+/* Remove the bottom border from the last row */
+tr:last-child {
+    @apply border-b-0;
 }

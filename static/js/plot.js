@@ -601,7 +601,7 @@ function createTable(trackData, clusterName) {
     const headerRow = table.insertRow(0);
 
     // Create table header
-    const headers = ['Track ID', 'Cluster Name', 'Valence'];
+    const headers = ['Track ID', 'Cluster Name', 'Valence', 'Energy'];
     headers.forEach((header, index) => {
         const th = document.createElement('th');
         th.textContent = header;
@@ -614,6 +614,7 @@ function createTable(trackData, clusterName) {
         row.insertCell(0).textContent = track.track_id;
         row.insertCell(1).textContent = track.cluster_name;
         row.insertCell(2).textContent = track.valence;
+        row.insertCell(3).textContent = track.energy;
         // Add more columns as needed
     });
 
