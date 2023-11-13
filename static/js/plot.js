@@ -184,13 +184,13 @@ function updateScatter(property, chartObject, originalData, axis) {
 
     if (axis === 'x') {
         for (var dataset of chartObject.data.datasets) {
-            dataset.data = points(originalData[dataset.label], property, currentY, "title");
+            dataset.data = points(originalData[dataset.label], property, currentY, "track_title");
         }
         chartObject.options.scales.x.title.text = property;
     }
     else if (axis === 'y') {
         for (var dataset of chartObject.data.datasets) {
-            dataset.data = points(originalData[dataset.label], currentX, property, "title");
+            dataset.data = points(originalData[dataset.label], currentX, property, "track_title");
         }
         chartObject.options.scales.y.title.text = property;
     }
