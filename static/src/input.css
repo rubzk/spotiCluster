@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+#table-container {
+    max-height: 24px;
+    /* Set the desired fixed height */
+}
+
+table {
+    @apply w-full border-collapse mt-4;
+}
+
+th {
+    @apply bg-gray-200;
+}
+
+tr:nth-child(even) {
+    @apply bg-gray-100;
+}
+
+td,
+th {
+    @apply border p-2;
+}
