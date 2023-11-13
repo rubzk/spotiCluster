@@ -594,6 +594,32 @@ function updateBarChart(property, chartObject, dataObj) {
 
 }
 
+function createTable(trackData, clusterName) {
+    const filteredData = trackData.filter(track => track.cluster_name === clusterName);
+
+    const table = document.createElement('table');
+    const headerRow = table.insertRow(0);
+
+    // Create table header
+    const headers = ['Track ID', 'Cluster Name', 'Valence'];
+    headers.forEach((header, index) => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+
+    // Create table rows for the specified cluster
+    filteredData.forEach((track, rowIndex) => {
+        const row = table.insertRow(rowIndex + 1);
+        row.insertCell(0).textContent = track.track_id;
+        row.insertCell(1).textContent = track.cluster_name;
+        row.insertCell(2).textContent = track.valence;
+        // Add more columns as needed
+    });
+
+    return table;
+}
+
 
 var fetchNow = function () {
     fetch('/status/' + taskId, {
@@ -861,6 +887,13 @@ var fetchNow = function () {
 
                     updateBarChart(property, chartObject, originalData);
                 });
+
+                const container = document.getElementById('table-container');
+
+                // Append the created table to the container
+
+                var targetCluster = 'Cluster 2';
+                container.appendChild(createTable(data['plots']['user_model']['clustered_tracks'], targetCluster));
 
 
 
