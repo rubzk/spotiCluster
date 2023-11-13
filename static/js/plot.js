@@ -70,10 +70,12 @@ function points(config, selectedX, selectedY, label) {
             var x = xValues[i];
             var y = yValues[i];
 
-            // Include the name as part of the data object for each point
-            data.push({ x, y, label: name });
+            var dataPoint = { x, y };
+            dataPoint[label] = config[label][i];
+            data.push(dataPoint);
         }
     }
+
 
     return data;
 }
@@ -89,7 +91,7 @@ function createScatterChart(dataObj) {
     for (var [index, [key, value]] of Object.entries(Object.entries(dataObj))) {
         var dataset = {
             label: key,
-            data: points(value, selectedX = "energy", selectedY = "valence", label = "title"),
+            data: points(value, selectedX = "energy", selectedY = "valence", label = "track_title"),
             backgroundColor: colors[index % colors.length],
             borderColor: colors[index % colors.length].replace('0.2', '5'), // Increase opacity
             fill: false,
@@ -145,13 +147,16 @@ function createScatterChart(dataObj) {
         plugins: {
             tooltip: {
                 callbacks: {
-                    title: function (tooltipItem) {
-                        // Display the name as the tooltip title
-                        return tooltipItem[0].label;
+                    label: function (context) {
+                        var dataPoint = context.dataset.data[context.dataIndex];
+                        return `Track Title: ${dataPoint.track_title || 'N/A'} - X: ${context.parsed.x}, Y: ${context.parsed.y}`;
                     }
                 }
+
             }
+
         }
+
     }
 
     var chartConfig = {
