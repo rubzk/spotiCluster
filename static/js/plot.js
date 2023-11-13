@@ -238,7 +238,7 @@ function createPieChart(dataObj) {
 function createRadarChart(dataObj) {
 
 
-    var { key, tempo, time_signature, track_cluster, duration_ms, mode, loudness, ...dataObj } = dataObj;
+    var { key, tempo, time_signature, track_cluster, duration_ms, mode, loudness, speechiness, ...dataObj } = dataObj;
 
     var options = {
         scales: {
@@ -636,17 +636,16 @@ var fetchNow = function () {
 
                 var addButtonEnergy = document.getElementById('add-energy');
 
-                var addButtonTempo = document.getElementById('add-tempo');
-
                 var addButtonLiveness = document.getElementById('add-liveness');
-
-                var addButtonLoudness = document.getElementById('add-loudness');
-
-                var addButtonSpeechiness = document.getElementById('add-speechiness');
 
                 var addButtonDanceability = document.getElementById('add-danceability');
 
                 var addButtonAcousticness = document.getElementById('add-acousticness');
+
+                var addButtonValence = document.getElementById('add-valence');
+
+                var addButtonInstrumentalness = document.getElementById('add-instrumentalness');
+
 
                 addButtonEnergy.addEventListener('click', function () {
                     var property = 'energy'; // Replace with the desired property
@@ -656,34 +655,8 @@ var fetchNow = function () {
                     updateChartProperty(property, chartObject, originalData);
                 });
 
-                addButtonTempo.addEventListener('click', function () {
-                    var property = 'tempo'; // Replace with the desired property
-                    var chartObject = myRadarChart; // Replace with your actual chart object
-
-
-                    updateChartProperty(property, chartObject, originalData);
-                });
-
-
-
                 addButtonLiveness.addEventListener('click', function () {
                     var property = 'liveness'; // Replace with the desired property
-                    var chartObject = myRadarChart; // Replace with your actual chart object
-
-
-                    updateChartProperty(property, chartObject, originalData);
-                });
-
-                addButtonLoudness.addEventListener('click', function () {
-                    var property = 'loudness'; // Replace with the desired property
-                    var chartObject = myRadarChart; // Replace with your actual chart object
-
-
-                    updateChartProperty(property, chartObject, originalData);
-                });
-
-                addButtonSpeechiness.addEventListener('click', function () {
-                    var property = 'speechiness'; // Replace with the desired property
                     var chartObject = myRadarChart; // Replace with your actual chart object
 
 
@@ -705,6 +678,20 @@ var fetchNow = function () {
 
                     updateChartProperty(property, chartObject, originalData);
                 });
+
+                addButtonValence.addEventListener('click', function () {
+                    var property = 'valence';
+                    var chartObject = myRadarChart;
+
+                    updateChartProperty(property, chartObject, originalData);
+                })
+
+                addButtonInstrumentalness.addEventListener('click', function () {
+                    var property = 'instrumentalness';
+                    var chartObject = myRadarChart;
+
+                    updateChartProperty(property, chartObject, originalData);
+                })
 
 
                 var addEnergyScatterY = document.getElementById('add-energy-scatter-y');
