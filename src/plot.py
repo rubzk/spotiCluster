@@ -270,6 +270,19 @@ def generate_data_for_table(user_data):
         _artist_tracks, on="track_id", how="left"
     ).drop_duplicates(subset=["track_id"])
 
-    _df_clustered = _df_clustered.to_dict("list")
+    _columns = [
+        "track_name",
+        "first_artist",
+        "cluster_name",
+        "energy",
+        "danceability",
+        "valence",
+        "instrumentalness",
+        "key_mapped",
+        "tempo",
+        "track_href",
+    ]
+
+    _df_clustered = _df_clustered[_columns].to_dict("list")
 
     return Plot(data=_df_clustered)

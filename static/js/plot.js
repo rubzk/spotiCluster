@@ -619,25 +619,35 @@ function updateBarChart(property, chartObject, dataObj) {
 }
 
 function createTable(data) {
+    const columnOrder = ["track_name",
+        "first_artist",
+        "cluster_name",
+        "energy",
+        "danceability",
+        "valence",
+        "instrumentalness",
+        "key_mapped",
+        "tempo",
+        "track_href"]
     const table = document.createElement('table');
     const headerRow = table.insertRow(0);
 
-    // Create table header
-    Object.keys(data).forEach((columnName) => {
+    // Create table header based on custom order
+    columnOrder.forEach((columnName) => {
         const th = document.createElement('th');
         th.textContent = columnName;
         headerRow.appendChild(th);
     });
 
     // Find the maximum length among all columns
-    const maxLength = Math.max(...Object.values(data).map(arr => arr.length));
+    const maxLength = Math.max(...columnOrder.map(columnName => data[columnName].length));
 
     // Create table rows for all data points
     for (let rowIndex = 0; rowIndex < maxLength; rowIndex++) {
         const row = table.insertRow(rowIndex + 1);
 
-        // Populate cells based on column data
-        Object.keys(data).forEach((columnName, columnIndex) => {
+        // Populate cells based on custom column order
+        columnOrder.forEach((columnName, columnIndex) => {
             const cellValue = data[columnName][rowIndex];
             row.insertCell(columnIndex).textContent = cellValue !== undefined ? cellValue : '';
         });
@@ -647,6 +657,17 @@ function createTable(data) {
 }
 
 function updateTable(data, legendStatus) {
+
+    const columnOrder = ["track_name",
+        "first_artist",
+        "cluster_name",
+        "energy",
+        "danceability",
+        "valence",
+        "instrumentalness",
+        "key_mapped",
+        "tempo",
+        "track_href"]
     // Clear existing table content
     const tableContainer = document.getElementById('table-container');
     tableContainer.innerHTML = '';
@@ -655,8 +676,8 @@ function updateTable(data, legendStatus) {
     const table = document.createElement('table');
     const headerRow = table.insertRow(0);
 
-    // Create table header
-    Object.keys(data).forEach((columnName) => {
+    // Create table header based on custom order
+    columnOrder.forEach((columnName) => {
         const th = document.createElement('th');
         th.textContent = columnName;
         headerRow.appendChild(th);
@@ -667,8 +688,8 @@ function updateTable(data, legendStatus) {
         if (!legendStatus[cluster]) {
             const row = table.insertRow();
 
-            // Populate cells based on column data
-            Object.keys(data).forEach((columnName, columnIndex) => {
+            // Populate cells based on custom column order
+            columnOrder.forEach((columnName, columnIndex) => {
                 const cellValue = data[columnName][rowIndex];
                 row.insertCell(columnIndex).textContent = cellValue !== undefined ? cellValue : '';
             });
@@ -678,7 +699,6 @@ function updateTable(data, legendStatus) {
     // Append the new table to the container
     tableContainer.appendChild(table);
 }
-
 function onLegendClick(clusterName) {
     // Toggle the legend status for the clicked cluster
     legendStatus[clusterName] = !legendStatus[clusterName];
