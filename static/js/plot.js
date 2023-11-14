@@ -80,7 +80,7 @@ function points(config, selectedX, selectedY, label) {
     return data;
 }
 
-function createScatterChart(dataObj) {
+function createScatterChart(dataObj, trackData) {
     var dataPlots = {
         datasets: []
     };
@@ -184,10 +184,8 @@ function createScatterChart(dataObj) {
 
                     console.log(legendStatus);
 
-                    // console.log(this.options)
-                    // this.options.legendStatus[clusterName] = !this.options.legendStatus[clusterName];
 
-                    // updateTable(trackData, this.options.legendStatus);
+                    updateTable(trackData, legendStatus);
                 }
             },
 
@@ -623,9 +621,7 @@ function updateBarChart(property, chartObject, dataObj) {
 
 }
 
-function createTable(trackData, clusterName) {
-    const filteredData = trackData.filter(track => track.cluster_name === clusterName);
-
+function createTable(trackData) {
     const table = document.createElement('table');
     const headerRow = table.insertRow(0);
 
@@ -637,8 +633,8 @@ function createTable(trackData, clusterName) {
         headerRow.appendChild(th);
     });
 
-    // Create table rows for the specified cluster
-    filteredData.forEach((track, rowIndex) => {
+    // Create table rows for all clusters
+    trackData.forEach((track, rowIndex) => {
         const row = table.insertRow(rowIndex + 1);
         row.insertCell(0).textContent = track.track_id;
         row.insertCell(1).textContent = track.cluster_name;
@@ -650,7 +646,7 @@ function createTable(trackData, clusterName) {
     return table;
 }
 
-function updateTable(trackData = trackData, legendStatus) {
+function updateTable(trackData, legendStatus) {
     // Clear existing table content
     const tableContainer = document.getElementById('table-container');
     tableContainer.innerHTML = '';
@@ -669,7 +665,7 @@ function updateTable(trackData = trackData, legendStatus) {
 
     // Filter and create rows based on legend status
     trackData.forEach((track, rowIndex) => {
-        if (legendStatus[track.cluster_name]) {
+        if (!legendStatus[track.cluster_name]) {
             const row = table.insertRow();
             row.insertCell(0).textContent = track.track_id;
             row.insertCell(1).textContent = track.cluster_name;
@@ -722,7 +718,9 @@ var fetchNow = function () {
 
                 var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
 
-                var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'])
+                const trackData = data['plots']['user_model']['clustered_tracks']
+
+                var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'], trackData)
 
                 var dataPieChart = createPieChart(data['plots']['pie_chart']['data'])
 
@@ -964,8 +962,8 @@ var fetchNow = function () {
                 // Append the created table to the container
 
                 var targetCluster = 'Cluster 2';
-                const trackData = data['plots']['user_model']['clustered_tracks']
-                container.appendChild(createTable(trackData, targetCluster));
+
+                container.appendChild(createTable(trackData));
 
 
 
