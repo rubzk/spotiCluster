@@ -58,6 +58,7 @@ class Plots(BaseModel):
     scatter_chart: Optional[Plot]
     top_3_artist: Optional[Plot]
     saved_tracks_timeline: Optional[Plot]
+    table_tracks: Optional[Plot]
     user_model: UserData
 
 
@@ -209,27 +210,26 @@ def generate_scatter_chart(user_data):
 
     _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
 
-
     _data = []
 
     for playlist in user_data.playlists:
         if playlist.tracks:
             for track in playlist.tracks:
-                _data.append([track.id,track.name ,track.artists[0].name])
+                _data.append([track.id, track.name, track.artists[0].name])
 
-    _artist_tracks = pd.DataFrame(_data, columns=["track_id","track_name" ,"first_artist"])
+    _artist_tracks = pd.DataFrame(
+        _data, columns=["track_id", "track_name", "first_artist"]
+    )
 
-    _artist_tracks['track_title'] = _artist_tracks["track_name"] + ' - ' +  _artist_tracks["first_artist"]
+    _artist_tracks["track_title"] = (
+        _artist_tracks["track_name"] + " - " + _artist_tracks["first_artist"]
+    )
 
-    _df = _df.merge(_artist_tracks,on="track_id", how="left").drop_duplicates(subset=["track_id"])
+    _df = _df.merge(_artist_tracks, on="track_id", how="left").drop_duplicates(
+        subset=["track_id"]
+    )
 
-    features = [
-        "danceability",
-        "energy",
-        "instrumentalness",
-        "valence",
-        "track_title"
-    ]
+    features = ["danceability", "energy", "instrumentalness", "valence", "track_title"]
 
     _scatter_dict = {}
 
@@ -240,3 +240,49 @@ def generate_scatter_chart(user_data):
 
     return Plot(data=_scatter_dict)
 
+
+def generate_data_for_table(user_data):
+    """
+    Generate dataframe with data for plotting a table
+
+    """
+
+    _df_clustered = pd.DataFrame(
+        [track.model_dump() for track in user_data.clustered_tracks]
+    )
+
+    _data = []
+
+    for playlist in user_data.playlists:
+        if playlist.tracks:
+            for track in playlist.tracks:
+                _data.append([track.id, track.name, track.artists[0].name])
+
+    _artist_tracks = pd.DataFrame(
+        _data, columns=["track_id", "track_name", "first_artist"]
+    )
+
+    _artist_tracks["track_title"] = (
+        _artist_tracks["track_name"] + " - " + _artist_tracks["first_artist"]
+    )
+
+    _df_clustered = _df_clustered.merge(
+        _artist_tracks, on="track_id", how="left"
+    ).drop_duplicates(subset=["track_id"])
+
+    _columns = [
+        "track_name",
+        "first_artist",
+        "cluster_name",
+        "energy",
+        "danceability",
+        "valence",
+        "instrumentalness",
+        "key_mapped",
+        "tempo",
+        "track_href",
+    ]
+
+    _df_clustered = _df_clustered[_columns].to_dict("list")
+
+    return Plot(data=_df_clustered)

@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+#table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+
+}
+
+table {
+    @apply w-full text-sm text-left rtl:text-right text-slate-50
+}
+
+th {
+    @apply uppercase text-xs font-bold text-gray-500
+}
+
+td {
+    @apply px-3 py-3 tracking-tighter text-amber-50
+}
+
+tr {
+    @apply border-b border-zinc-400 font-semibold
+}
+
+
+/* Remove the bottom border from the last row */
+tr:last-child {
+    @apply border-b-0;
+}

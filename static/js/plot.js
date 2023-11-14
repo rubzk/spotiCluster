@@ -80,7 +80,7 @@ function points(config, selectedX, selectedY, label) {
     return data;
 }
 
-function createScatterChart(dataObj) {
+function createScatterChart(dataObj, trackData) {
     var dataPlots = {
         datasets: []
     };
@@ -144,6 +144,7 @@ function createScatterChart(dataObj) {
                 }
             }
         },
+
         plugins: {
             tooltip: {
                 callbacks: {
@@ -160,7 +161,30 @@ function createScatterChart(dataObj) {
                     }
                 },
 
-            }
+            },
+            legend: {
+                onClick: function (e, legendItem, legend) {
+                    const index = legendItem.datasetIndex;
+                    const ci = legend.chart;
+                    if (ci.isDatasetVisible(index)) {
+                        ci.hide(index);
+                        legendItem.hidden = true;
+                    } else {
+                        ci.show(index);
+                        legendItem.hidden = false;
+                    }
+
+                    const legendStatus = {};
+
+                    legend['legendItems'].forEach((legendItem) => {
+                        const clusterName = legendItem.text;
+                        const isHidden = legendItem.hidden;
+                        legendStatus[clusterName] = isHidden;
+                    });
+
+                    updateTable(trackData, legendStatus);
+                }
+            },
 
         }
 
@@ -184,13 +208,13 @@ function updateScatter(property, chartObject, originalData, axis) {
 
     if (axis === 'x') {
         for (var dataset of chartObject.data.datasets) {
-            dataset.data = points(originalData[dataset.label], property, currentY, "title");
+            dataset.data = points(originalData[dataset.label], property, currentY, "track_title");
         }
         chartObject.options.scales.x.title.text = property;
     }
     else if (axis === 'y') {
         for (var dataset of chartObject.data.datasets) {
-            dataset.data = points(originalData[dataset.label], currentX, property, "title");
+            dataset.data = points(originalData[dataset.label], currentX, property, "track_title");
         }
         chartObject.options.scales.y.title.text = property;
     }
@@ -594,6 +618,95 @@ function updateBarChart(property, chartObject, dataObj) {
 
 }
 
+function createTable(data) {
+    const columnOrder = ["track_name",
+        "first_artist",
+        "cluster_name",
+        "energy",
+        "danceability",
+        "valence",
+        "instrumentalness",
+        "key_mapped",
+        "tempo",
+        "track_href"]
+    const table = document.createElement('table');
+    const headerRow = table.insertRow(0);
+
+    // Create table header based on custom order
+    columnOrder.forEach((columnName) => {
+        const th = document.createElement('th');
+        th.textContent = columnName;
+        headerRow.appendChild(th);
+    });
+
+    // Find the maximum length among all columns
+    const maxLength = Math.max(...columnOrder.map(columnName => data[columnName].length));
+
+    // Create table rows for all data points
+    for (let rowIndex = 0; rowIndex < maxLength; rowIndex++) {
+        const row = table.insertRow(rowIndex + 1);
+
+        // Populate cells based on custom column order
+        columnOrder.forEach((columnName, columnIndex) => {
+            const cellValue = data[columnName][rowIndex];
+            row.insertCell(columnIndex).textContent = cellValue !== undefined ? cellValue : '';
+        });
+    }
+
+    return table;
+}
+
+function updateTable(data, legendStatus) {
+
+    const columnOrder = ["track_name",
+        "first_artist",
+        "cluster_name",
+        "energy",
+        "danceability",
+        "valence",
+        "instrumentalness",
+        "key_mapped",
+        "tempo",
+        "track_href"]
+    // Clear existing table content
+    const tableContainer = document.getElementById('table-container');
+    tableContainer.innerHTML = '';
+
+    // Create a new table
+    const table = document.createElement('table');
+    const headerRow = table.insertRow(0);
+
+    // Create table header based on custom order
+    columnOrder.forEach((columnName) => {
+        const th = document.createElement('th');
+        th.textContent = columnName;
+        headerRow.appendChild(th);
+    });
+
+    // Filter and create rows based on legend status
+    data.cluster_name.forEach((cluster, rowIndex) => {
+        if (!legendStatus[cluster]) {
+            const row = table.insertRow();
+
+            // Populate cells based on custom column order
+            columnOrder.forEach((columnName, columnIndex) => {
+                const cellValue = data[columnName][rowIndex];
+                row.insertCell(columnIndex).textContent = cellValue !== undefined ? cellValue : '';
+            });
+        }
+    });
+
+    // Append the new table to the container
+    tableContainer.appendChild(table);
+}
+function onLegendClick(clusterName) {
+    // Toggle the legend status for the clicked cluster
+    legendStatus[clusterName] = !legendStatus[clusterName];
+
+    // Update the table with the current legend status
+    updateTable(legendStatus = legendStatus);
+}
+
 
 var fetchNow = function () {
     fetch('/status/' + taskId, {
@@ -625,7 +738,9 @@ var fetchNow = function () {
 
                 var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
 
-                var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'])
+                const trackData = data['plots']['table_tracks']['data']
+
+                var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'], trackData)
 
                 var dataPieChart = createPieChart(data['plots']['pie_chart']['data'])
 
@@ -861,6 +976,14 @@ var fetchNow = function () {
 
                     updateBarChart(property, chartObject, originalData);
                 });
+
+                const container = document.getElementById('table-container');
+
+                // Append the created table to the container
+
+                var targetCluster = 'Cluster 2';
+
+                container.appendChild(createTable(trackData));
 
 
 

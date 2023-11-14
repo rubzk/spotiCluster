@@ -9,6 +9,7 @@ from src.plot import (
     generate_scatter_chart,
     generate_saved_tracks_timeline,
     generate_top_3_artist,
+    generate_data_for_table,
 )
 
 from utils.postgres import df_to_db, PostgresDB
@@ -196,6 +197,8 @@ def create_plots(self, user_data):
 
     saved_tracks_timeline = generate_saved_tracks_timeline(user_data)
 
+    table_tracks = generate_data_for_table(user_data)
+
     number_of_tracks = len(user_data.clustered_tracks)
 
     number_of_clusters = len(
@@ -210,9 +213,9 @@ def create_plots(self, user_data):
         scatter_chart=scatter_chart,
         top_3_artist=top_3_artist,
         saved_tracks_timeline=saved_tracks_timeline,
+        table_tracks=table_tracks,
         user_model=user_data,
     )
-
 
     return jsonable_encoder(plots)
 

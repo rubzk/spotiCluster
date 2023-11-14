@@ -265,6 +265,7 @@ class DataExtractor:
                     "track_id": audio_feature["id"],
                     "duration_ms": audio_feature["duration_ms"],
                     "time_signature": audio_feature["time_signature"],
+                    "track_href": audio_feature["track_href"],
                 }
 
                 audio_features = AudioFeatures(**ft_dict)
