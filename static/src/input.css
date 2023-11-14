@@ -19,11 +19,11 @@ th {
 }
 
 td {
-    @apply px-3 py-6
+    @apply px-3 py-6 tracking-tighter text-amber-50
 }
 
 tr {
-    @apply border-b border-zinc-400;
+    @apply border-b border-zinc-400 font-semibold
 }
 
 

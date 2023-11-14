@@ -954,12 +954,16 @@ td {
   padding-right: 0.75rem;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+  letter-spacing: -0.05em;
+  --tw-text-opacity: 1;
+  color: rgb(255 251 235 / var(--tw-text-opacity));
 }
 
 tr {
   border-bottom-width: 1px;
   --tw-border-opacity: 1;
   border-color: rgb(161 161 170 / var(--tw-border-opacity));
+  font-weight: 600;
 }
 
 /* Remove the bottom border from the last row */

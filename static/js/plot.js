@@ -144,6 +144,7 @@ function createScatterChart(dataObj) {
                 }
             }
         },
+
         plugins: {
             tooltip: {
                 callbacks: {
@@ -160,7 +161,31 @@ function createScatterChart(dataObj) {
                     }
                 },
 
-            }
+            },
+            legend: {
+                onClick: function (e, legendItem, legend) {
+                    console.log(e)
+                    console.log(legendItem)
+                    console.log(legend)
+                    // legendItem.hidden = !legendItem.hidden;
+
+                    const index = legendItem.datasetIndex;
+                    const ci = legend.chart;
+                    if (ci.isDatasetVisible(index)) {
+                        ci.hide(index);
+                        legendItem.hidden = true;
+                    } else {
+                        ci.show(index);
+                        legendItem.hidden = false;
+                    }
+
+
+                    // console.log(this.options)
+                    // this.options.legendStatus[clusterName] = !this.options.legendStatus[clusterName];
+
+                    // updateTable(trackData, this.options.legendStatus);
+                }
+            },
 
         }
 
@@ -621,6 +646,47 @@ function createTable(trackData, clusterName) {
     return table;
 }
 
+function updateTable(trackData = trackData, legendStatus) {
+    // Clear existing table content
+    const tableContainer = document.getElementById('table-container');
+    tableContainer.innerHTML = '';
+
+    // Create a new table
+    const table = document.createElement('table');
+    const headerRow = table.insertRow(0);
+
+    // Create table header
+    const headers = ['Track ID', 'Cluster Name', 'Valence', 'Energy'];
+    headers.forEach((header, index) => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+
+    // Filter and create rows based on legend status
+    trackData.forEach((track, rowIndex) => {
+        if (legendStatus[track.cluster_name]) {
+            const row = table.insertRow();
+            row.insertCell(0).textContent = track.track_id;
+            row.insertCell(1).textContent = track.cluster_name;
+            row.insertCell(2).textContent = track.valence;
+            row.insertCell(3).textContent = track.energy;
+            // Add more columns as needed
+        }
+    });
+
+    // Append the new table to the container
+    tableContainer.appendChild(table);
+}
+
+function onLegendClick(clusterName) {
+    // Toggle the legend status for the clicked cluster
+    legendStatus[clusterName] = !legendStatus[clusterName];
+
+    // Update the table with the current legend status
+    updateTable(legendStatus = legendStatus);
+}
+
 
 var fetchNow = function () {
     fetch('/status/' + taskId, {
@@ -894,7 +960,8 @@ var fetchNow = function () {
                 // Append the created table to the container
 
                 var targetCluster = 'Cluster 2';
-                container.appendChild(createTable(data['plots']['user_model']['clustered_tracks'], targetCluster));
+                const trackData = data['plots']['user_model']['clustered_tracks']
+                container.appendChild(createTable(trackData, targetCluster));
 
 
 
