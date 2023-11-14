@@ -164,11 +164,6 @@ function createScatterChart(dataObj) {
             },
             legend: {
                 onClick: function (e, legendItem, legend) {
-                    console.log(e)
-                    console.log(legendItem)
-                    console.log(legend)
-                    // legendItem.hidden = !legendItem.hidden;
-
                     const index = legendItem.datasetIndex;
                     const ci = legend.chart;
                     if (ci.isDatasetVisible(index)) {
@@ -179,6 +174,15 @@ function createScatterChart(dataObj) {
                         legendItem.hidden = false;
                     }
 
+                    const legendStatus = {};
+
+                    legend['legendItems'].forEach((legendItem) => {
+                        const clusterName = legendItem.text;
+                        const isHidden = legendItem.hidden;
+                        legendStatus[clusterName] = isHidden;
+                    });
+
+                    console.log(legendStatus);
 
                     // console.log(this.options)
                     // this.options.legendStatus[clusterName] = !this.options.legendStatus[clusterName];
