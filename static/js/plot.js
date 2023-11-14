@@ -182,9 +182,6 @@ function createScatterChart(dataObj, trackData) {
                         legendStatus[clusterName] = isHidden;
                     });
 
-                    console.log(legendStatus);
-
-
                     updateTable(trackData, legendStatus);
                 }
             },
