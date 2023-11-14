@@ -618,32 +618,35 @@ function updateBarChart(property, chartObject, dataObj) {
 
 }
 
-function createTable(trackData) {
+function createTable(data) {
     const table = document.createElement('table');
     const headerRow = table.insertRow(0);
 
     // Create table header
-    const headers = ['Track ID', 'Cluster Name', 'Valence', 'Energy'];
-    headers.forEach((header, index) => {
+    Object.keys(data).forEach((columnName) => {
         const th = document.createElement('th');
-        th.textContent = header;
+        th.textContent = columnName;
         headerRow.appendChild(th);
     });
 
-    // Create table rows for all clusters
-    trackData.forEach((track, rowIndex) => {
+    // Find the maximum length among all columns
+    const maxLength = Math.max(...Object.values(data).map(arr => arr.length));
+
+    // Create table rows for all data points
+    for (let rowIndex = 0; rowIndex < maxLength; rowIndex++) {
         const row = table.insertRow(rowIndex + 1);
-        row.insertCell(0).textContent = track.track_id;
-        row.insertCell(1).textContent = track.cluster_name;
-        row.insertCell(2).textContent = track.valence;
-        row.insertCell(3).textContent = track.energy;
-        // Add more columns as needed
-    });
+
+        // Populate cells based on column data
+        Object.keys(data).forEach((columnName, columnIndex) => {
+            const cellValue = data[columnName][rowIndex];
+            row.insertCell(columnIndex).textContent = cellValue !== undefined ? cellValue : '';
+        });
+    }
 
     return table;
 }
 
-function updateTable(trackData, legendStatus) {
+function updateTable(data, legendStatus) {
     // Clear existing table content
     const tableContainer = document.getElementById('table-container');
     tableContainer.innerHTML = '';
@@ -653,22 +656,22 @@ function updateTable(trackData, legendStatus) {
     const headerRow = table.insertRow(0);
 
     // Create table header
-    const headers = ['Track ID', 'Cluster Name', 'Valence', 'Energy'];
-    headers.forEach((header, index) => {
+    Object.keys(data).forEach((columnName) => {
         const th = document.createElement('th');
-        th.textContent = header;
+        th.textContent = columnName;
         headerRow.appendChild(th);
     });
 
     // Filter and create rows based on legend status
-    trackData.forEach((track, rowIndex) => {
-        if (!legendStatus[track.cluster_name]) {
+    data.cluster_name.forEach((cluster, rowIndex) => {
+        if (!legendStatus[cluster]) {
             const row = table.insertRow();
-            row.insertCell(0).textContent = track.track_id;
-            row.insertCell(1).textContent = track.cluster_name;
-            row.insertCell(2).textContent = track.valence;
-            row.insertCell(3).textContent = track.energy;
-            // Add more columns as needed
+
+            // Populate cells based on column data
+            Object.keys(data).forEach((columnName, columnIndex) => {
+                const cellValue = data[columnName][rowIndex];
+                row.insertCell(columnIndex).textContent = cellValue !== undefined ? cellValue : '';
+            });
         }
     });
 
@@ -715,7 +718,7 @@ var fetchNow = function () {
 
                 var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
 
-                const trackData = data['plots']['user_model']['clustered_tracks']
+                const trackData = data['plots']['table_tracks']['data']
 
                 var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'], trackData)
 
