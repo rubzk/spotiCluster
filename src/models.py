@@ -26,6 +26,7 @@ class AudioFeatures(BaseModel):
     tempo: float
     duration_ms: int
     time_signature: int
+    track_href: str
     key_mapped: Optional[str] = None
 
     def model_post_init(self, __context) -> None:
