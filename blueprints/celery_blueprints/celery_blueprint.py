@@ -77,7 +77,7 @@ def auth():
 
 
 @celery_bp.route("/status/<celery_task_id>", methods=["GET"])
-def taskstatus(celery_task_id):
+def get_task_status(celery_task_id):
     task = current_app.celery.AsyncResult(celery_task_id)
 
     # app.logger.info(f"status: {task.state}")
