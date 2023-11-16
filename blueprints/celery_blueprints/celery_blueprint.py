@@ -73,16 +73,18 @@ def auth():
         append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
 
-    return redirect(url_for("celery_bp.taskstatus", celery_task_id=task.id))
+    return redirect(url_for("celery_bp.get_task_status", celery_task_id=task.id))
 
 
 @celery_bp.route("/status/<celery_task_id>", methods=["GET"])
-def taskstatus(celery_task_id):
+def get_task_status(celery_task_id):
+
     task = current_app.celery.AsyncResult(celery_task_id)
 
     # app.logger.info(f"status: {task.state}")
 
     if "application/json" in request.headers.get("Content-Type", ""):
+
         if task.state == "SUCCESS":
             # with open("./output/task_info.json", "w") as json_file:
             #     json.dump(task.info, json_file)
