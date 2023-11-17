@@ -19,6 +19,8 @@ import logging
 import pandas as pd
 from celery import shared_task
 from .models import Playlist, UserData, TracksClustered
+from .db_models import commit_results,UserResults
+from datetime import datetime
 
 from fastapi.encoders import jsonable_encoder
 
@@ -205,6 +207,11 @@ def create_plots(self, user_data):
         set([track.cluster_name for track in user_data.clustered_tracks])
     )
 
+    user_result = UserResults(task_id="y23573257",
+                              created=datetime.today())
+
+    commit_results(results=[user_result])
+
     plots = Plots(
         number_of_tracks=number_of_tracks,
         number_of_clusters=number_of_clusters,
@@ -220,24 +227,24 @@ def create_plots(self, user_data):
     return jsonable_encoder(plots)
 
 
-@shared_task(
-    bind=True,
-    name="SAVE CLUSTER DATA IN POSTGRES",
-    max_retries=3,
-    default_retry_delay=10,
-)
-def save_data_in_postgres(self, result):
-    cluster_data = pd.read_json(json.dumps(result["clusters"]))
-    cluster_stats = pd.read_json(json.dumps(result["cluster_stats"]))
+# @shared_task(
+#     bind=True,
+#     name="SAVE CLUSTER DATA IN POSTGRES",
+#     max_retries=3,
+#     default_retry_delay=10,
+# )
+# def save_data_in_postgres(self, result):
+#     cluster_data = pd.read_json(json.dumps(result["clusters"]))
+#     cluster_stats = pd.read_json(json.dumps(result["cluster_stats"]))
 
-    db = PostgresDB()
-    df_to_db(
-        df=cluster_data,
-        table_name="user_clusters",
-    )
+#     db = PostgresDB()
+#     df_to_db(
+#         df=cluster_data,
+#         table_name="user_clusters",
+#     )
 
-    return {
-        "clusters": cluster_data.to_dict("list"),
-        "cluster_stats": cluster_stats.to_dict("list"),
-        "saved_tracks": result["saved_tracks"],
-    }
+#     return {
+#         "clusters": cluster_data.to_dict("list"),
+#         "cluster_stats": cluster_stats.to_dict("list"),
+#         "saved_tracks": result["saved_tracks"],
+#     }
