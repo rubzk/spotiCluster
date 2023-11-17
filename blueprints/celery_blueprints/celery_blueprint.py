@@ -15,7 +15,6 @@ from src.tasks import (
     append_results,
     cluster_results,
     create_plots,
-    save_data_in_postgres,
     get_saved_tracks,
 )
 from celery import chord
