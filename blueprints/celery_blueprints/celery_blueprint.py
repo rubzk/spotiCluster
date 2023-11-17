@@ -10,6 +10,8 @@ from flask import (
 )
 from src.auth import Authenticator
 import configparser
+import uuid
+from datetime import datetime
 from src.tasks import (
     get_tracks,
     append_results,
@@ -19,6 +21,8 @@ from src.tasks import (
 )
 from celery import chord
 from src.extract import DataExtractor
+from src.models import Task
+
 
 config = configparser.RawConfigParser()
 config.read(r"config.cfg")
@@ -40,9 +44,13 @@ def auth():
 
     extractor = DataExtractor(auth.auth_token)
 
+    task_ = Task(id=uuid.uuid4(),started_at=datetime.today())
+
     user_data = extractor.get_user_id()
 
     user_data = extractor.get_all_playlists(user_data)
+
+    user_data.task = task_
 
     total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
         get_tracks.s(auth.auth_token, playlist.dict())
