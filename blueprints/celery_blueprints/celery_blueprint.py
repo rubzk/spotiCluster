@@ -61,14 +61,14 @@ def auth():
         append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
 
-    return redirect(url_for("celery_bp.results_route", celery_task_id=task.id))
+    return redirect(url_for("celery_bp.get_results", celery_task_id=task.id))
 
 @celery_bp.route("/results/<celery_task_id>", methods=["GET"])
-def results_route(celery_task_id):
+def get_results(celery_task_id):
     return render_template("plot.html", task_id=celery_task_id)
 
 @celery_bp.route("/status/<celery_task_id>", methods=["GET"])
-def taskstatus(celery_task_id):
+def get_task_status(celery_task_id):
     task = current_app.celery.AsyncResult(celery_task_id)
 
     ## In the future  I would love to have an status bar 
