@@ -75,7 +75,7 @@ def generate_radar_chart(user_data):
     :rtype: Plot
     """
 
-    _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
+    _df = pd.DataFrame([track.dict() for track in user_data.clustered_tracks])
 
     cluster_stats = _df.groupby("cluster_name").mean().reset_index()
 
@@ -100,7 +100,7 @@ def generate_pie_chart(user_data):
     :rtype: Plot
     """
 
-    _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
+    _df = pd.DataFrame([track.dict() for track in user_data.clustered_tracks])
 
     _df_gb = (
         _df.groupby("cluster_name")[["track_id"]]
@@ -129,7 +129,7 @@ def generate_top_3_artist(user_data):
         return group["artist_name"].value_counts().nlargest(3)
 
     _tracks_clustered = pd.DataFrame(
-        [track.model_dump() for track in user_data.clustered_tracks]
+        [track.dict() for track in user_data.clustered_tracks]
     )
 
     _data = []
@@ -180,7 +180,7 @@ def generate_saved_tracks_timeline(user_data):
         "tempo",
     ]
 
-    _df = pd.DataFrame([track.model_dump() for track in user_data.saved_tracks.tracks])
+    _df = pd.DataFrame([track.dict() for track in user_data.saved_tracks.tracks])
 
     _df = pd.concat([_df, pd.json_normalize(_df["features"])], axis=1)
 
@@ -208,7 +208,7 @@ def generate_scatter_chart(user_data):
     :rtype: Plot
     """
 
-    _df = pd.DataFrame([track.model_dump() for track in user_data.clustered_tracks])
+    _df = pd.DataFrame([track.dict() for track in user_data.clustered_tracks])
 
     _data = []
 
@@ -248,7 +248,7 @@ def generate_data_for_table(user_data):
     """
 
     _df_clustered = pd.DataFrame(
-        [track.model_dump() for track in user_data.clustered_tracks]
+        [track.dict() for track in user_data.clustered_tracks]
     )
 
     _data = []
