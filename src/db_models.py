@@ -1,8 +1,19 @@
-from sqlmodel import SQLModel, Field, create_engine, Session
+from sqlmodel import SQLModel, Field, create_engine, Session, Column, BigInteger
 from typing import List, Optional
 from datetime import datetime
 import os 
+from uuid import UUID
 
+class TaskRuns(SQLModel, table=True):
+    __tablename__ = "task_runs"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    task_id: UUID
+    user_id: int = Field(sa_column=Column(BigInteger()))
+    started_at: datetime
+    finished_at: datetime
+
+# class Results(SQLModel, table=True):
+#     __tablename__ = "results_tasks"
 
 def create_db_engine():
     try:
@@ -25,11 +36,4 @@ def commit_results(results):
             session.add(r)
         session.commit()
 
-
-class UserResults(SQLModel, table=True):
-    __tablename__ = "user_results"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    task_id: str
-    created: datetime
-
+    
