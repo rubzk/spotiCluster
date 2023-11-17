@@ -39,21 +39,9 @@ def auth():
         auth_code=auth_code,
     )
 
-    res = make_response()
-
-    res.headers["my-header"] = "Test Header"
-
     extractor = DataExtractor(auth.auth_token)
 
     user_data = extractor.get_user_id()
-
-    res.set_cookie(
-        "username",
-        # value=user_id,
-        value="carlos",
-        expires=None,
-        path="/",
-    )
 
     user_data = extractor.get_all_playlists(user_data)
 
