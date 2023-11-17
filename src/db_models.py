@@ -3,6 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 import os 
 from uuid import UUID
+from src.plot import Plots
 
 class TaskRuns(SQLModel, table=True):
     __tablename__ = "task_runs"
@@ -11,6 +12,12 @@ class TaskRuns(SQLModel, table=True):
     user_id: int = Field(sa_column=Column(BigInteger()))
     started_at: datetime
     finished_at: datetime
+
+class TaskResults(SQLModel, table=True):
+    __tablename__ = "task_results"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    taks_id: UUID
+    results: Optional[int] = Field(default=None)
 
 # class Results(SQLModel, table=True):
 #     __tablename__ = "results_tasks"
