@@ -12,7 +12,7 @@ from src.plot import (
     generate_data_for_table,
 )
 
-from utils.postgres import df_to_db, PostgresDB
+#from utils.postgres import df_to_db, PostgresDB
 
 import logging
 
