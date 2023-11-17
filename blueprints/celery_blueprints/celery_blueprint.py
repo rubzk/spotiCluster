@@ -39,21 +39,9 @@ def auth():
         auth_code=auth_code,
     )
 
-    res = make_response()
-
-    res.headers["my-header"] = "Test Header"
-
     extractor = DataExtractor(auth.auth_token)
 
     user_data = extractor.get_user_id()
-
-    res.set_cookie(
-        "username",
-        # value=user_id,
-        value="carlos",
-        expires=None,
-        path="/",
-    )
 
     user_data = extractor.get_all_playlists(user_data)
 
@@ -72,40 +60,30 @@ def auth():
     task = chord(total_tracks)(
         append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
+    return redirect(url_for("celery_bp.get_results", celery_task_id=task.id))
 
-    return redirect(url_for("celery_bp.get_task_status", celery_task_id=task.id))
 
+@celery_bp.route("/results/<celery_task_id>", methods=["GET"])
+def get_results(celery_task_id):
+    return render_template("plot.html", task_id=celery_task_id)
 
 @celery_bp.route("/status/<celery_task_id>", methods=["GET"])
 def get_task_status(celery_task_id):
 
     task = current_app.celery.AsyncResult(celery_task_id)
 
-    # app.logger.info(f"status: {task.state}")
+    ## In the future  I would love to have an status bar 
 
     if "application/json" in request.headers.get("Content-Type", ""):
 
         if task.state == "SUCCESS":
-            # with open("./output/task_info.json", "w") as json_file:
-            #     json.dump(task.info, json_file)
-
             return {"plots": task.info}
 
-        # app.logger.info(task.info)
 
         return {
             "status": task.state
-        }  ### Here One idea I have is to return the status of the task and Update front end with it
-
-    return render_template("plot.html", task_id=celery_task_id)
+        }  
 
 
-# @app.route("/tasks/", methods=["GET"])
-# def get_tasks_celery():
-#     current_app.loader.import_default_modules()
 
-#     tasks = list(
-#         sorted(name for name in current_app.tasks if not name.startswith("celery."))
-#     )
 
-#     return jsonify(tasks)
