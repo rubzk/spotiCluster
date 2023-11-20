@@ -1,5 +1,5 @@
-from sqlmodel import SQLModel, Field, create_engine, Session, Column, BigInteger
-from typing import List, Optional
+from sqlmodel import SQLModel, Field, create_engine, Session, Column, BigInteger, JSON
+from typing import List, Optional, Dict
 from datetime import datetime
 import os 
 from uuid import UUID
@@ -61,10 +61,20 @@ class Artists(SQLModel, table=True):
     __tablename__ = "artists"
     artist_id: int = Field(primary_key=True)
     name: str
-    type: str 
+    type: str
 
-# class Results(SQLModel, table=True):
-#     __tablename__ = "results_tasks"
+
+class PlotResults(SQLModel, table=True):
+    __tablename__ = "plot_results"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    task_id: UUID
+    plot_id: int
+    result: Dict = Field(default={}, sa_column=Column(JSON))
+
+class PlotTypes(SQLModel, table=True):
+    __tablename__ = "plot_types"
+    id: int = Field(primary_key=True)
+    name: str
 
 def create_db_engine():
     try:
