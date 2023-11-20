@@ -210,6 +210,7 @@ def create_plots(self, user_data):
 
     user_result = TaskRuns(task_id=user_data.task.id,
                               user_id=user_data.id,
+                              number_of_tracks=number_of_tracks,
                               started_at=user_data.task.started_at,
                               finished_at=datetime.today())
 
