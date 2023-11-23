@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, root_validator
 from typing import List, Optional, Any, Dict
 from .models import UserData
 
+
 class Plot(BaseModel):
     """
     Data model for a plot.
@@ -287,3 +288,19 @@ def generate_data_for_table(user_data):
     _df_clustered = _df_clustered[_columns].to_dict("list")
 
     return Plot(data=_df_clustered, plot_id=6)
+
+
+def generate_and_commit_task_results_db(plots, task_id):
+
+    results = []
+
+    for result in plots:
+        results.append(TaskResults(
+            task_id=task_id,
+            plot_id=result.plot_id,
+            result=result.data
+        ))
+    
+    commit_results(results)
+
+    
