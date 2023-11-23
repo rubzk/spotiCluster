@@ -20,7 +20,7 @@ import logging
 import pandas as pd
 from celery import shared_task
 from .models import Playlist, UserData, TracksClustered
-from .db_models import commit_results,TaskRuns
+from .db_models import commit_results,TaskRuns, TaskResults
 from datetime import datetime
 
 from fastapi.encoders import jsonable_encoder
@@ -208,13 +208,19 @@ def create_plots(self, user_data):
         set([track.cluster_name for track in user_data.clustered_tracks])
     )
 
-    user_result = TaskRuns(task_id=user_data.task.id,
+    user_task = TaskRuns(task_id=user_data.task.id,
                               user_id=user_data.id,
                               number_of_tracks=number_of_tracks,
                               started_at=user_data.task.started_at,
                               finished_at=datetime.today())
+    
+    user_results = TaskResults(task_id=user_data.task.id,
+                               plot_id=1,
+                               result=pie_chart)
+    
+    
 
-    commit_results(results=[user_result])
+    commit_results(results=[user_task, user_results])
 
     plots = Plots(
         number_of_tracks=number_of_tracks,
