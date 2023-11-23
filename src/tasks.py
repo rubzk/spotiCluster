@@ -208,19 +208,31 @@ def create_plots(self, user_data):
         set([track.cluster_name for track in user_data.clustered_tracks])
     )
 
-    user_task = TaskRuns(task_id=user_data.task.id,
-                              user_id=user_data.id,
-                              number_of_tracks=number_of_tracks,
-                              started_at=user_data.task.started_at,
-                              finished_at=datetime.today())
+    results_sql = []
+
+    for plot in [radar_chart,pie_chart,scatter_chart,top_3_artist,saved_tracks_timeline,table_tracks]:
+        results_sql.append(TaskResults(
+            task_id=user_data.task.id,
+            plot_id=plot.plot_id,
+            result=plot.data
+        ))
+
+    commit_results(results=results_sql)
     
-    user_results = TaskResults(task_id=user_data.task.id,
-                               plot_id=1,
-                               result=pie_chart)
+
+    # user_task = TaskRuns(task_id=user_data.task.id,
+    #                           user_id=user_data.id,
+    #                           number_of_tracks=number_of_tracks,
+    #                           started_at=user_data.task.started_at,
+    #                           finished_at=datetime.today())
+    
+    # user_results = TaskResults(task_id=user_data.task.id,
+    #                            plot_id=1,
+    #                            result=pie_chart)
     
     
 
-    commit_results(results=[user_task, user_results])
+    # commit_results(results=[user_task, user_results])
 
     plots = Plots(
         number_of_tracks=number_of_tracks,

@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field, root_validator
 from typing import List, Optional, Any, Dict
 from .models import UserData
 
-
 class Plot(BaseModel):
     """
     Data model for a plot.
@@ -18,6 +17,8 @@ class Plot(BaseModel):
     """
 
     data: Dict
+    plot_id : int
+
 
 
 class Plots(BaseModel):
@@ -84,7 +85,7 @@ def generate_radar_chart(user_data):
     for c in cluster_stats.columns:
         _plot[c] = cluster_stats[c].to_list()
 
-    return Plot(data=_plot)
+    return Plot(data=_plot, plot_id=1)
 
 
 def generate_pie_chart(user_data):
@@ -109,7 +110,7 @@ def generate_pie_chart(user_data):
         .rename(columns={"track_id": "number_of_tracks"})
     )
 
-    return Plot(data=_df_gb.to_dict("list"))
+    return Plot(data=_df_gb.to_dict("list"), plot_id=2)
 
 
 def generate_top_3_artist(user_data):
@@ -152,7 +153,7 @@ def generate_top_3_artist(user_data):
 
     top_artists_per_cluster = top_artists_per_cluster.to_dict("list")
 
-    return Plot(data=top_artists_per_cluster)
+    return Plot(data=top_artists_per_cluster, plot_id=3)
 
 
 def generate_saved_tracks_timeline(user_data):
@@ -192,7 +193,7 @@ def generate_saved_tracks_timeline(user_data):
 
     _timeline = _timeline.to_dict("list")
 
-    return Plot(data=_timeline)
+    return Plot(data=_timeline, plot_id=4)
 
 
 def generate_scatter_chart(user_data):
@@ -238,7 +239,7 @@ def generate_scatter_chart(user_data):
             {cluster: _df[_df.cluster_name == cluster][features].to_dict("list")}
         )
 
-    return Plot(data=_scatter_dict)
+    return Plot(data=_scatter_dict, plot_id=5)
 
 
 def generate_data_for_table(user_data):
@@ -285,4 +286,4 @@ def generate_data_for_table(user_data):
 
     _df_clustered = _df_clustered[_columns].to_dict("list")
 
-    return Plot(data=_df_clustered)
+    return Plot(data=_df_clustered, plot_id=6)
