@@ -61,7 +61,7 @@ def prepare_df_tracks_(user_data):
         if playlist.tracks:
             for track in playlist.tracks:
                 if track.features:
-                    data.append([track.features.model_dump()])
+                    data.append([track.features.dict()])
 
     df_ = pd.DataFrame(data, columns=["data"])
 

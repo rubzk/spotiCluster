@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
+from uuid import UUID
 
 class Artist(BaseModel):
     id: str
@@ -108,8 +108,14 @@ class TracksClustered(AudioFeatures):
     cluster_name: str
 
 
+class Task(BaseModel):
+    id: UUID
+    started_at: datetime
+    finished_at: Optional[datetime] = Field(default=None)
+
 class UserData(BaseModel):
     id: int
+    task: Optional[Task] = Field(default=None)
     playlists: List[Playlist]
     saved_tracks: Optional[SavedTracks] = Field(default=None)
     clustered_tracks: Optional[List[TracksClustered]] = Field(default=None)

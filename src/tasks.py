@@ -1,4 +1,5 @@
 import json
+import uuid 
 
 from src.extract import DataExtractor
 from src.clustering import k_means_clustering, prepare_df_tracks_
@@ -10,15 +11,18 @@ from src.plot import (
     generate_saved_tracks_timeline,
     generate_top_3_artist,
     generate_data_for_table,
+    generate_and_commit_task_results_db
 )
 
-from utils.postgres import df_to_db, PostgresDB
+#from utils.postgres import df_to_db, PostgresDB
 
 import logging
 
 import pandas as pd
 from celery import shared_task
 from .models import Playlist, UserData, TracksClustered
+from .db_models import commit_results,TaskRuns, TaskResults
+from datetime import datetime
 
 from fastapi.encoders import jsonable_encoder
 
@@ -205,6 +209,17 @@ def create_plots(self, user_data):
         set([track.cluster_name for track in user_data.clustered_tracks])
     )
 
+    generate_and_commit_task_results_db(results=[radar_chart,pie_chart,scatter_chart,top_3_artist,saved_tracks_timeline,table_tracks], task_id=user_data.task.id)
+
+
+    user_task = TaskRuns(task_id=user_data.task.id,
+                              user_id=user_data.id,
+                              number_of_tracks=number_of_tracks,
+                              started_at=user_data.task.started_at,
+                              finished_at=datetime.today())
+    
+    commit_results(results=[user_task])
+
     plots = Plots(
         number_of_tracks=number_of_tracks,
         number_of_clusters=number_of_clusters,
@@ -220,24 +235,24 @@ def create_plots(self, user_data):
     return jsonable_encoder(plots)
 
 
-@shared_task(
-    bind=True,
-    name="SAVE CLUSTER DATA IN POSTGRES",
-    max_retries=3,
-    default_retry_delay=10,
-)
-def save_data_in_postgres(self, result):
-    cluster_data = pd.read_json(json.dumps(result["clusters"]))
-    cluster_stats = pd.read_json(json.dumps(result["cluster_stats"]))
+# @shared_task(
+#     bind=True,
+#     name="SAVE CLUSTER DATA IN POSTGRES",
+#     max_retries=3,
+#     default_retry_delay=10,
+# )
+# def save_data_in_postgres(self, result):
+#     cluster_data = pd.read_json(json.dumps(result["clusters"]))
+#     cluster_stats = pd.read_json(json.dumps(result["cluster_stats"]))
 
-    db = PostgresDB()
-    df_to_db(
-        df=cluster_data,
-        table_name="user_clusters",
-    )
+#     db = PostgresDB()
+#     df_to_db(
+#         df=cluster_data,
+#         table_name="user_clusters",
+#     )
 
-    return {
-        "clusters": cluster_data.to_dict("list"),
-        "cluster_stats": cluster_stats.to_dict("list"),
-        "saved_tracks": result["saved_tracks"],
-    }
+#     return {
+#         "clusters": cluster_data.to_dict("list"),
+#         "cluster_stats": cluster_stats.to_dict("list"),
+#         "saved_tracks": result["saved_tracks"],
+#     }
