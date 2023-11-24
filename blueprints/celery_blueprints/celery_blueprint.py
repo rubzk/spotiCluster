@@ -22,7 +22,7 @@ from src.tasks import (
 from celery import chord
 from src.extract import DataExtractor
 from src.models import Task
-
+from src.db import select_user_runs
 
 config = configparser.RawConfigParser()
 config.read(r"config.cfg")
@@ -57,13 +57,6 @@ def auth():
         for playlist in user_data.playlists
     ]
 
-    # task = chord(total_tracks[:5])(
-    #     append_results.s(user=user_data.dict())
-    #     | cluster_results.s()
-    #     | save_data_in_postgres.s()
-    #     | create_plots.s()
-    # )
-
     task = chord(total_tracks)(
         append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
     )
@@ -73,6 +66,17 @@ def auth():
 @celery_bp.route("/results/<celery_task_id>", methods=["GET"])
 def get_results(celery_task_id):
     return render_template("plot.html", task_id=celery_task_id)
+
+
+@celery_bp.route("/results_v2/<user_id>", methods=["GET"])
+def get_results_user(user_id):
+    runs = select_user_runs()
+
+    return runs.json()
+
+
+
+
 
 @celery_bp.route("/status/<celery_task_id>", methods=["GET"])
 def get_task_status(celery_task_id):

@@ -1,4 +1,4 @@
-from sqlmodel import Session,create_engine,SQLModel
+from sqlmodel import Session,create_engine,SQLModel, select
 from .db_models import TaskResults, TaskRuns
 import os 
 from datetime import datetime
@@ -24,7 +24,7 @@ def commit_results(results):
         session.commit()
 
 def generate_and_commit_task_metadata_db(user_data, number_of_tracks):
-    
+
     user_task_metadata = TaskRuns(task_id=user_data.task.id,
                                     user_id=user_data.id,
                                     number_of_tracks=number_of_tracks,
@@ -47,3 +47,15 @@ def generate_and_commit_task_results_db(plots, task_id):
     
     commit_results(results)
 
+
+
+def select_user_runs():
+    
+    engine = create_db_engine()
+
+    with Session(engine) as session:
+        statement = select(TaskRuns)
+        results = session.exec(statement).first()
+        
+
+    return results
