@@ -92,6 +92,14 @@ class DataExtractor:
         :raises KeyError: If the response JSON does not contain the expected 'items' field.
         """
 
+        response_test = response = requests.get(
+            "https://api.spotify.com/v1/me/playlists?"
+            + "limit={}".format(self.limit)
+            + "&offset={}".format(offset),
+            headers=self.headers,
+        ).json()
+
+
         response = requests.get(
             "https://api.spotify.com/v1/me/playlists?"
             + "limit={}".format(self.limit)
@@ -99,10 +107,14 @@ class DataExtractor:
             headers=self.headers,
         ).json()["items"]
 
+
         for p in response:
             user_data.playlists.append(
                 Playlist(id=p["id"], type=p["type"], public=p["public"], tracks=[])
             )
+
+        with open("playlist_raw.json","w") as file:
+            json.dump(user_data.dict(),file)
 
         return user_data
 

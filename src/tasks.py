@@ -52,7 +52,6 @@ def get_tracks(self, auth_token, playlist_dict):
 
     :raises KeyError, AttributeError: If there are issues with data extraction.
     """
-
     try:
         data_extractor = DataExtractor(auth_token)
 
@@ -92,8 +91,6 @@ def get_saved_tracks(self, auth_token):
 
     saved_tracks = data_extractor.get_all_audio_features(saved_tracks)
 
-    log.warning(saved_tracks.dict())
-
     return jsonable_encoder(saved_tracks)
 
 
@@ -118,12 +115,16 @@ def append_results(self, results, user):
 
     user_data = UserData(**user)
 
+
+    playlists = []
+
     for r in results:
         if "playlist_model" in r:
-            user_data.playlists.append(Playlist.parse_obj(r["playlist_model"]))
+            playlists.append(Playlist.parse_obj(r["playlist_model"]))
         else:
-            # saved_tracks = SavedTracks.parse_obj(r)
             user_data.saved_tracks = r
+    
+    user_data.playlists = playlists
 
     return jsonable_encoder(user_data)
 
