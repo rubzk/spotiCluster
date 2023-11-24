@@ -227,25 +227,3 @@ def create_plots(self, user_data):
 
     return jsonable_encoder(plots)
 
-
-# @shared_task(
-#     bind=True,
-#     name="SAVE CLUSTER DATA IN POSTGRES",
-#     max_retries=3,
-#     default_retry_delay=10,
-# )
-# def save_data_in_postgres(self, result):
-#     cluster_data = pd.read_json(json.dumps(result["clusters"]))
-#     cluster_stats = pd.read_json(json.dumps(result["cluster_stats"]))
-
-#     db = PostgresDB()
-#     df_to_db(
-#         df=cluster_data,
-#         table_name="user_clusters",
-#     )
-
-#     return {
-#         "clusters": cluster_data.to_dict("list"),
-#         "cluster_stats": cluster_stats.to_dict("list"),
-#         "saved_tracks": result["saved_tracks"],
-#     }
