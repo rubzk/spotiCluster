@@ -1,7 +1,7 @@
 from sqlmodel import Session,create_engine,SQLModel, select
 from .db_models import TaskResults, TaskRuns
 import os 
-from datetime import datetime
+from datetime import datetime, timedelta
 def create_db_engine():
     try:
         db_url  = f'postgresql://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}@{os.environ["POSTGRES_HOST"]}/{os.environ["POSTGRES_DB"]}'
@@ -53,9 +53,22 @@ def select_user_runs():
     
     engine = create_db_engine()
 
-    with Session(engine) as session:
-        statement = select(TaskRuns)
-        results = session.exec(statement).first()
-        
+    current_date = datetime.today()
 
-    return results
+    current_date_minus_30 = datetime.today() + timedelta(-30)
+
+    with Session(engine) as session:
+        statement = select(TaskRuns).where(TaskRuns.finished_at >= current_date_minus_30).where(TaskRuns.finished_at <= current_date)
+        results = session.exec(statement).first()
+
+    if results:
+
+        with Session(engine) as session:
+            statement = select(TaskResults).where(TaskResults.task_id ==results.task_id)
+
+            plots = session.exec(statement).first()
+
+        return plots.json()
+    else:
+        print("No results found")
+        return {"No results found"}

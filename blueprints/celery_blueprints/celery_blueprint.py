@@ -72,7 +72,9 @@ def get_results(celery_task_id):
 def get_results_user(user_id):
     runs = select_user_runs()
 
-    return runs.json()
+    # runs.finished_at
+
+    return runs
 
 
 
