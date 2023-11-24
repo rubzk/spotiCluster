@@ -4,7 +4,7 @@ from flask import Flask
 import configparser
 from utils.flask_celery import make_celery
 
-from src.db_models import create_db_and_tables, create_engine
+from src.db import create_db_and_tables, create_engine
 
 from blueprints.index_blueprints.index_blueprint import index_bp
 from blueprints.celery_blueprints.celery_blueprint import celery_bp

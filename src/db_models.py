@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field, create_engine, Session, Column, BigInteger, JSON
+from sqlmodel import SQLModel, Field, Column, BigInteger, JSON
 from typing import List, Optional, Dict
 from datetime import datetime
 import os 
@@ -70,25 +70,5 @@ class PlotTypes(SQLModel, table=True):
     id: int = Field(primary_key=True)
     name: str
 
-def create_db_engine():
-    try:
-        db_url  = f'postgresql://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}@{os.environ["POSTGRES_HOST"]}/{os.environ["POSTGRES_DB"]}'
-        engine = create_engine(db_url, echo=True)
-        return engine
-    except Exception as e: 
-        print(f"Couldn't create the connection: {e}")
-
-def create_db_and_tables():
-    engine = create_db_engine()
-    SQLModel.metadata.create_all(engine)
-
-def commit_results(results):
-
-    engine = create_db_engine()
-
-    with Session(engine) as session:
-        for r in results:
-            session.add(r)
-        session.commit()
 
     

@@ -11,7 +11,6 @@ from src.plot import (
     generate_saved_tracks_timeline,
     generate_top_3_artist,
     generate_data_for_table,
-    generate_and_commit_task_results_db
 )
 
 #from utils.postgres import df_to_db, PostgresDB
@@ -21,8 +20,11 @@ import logging
 import pandas as pd
 from celery import shared_task
 from .models import Playlist, UserData, TracksClustered
-from .db_models import commit_results,TaskRuns, TaskResults
+from .db_models import TaskRuns, TaskResults
+from .db import generate_and_commit_task_results_db
+#from .db import commit_results
 from datetime import datetime
+
 
 from fastapi.encoders import jsonable_encoder
 
@@ -209,7 +211,7 @@ def create_plots(self, user_data):
         set([track.cluster_name for track in user_data.clustered_tracks])
     )
 
-    generate_and_commit_task_results_db(results=[radar_chart,pie_chart,scatter_chart,top_3_artist,saved_tracks_timeline,table_tracks], task_id=user_data.task.id)
+    generate_and_commit_task_results_db(plots=[radar_chart,pie_chart,scatter_chart,top_3_artist,saved_tracks_timeline,table_tracks], task_id=user_data.task.id)
 
 
     user_task = TaskRuns(task_id=user_data.task.id,
@@ -218,7 +220,7 @@ def create_plots(self, user_data):
                               started_at=user_data.task.started_at,
                               finished_at=datetime.today())
     
-    commit_results(results=[user_task])
+    # commit_results(results=[user_task])
 
     plots = Plots(
         number_of_tracks=number_of_tracks,
