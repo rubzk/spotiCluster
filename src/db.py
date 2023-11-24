@@ -1,6 +1,7 @@
 from sqlmodel import Session,create_engine,SQLModel
-from .db_models import TaskResults
+from .db_models import TaskResults, TaskRuns
 import os 
+from datetime import datetime
 def create_db_engine():
     try:
         db_url  = f'postgresql://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}@{os.environ["POSTGRES_HOST"]}/{os.environ["POSTGRES_DB"]}'
@@ -22,6 +23,15 @@ def commit_results(results):
             session.add(r)
         session.commit()
 
+def generate_and_commit_task_metadata_db(user_data, number_of_tracks):
+    
+    user_task_metadata = TaskRuns(task_id=user_data.task.id,
+                                    user_id=user_data.id,
+                                    number_of_tracks=number_of_tracks,
+                                    started_at=user_data.task.started_at,
+                                    finished_at=datetime.today())
+            
+    commit_results([user_task_metadata])
 
 def generate_and_commit_task_results_db(plots, task_id):
 
@@ -31,7 +41,8 @@ def generate_and_commit_task_results_db(plots, task_id):
         results.append(TaskResults(
             task_id=task_id,
             plot_id=result.plot_id,
-            result=result.data
+            result=result.data,
+            created=datetime.today()
         ))
     
     commit_results(results)

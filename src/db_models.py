@@ -3,7 +3,6 @@ from typing import List, Optional, Dict
 from datetime import datetime
 import os 
 from uuid import UUID
-from src.plot import Plots
 
 class TaskRuns(SQLModel, table=True):
     __tablename__ = "task_runs"
@@ -20,6 +19,7 @@ class TaskResults(SQLModel, table=True):
     task_id: UUID
     plot_id: int
     result: dict = Field(sa_column=Column(JSON))
+    created: datetime
 
     
 
