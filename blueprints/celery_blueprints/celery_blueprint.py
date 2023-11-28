@@ -33,7 +33,6 @@ celery_bp = Blueprint("celery_bp", __name__)
 @celery_bp.route("/auth_ok/")
 def auth():
     auth_code = request.args.get("code")
-    # app.logger.info(f"auth_code: {auth_code}")
 
     auth = Authenticator(
         client_id=config.get("spotify-api", "client_id"),
@@ -44,23 +43,33 @@ def auth():
 
     extractor = DataExtractor(auth.auth_token)
 
-    task_ = Task(id=uuid.uuid4(),started_at=datetime.today())
+    
 
     user_data = extractor.get_user_id()
 
-    user_data = extractor.get_all_playlists(user_data)
+    runs = select_user_runs(user_data.id)
 
-    user_data.task = task_
+    if runs:
+        return "Redirect with results"
+    # return redirect(url_for("celery_bp.get_results_user", auth_code=auth_code))
+    else:
+        print("start task and redirect to plot loading")
+        task_ = Task(id=uuid.uuid4(),started_at=datetime.today())
+        user_data = extractor.get_all_playlists(user_data)
 
-    total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
-        get_tracks.s(auth.auth_token, playlist.dict())
-        for playlist in user_data.playlists
-    ]
+    
+        user_data.task = task_
 
-    task = chord(total_tracks)(
-        append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
-    )
-    return redirect(url_for("celery_bp.get_results", celery_task_id=task.id))
+        total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
+            get_tracks.s(auth.auth_token, playlist.dict())
+            for playlist in user_data.playlists
+        ]
+
+        task = chord(total_tracks)(
+            append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
+        )
+    
+        return redirect(url_for("celery_bp.get_results", celery_task_id=task.id))
 
 
 @celery_bp.route("/results/<celery_task_id>", methods=["GET"])
@@ -69,12 +78,31 @@ def get_results(celery_task_id):
 
 
 @celery_bp.route("/results_v2/<user_id>", methods=["GET"])
-def get_results_user(user_id):
+def get_results_user(user_id, auth_token):
     runs = select_user_runs()
 
-    # runs.finished_at
+    if runs:
+        return runs
+    else:
 
-    return runs
+        extractor = DataExtractor(auth_token)
+
+        task_ = Task(id=uuid.uuid4(),started_at=datetime.today())
+
+        user_data = extractor.get_user_id()
+
+        user_data = extractor.get_all_playlists(user_data)
+
+        user_data.task = task_
+
+        total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
+            get_tracks.s(auth.auth_token, playlist.dict())
+            for playlist in user_data.playlists
+        ]
+
+        task = chord(total_tracks)(
+            append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
+        )
 
 
 

@@ -49,7 +49,7 @@ def generate_and_commit_task_results_db(plots, task_id):
 
 
 
-def select_user_runs():
+def select_user_runs(user_id):
     
     engine = create_db_engine()
 
@@ -58,7 +58,7 @@ def select_user_runs():
     current_date_minus_30 = datetime.today() + timedelta(-30)
 
     with Session(engine) as session:
-        statement = select(TaskRuns).where(TaskRuns.finished_at >= current_date_minus_30).where(TaskRuns.finished_at <= current_date)
+        statement = select(TaskRuns).where(TaskRuns.user_id==user_id).where(TaskRuns.finished_at >= current_date_minus_30).where(TaskRuns.finished_at <= current_date)
         results = session.exec(statement).first()
 
     if results:
@@ -70,5 +70,4 @@ def select_user_runs():
 
         return plots.json()
     else:
-        print("No results found")
-        return {"No results found"}
+        return None
