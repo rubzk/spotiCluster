@@ -62,12 +62,10 @@ def select_user_runs(user_id):
         results = session.exec(statement).first()
 
     if results:
+        # with Session(engine) as session:
+        #     statement = select(TaskResults).where(TaskResults.task_id ==results.task_id)
 
-        with Session(engine) as session:
-            statement = select(TaskResults).where(TaskResults.task_id ==results.task_id)
-
-            plots = session.exec(statement).first()
-
-        return plots.json()
+        #     plots = session.exec(statement).all()
+        return results.task_id
     else:
         return None

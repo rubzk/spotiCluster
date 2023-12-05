@@ -1,7 +1,7 @@
 
 var taskId = '{{task_id | safe}}'
 
-var resultFound = false;
+
 
 var colors = [
     'rgba(255, 99, 132, 0.2)',   // Red
@@ -709,6 +709,8 @@ function onLegendClick(clusterName) {
 
 
 var fetchNow = function () {
+
+
     fetch('/status/' + taskId, {
         headers: headers
     })
@@ -998,8 +1000,6 @@ var fetchNow = function () {
             }
         });
 }
-
-
 
 
 
