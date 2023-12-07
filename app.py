@@ -4,7 +4,7 @@ from flask import Flask
 import configparser
 from utils.flask_celery import make_celery
 
-from src.db import create_db_and_tables, create_engine
+from src.db import create_db_and_tables, create_engine, create_plot_types
 
 from blueprints.index_blueprints.index_blueprint import index_bp
 from blueprints.celery_blueprints.celery_blueprint import celery_bp
@@ -25,5 +25,6 @@ app.celery = celery
 
 if __name__ == "__main__":
     create_db_and_tables()
+    create_plot_types()
     app.run(host="0.0.0.0", port=5000, debug=True)
     

@@ -1,5 +1,5 @@
 from sqlmodel import Session,create_engine,SQLModel, select
-from .db_models import TaskResults, TaskRuns
+from .db_models import TaskResults, TaskRuns, PlotTypes
 import os 
 from datetime import datetime, timedelta
 def create_db_engine():
@@ -69,3 +69,39 @@ def select_user_runs(user_id):
         return results.task_id
     else:
         return None
+    
+
+def select_results(task_id):
+
+    engine = create_db_engine()
+
+    with Session(engine) as session:
+        statement = select(TaskResults).where(TaskResults.task_id == task_id)
+
+        results = session.exec(statement).all()
+
+
+def create_plot_types():
+
+    engine = create_db_engine()
+
+    with Session(engine) as session:
+        statement = select(PlotTypes)
+
+        results = session.exec(statement).first()
+
+    
+    if not results:
+
+        ## Create rows
+
+        plot_types = [PlotTypes(id=1,name="radar_chart"),PlotTypes(id=2,name="pie_chart"),PlotTypes(id=3,name="top_3_artist"),
+                      PlotTypes(id=4, name="saved_tracks_timeline"),PlotTypes(id=5,name="scatter_chart"),PlotTypes(id=6, name="table_tracks")]
+
+        with Session(engine) as session:
+
+            for t in plot_types:
+                session.add(t)
+
+            session.commit()
+
