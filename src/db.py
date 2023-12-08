@@ -2,6 +2,8 @@ from sqlmodel import Session,create_engine,SQLModel, select
 from .db_models import TaskResults, TaskRuns, PlotTypes
 import os 
 from datetime import datetime, timedelta
+from plot import Plot,Plots
+
 def create_db_engine():
     try:
         db_url  = f'postgresql://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}@{os.environ["POSTGRES_HOST"]}/{os.environ["POSTGRES_DB"]}'
@@ -62,10 +64,6 @@ def select_user_runs(user_id):
         results = session.exec(statement).first()
 
     if results:
-        # with Session(engine) as session:
-        #     statement = select(TaskResults).where(TaskResults.task_id ==results.task_id)
-
-        #     plots = session.exec(statement).all()
         return results.task_id
     else:
         return None
@@ -76,9 +74,21 @@ def select_results(task_id):
     engine = create_db_engine()
 
     with Session(engine) as session:
-        statement = select(TaskResults).where(TaskResults.task_id == task_id)
+        statement = select(TaskResults, PlotTypes).join(PlotTypes).where(TaskResults.task_id == task_id)
 
         results = session.exec(statement).all()
+
+
+    if results:
+        data = {}
+        for task_result, plot_type in results:
+            data["plots"][plot_type.name] = task_result.result
+        return data
+    
+    return None
+
+    
+
 
 
 def create_plot_types():

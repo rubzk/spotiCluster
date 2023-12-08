@@ -22,7 +22,11 @@ from src.tasks import (
 from celery import chord
 from src.extract import DataExtractor
 from src.models import Task
-from src.db import select_user_runs
+from src.db import select_user_runs, select_results
+
+import logging
+
+log = logging.getLogger(__name__)
 
 config = configparser.RawConfigParser()
 config.read(r"config.cfg")
@@ -75,7 +79,6 @@ def auth():
 
 @celery_bp.route("/results/<task_id>", methods=["GET"])
 def get_results(task_id):
-
     return render_template("plot.html", task_id=task_id)
 
 
@@ -99,5 +102,9 @@ def get_task_status(celery_task_id):
         }  
 
 
+@celery_bp.route("/get_old_result/<task_id>", methods=["GET"])
+def get_old_results(task_id):
 
+    data = select_results(task_id)
 
+    return data
