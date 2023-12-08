@@ -53,8 +53,11 @@ def auth():
 
     db_task_id = select_user_runs(user_data.id)
 
+    log.warning(f"db task_id:{db_task_id}")
+
     if db_task_id:
         # return "Redirect with results"
+        
         return redirect(url_for("celery_bp.get_results", task_id=db_task_id))
     # return redirect(url_for("celery_bp.get_results_user", auth_code=auth_code))
     else:

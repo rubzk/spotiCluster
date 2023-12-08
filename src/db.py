@@ -3,6 +3,10 @@ from .db_models import TaskResults, TaskRuns, PlotTypes
 import os 
 from datetime import datetime, timedelta
 
+import logging
+
+log = logging.getLogger(__name__)
+
 def create_db_engine():
     try:
         db_url  = f'postgresql://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}@{os.environ["POSTGRES_HOST"]}/{os.environ["POSTGRES_DB"]}'
@@ -62,6 +66,8 @@ def select_user_runs(user_id):
         statement = select(TaskRuns).where(TaskRuns.user_id==user_id).where(TaskRuns.finished_at >= current_date_minus_30).where(TaskRuns.finished_at <= current_date)
         results = session.exec(statement).first()
 
+    log.warning(f"The results are{results}")
+
     if results:
         return results.task_id
     else:
@@ -104,7 +110,6 @@ def create_plot_types():
     
     if not results:
 
-        ## Create rows
 
         plot_types = [PlotTypes(id=1,name="radar_chart"),PlotTypes(id=2,name="pie_chart"),PlotTypes(id=3,name="top_3_artist"),
                       PlotTypes(id=4, name="saved_tracks_timeline"),PlotTypes(id=5,name="scatter_chart"),PlotTypes(id=6, name="table_tracks")]
