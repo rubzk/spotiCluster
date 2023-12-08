@@ -13,15 +13,21 @@ class TaskRuns(SQLModel, table=True):
     started_at: datetime
     finished_at: datetime
 
+    
+class PlotTypes(SQLModel, table=True):
+    __tablename__ = "plot_types"
+    id: int = Field(primary_key=True)
+    name: str
+
 class TaskResults(SQLModel, table=True):
     __tablename__ = "task_results"
     id: Optional[int] = Field(default=None, primary_key=True)
     task_id: UUID
-    plot_id: int
+    plot_id: int = Field(foreign_key="plot_types.id")
     result: dict = Field(sa_column=Column(JSON))
     created: datetime
 
-    
+
 
 class UserPlaylists(SQLModel, table=True):
     __tablename__ = "user_playlists"
@@ -65,10 +71,7 @@ class Artists(SQLModel, table=True):
     type: str
 
 
-class PlotTypes(SQLModel, table=True):
-    __tablename__ = "plot_types"
-    id: int = Field(primary_key=True)
-    name: str
+
 
 
     

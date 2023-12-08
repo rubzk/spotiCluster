@@ -22,7 +22,11 @@ from src.tasks import (
 from celery import chord
 from src.extract import DataExtractor
 from src.models import Task
+from src.db import select_user_runs, select_results
 
+import logging
+
+log = logging.getLogger(__name__)
 
 config = configparser.RawConfigParser()
 config.read(r"config.cfg")
@@ -33,7 +37,6 @@ celery_bp = Blueprint("celery_bp", __name__)
 @celery_bp.route("/auth_ok/")
 def auth():
     auth_code = request.args.get("code")
-    # app.logger.info(f"auth_code: {auth_code}")
 
     auth = Authenticator(
         client_id=config.get("spotify-api", "client_id"),
@@ -44,35 +47,45 @@ def auth():
 
     extractor = DataExtractor(auth.auth_token)
 
-    task_ = Task(id=uuid.uuid4(),started_at=datetime.today())
+    
 
     user_data = extractor.get_user_id()
 
-    user_data = extractor.get_all_playlists(user_data)
+    db_task_id = select_user_runs(user_data.id)
 
-    user_data.task = task_
+    log.warning(f"db task_id:{db_task_id}")
 
-    total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
-        get_tracks.s(auth.auth_token, playlist.dict())
-        for playlist in user_data.playlists
-    ]
+    if db_task_id:
+        # return "Redirect with results"
+        
+        return redirect(url_for("celery_bp.get_results", task_id=db_task_id))
+    # return redirect(url_for("celery_bp.get_results_user", auth_code=auth_code))
+    else:
+        print("start task and redirect to plot loading")
+        task_ = Task(id=uuid.uuid4(),started_at=datetime.today())
+        user_data = extractor.get_all_playlists(user_data)
 
-    # task = chord(total_tracks[:5])(
-    #     append_results.s(user=user_data.dict())
-    #     | cluster_results.s()
-    #     | save_data_in_postgres.s()
-    #     | create_plots.s()
-    # )
+    
+        user_data.task = task_
 
-    task = chord(total_tracks)(
-        append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
-    )
-    return redirect(url_for("celery_bp.get_results", celery_task_id=task.id))
+        total_tracks = [get_saved_tracks.s(auth.auth_token)] + [
+            get_tracks.s(auth.auth_token, playlist.dict())
+            for playlist in user_data.playlists
+        ]
+
+        task = chord(total_tracks)(
+            append_results.s(user=user_data.dict()) | cluster_results.s() | create_plots.s()
+        )
+    
+        return redirect(url_for("celery_bp.get_results", task_id=task.id))
 
 
-@celery_bp.route("/results/<celery_task_id>", methods=["GET"])
-def get_results(celery_task_id):
-    return render_template("plot.html", task_id=celery_task_id)
+@celery_bp.route("/results/<task_id>", methods=["GET"])
+def get_results(task_id):
+    return render_template("plot.html", task_id=task_id)
+
+
+
 
 @celery_bp.route("/status/<celery_task_id>", methods=["GET"])
 def get_task_status(celery_task_id):
@@ -92,5 +105,14 @@ def get_task_status(celery_task_id):
         }  
 
 
+@celery_bp.route("/get_old_result/<task_id>", methods=["GET"])
+def get_old_results(task_id):
 
+    try:
+        uuid.UUID(task_id)
+    except ValueError:
+        return {"plots" : None}
 
+    data = select_results(task_id)
+
+    return data

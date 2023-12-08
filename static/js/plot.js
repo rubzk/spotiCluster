@@ -1,7 +1,5 @@
 
-var taskId = '{{task_id | safe}}'
-
-var resultFound = false;
+var taskId = '{{ task_id }}'
 
 var colors = [
     'rgba(255, 99, 132, 0.2)',   // Red
@@ -707,301 +705,343 @@ function onLegendClick(clusterName) {
     updateTable(legendStatus = legendStatus);
 }
 
+// var fetchNow = function () {
 
-var fetchNow = function () {
-    fetch('/status/' + taskId, {
-        headers: headers
+
+//     // Here do a quick check --> Fetch db: If 200 continue 
+//     // /get_old_results + taskId
+//     // if (results) {
+//     //     return this 
+//     // }  
+
+
+//     // Otherwise do a constant check to the status task
+
+
+//     fetch('/status/' + taskId, {
+//         headers: headers
+//     })
+//         .then(res => res.json())
+//         .then(data => {
+//             if (data['plots']) {
+
+
+//             }
+//             else {
+//                 fetchNow();
+//             }
+//         });
+// }
+
+
+var handleResults = function (data) {
+
+
+    test = data['plots']
+
+    document.getElementById("loading-div").style.display = 'none';
+
+    document.getElementById("done-text").innerHTML = "We analyzed " + data['plots']['number_of_tracks'] + " tracks and created " + data['plots']['number_of_clusters'] + " clusters"
+
+    document.getElementById("done-text").style.display = 'flex';
+
+    document.getElementById("div-test").style.display = 'flex';
+
+
+    var ctx_radar = document.getElementById('radarChart').getContext('2d');
+    var ctx_pie = document.getElementById('pieChart').getContext('2d');
+    var ctx_area = document.getElementById('areaChart').getContext('2d');
+    var ctx_scatter = document.getElementById('scatterChart').getContext('2d');
+    var ctx_bar = document.getElementById('barChart').getContext('2d');
+
+
+    var originalData = data['plots']['radar_chart']['data']
+
+    var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
+
+    const trackData = data['plots']['table_tracks']['data']
+
+    var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'], trackData)
+
+    var dataPieChart = createPieChart(data['plots']['pie_chart']['data'])
+
+    var dataRadarChart = createRadarChart(data['plots']['radar_chart']['data'])
+
+    var dataBarChart = createBarChart(data['plots']['radar_chart']['data'])
+
+
+    var myRadarChart = new Chart(ctx_radar, dataRadarChart);
+
+    var myPieChart = new Chart(ctx_pie, dataPieChart);
+
+
+    var myAreaChart = new Chart(ctx_area, dataArea);
+
+    var myScatterChart = new Chart(ctx_scatter, dataScatter);
+
+    var myBarChart = new Chart(ctx_bar, dataBarChart)
+
+
+    var addButtonEnergy = document.getElementById('add-energy');
+
+    var addButtonLiveness = document.getElementById('add-liveness');
+
+    var addButtonDanceability = document.getElementById('add-danceability');
+
+    var addButtonAcousticness = document.getElementById('add-acousticness');
+
+    var addButtonValence = document.getElementById('add-valence');
+
+    var addButtonInstrumentalness = document.getElementById('add-instrumentalness');
+
+
+    addButtonEnergy.addEventListener('click', function () {
+        var property = 'energy'; // Replace with the desired property
+        var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+        updateChartProperty(property, chartObject, originalData);
+    });
+
+    addButtonLiveness.addEventListener('click', function () {
+        var property = 'liveness'; // Replace with the desired property
+        var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+        updateChartProperty(property, chartObject, originalData);
+    });
+
+    addButtonDanceability.addEventListener('click', function () {
+        var property = 'danceability'; // Replace with the desired property
+        var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+        updateChartProperty(property, chartObject, originalData);
+    });
+
+    addButtonAcousticness.addEventListener('click', function () {
+        var property = 'acousticness'; // Replace with the desired property
+        var chartObject = myRadarChart; // Replace with your actual chart object
+
+
+        updateChartProperty(property, chartObject, originalData);
+    });
+
+    addButtonValence.addEventListener('click', function () {
+        var property = 'valence';
+        var chartObject = myRadarChart;
+
+        updateChartProperty(property, chartObject, originalData);
     })
-        .then(res => res.json())
-        .then(data => {
-            if (data['plots']) {
 
-                test = data['plots']
+    addButtonInstrumentalness.addEventListener('click', function () {
+        var property = 'instrumentalness';
+        var chartObject = myRadarChart;
 
-                document.getElementById("loading-div").style.display = 'none';
+        updateChartProperty(property, chartObject, originalData);
+    })
 
-                document.getElementById("done-text").innerHTML = "We analyzed " + data['plots']['number_of_tracks'] + " tracks and created " + data['plots']['number_of_clusters'] + " clusters"
 
-                document.getElementById("done-text").style.display = 'flex';
+    var addEnergyScatterY = document.getElementById('add-energy-scatter-y');
 
-                document.getElementById("div-test").style.display = 'flex';
+    var addValenceScatterY = document.getElementById('add-valence-scatter-y');
 
+    var addDanceabilityScatterY = document.getElementById('add-danceability-scatter-y');
 
-                var ctx_radar = document.getElementById('radarChart').getContext('2d');
-                var ctx_pie = document.getElementById('pieChart').getContext('2d');
-                var ctx_area = document.getElementById('areaChart').getContext('2d');
-                var ctx_scatter = document.getElementById('scatterChart').getContext('2d');
-                var ctx_bar = document.getElementById('barChart').getContext('2d');
+    var addInstrumentalnessScatterY = document.getElementById('add-instrumentalness-scatter-y');
 
 
-                var originalData = data['plots']['radar_chart']['data']
+    addEnergyScatterY.addEventListener('click', function () {
+        var property = 'energy'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
-                var dataArea = createAreaChart(data['plots']['saved_tracks_timeline']['data'])
 
-                const trackData = data['plots']['table_tracks']['data']
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
+    });
 
-                var dataScatter = createScatterChart(data['plots']['scatter_chart']['data'], trackData)
+    addValenceScatterY.addEventListener('click', function () {
+        var property = 'valence'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
-                var dataPieChart = createPieChart(data['plots']['pie_chart']['data'])
 
-                var dataRadarChart = createRadarChart(data['plots']['radar_chart']['data'])
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
+    });
 
-                var dataBarChart = createBarChart(data['plots']['radar_chart']['data'])
+    addDanceabilityScatterY.addEventListener('click', function () {
+        var property = 'danceability'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                var myRadarChart = new Chart(ctx_radar, dataRadarChart);
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
+    });
 
-                var myPieChart = new Chart(ctx_pie, dataPieChart);
+    addInstrumentalnessScatterY.addEventListener('click', function () {
+        var property = 'instrumentalness'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
 
-                var myAreaChart = new Chart(ctx_area, dataArea);
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
+    });
 
-                var myScatterChart = new Chart(ctx_scatter, dataScatter);
 
-                var myBarChart = new Chart(ctx_bar, dataBarChart)
+    var addEnergyScatterX = document.getElementById('add-energy-scatter-x');
 
+    var addValenceScatterX = document.getElementById('add-valence-scatter-x');
 
-                var addButtonEnergy = document.getElementById('add-energy');
+    var addDanceabilityScatterX = document.getElementById('add-danceability-scatter-x');
 
-                var addButtonLiveness = document.getElementById('add-liveness');
+    var addInstrumentalnessScatterX = document.getElementById('add-instrumentalness-scatter-x');
 
-                var addButtonDanceability = document.getElementById('add-danceability');
 
-                var addButtonAcousticness = document.getElementById('add-acousticness');
+    addEnergyScatterX.addEventListener('click', function () {
+        var property = 'energy'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
-                var addButtonValence = document.getElementById('add-valence');
 
-                var addButtonInstrumentalness = document.getElementById('add-instrumentalness');
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
+    });
 
+    addValenceScatterX.addEventListener('click', function () {
+        var property = 'valence'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
-                addButtonEnergy.addEventListener('click', function () {
-                    var property = 'energy'; // Replace with the desired property
-                    var chartObject = myRadarChart; // Replace with your actual chart object
 
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
+    });
 
-                    updateChartProperty(property, chartObject, originalData);
-                });
+    addDanceabilityScatterX.addEventListener('click', function () {
+        var property = 'danceability'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
-                addButtonLiveness.addEventListener('click', function () {
-                    var property = 'liveness'; // Replace with the desired property
-                    var chartObject = myRadarChart; // Replace with your actual chart object
 
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
+    });
 
-                    updateChartProperty(property, chartObject, originalData);
-                });
+    addInstrumentalnessScatterX.addEventListener('click', function () {
+        var property = 'instrumentalness'; // Replace with the desired property
+        var chartObject = myScatterChart; // Replace with your actual chart object
 
-                addButtonDanceability.addEventListener('click', function () {
-                    var property = 'danceability'; // Replace with the desired property
-                    var chartObject = myRadarChart; // Replace with your actual chart object
 
+        updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
+    });
 
-                    updateChartProperty(property, chartObject, originalData);
-                });
 
-                addButtonAcousticness.addEventListener('click', function () {
-                    var property = 'acousticness'; // Replace with the desired property
-                    var chartObject = myRadarChart; // Replace with your actual chart object
 
 
-                    updateChartProperty(property, chartObject, originalData);
-                });
+    var addEnergyBarChart = document.getElementById('add-energy-bar');
 
-                addButtonValence.addEventListener('click', function () {
-                    var property = 'valence';
-                    var chartObject = myRadarChart;
+    var addTempoBarChart = document.getElementById('add-tempo-bar');
 
-                    updateChartProperty(property, chartObject, originalData);
-                })
+    var addDanceabilityBarChart = document.getElementById('add-danceability-bar');
 
-                addButtonInstrumentalness.addEventListener('click', function () {
-                    var property = 'instrumentalness';
-                    var chartObject = myRadarChart;
+    var addInstrumentalnessBarChart = document.getElementById('add-instrumentalness-bar');
 
-                    updateChartProperty(property, chartObject, originalData);
-                })
+    var addLoudnessBarChart = document.getElementById('add-loudness-bar');
 
+    var addValenceBarChart = document.getElementById('add-valence-bar');
 
-                var addEnergyScatterY = document.getElementById('add-energy-scatter-y');
+    var addSpeechinessBarChart = document.getElementById('add-speechiness-bar');
 
-                var addValenceScatterY = document.getElementById('add-valence-scatter-y');
+    addEnergyBarChart.addEventListener('click', function () {
+        var property = 'energy'; // Replace with the desired property
+        var chartObject = myBarChart; // Replace with your actual chart object
 
-                var addDanceabilityScatterY = document.getElementById('add-danceability-scatter-y');
 
-                var addInstrumentalnessScatterY = document.getElementById('add-instrumentalness-scatter-y');
+        updateBarChart(property, chartObject, originalData);
+    });
 
+    addTempoBarChart.addEventListener('click', function () {
+        var property = 'tempo'; // Replace with the desired property
+        var chartObject = myBarChart; // Replace with your actual chart object
 
-                addEnergyScatterY.addEventListener('click', function () {
-                    var property = 'energy'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
 
+        updateBarChart(property, chartObject, originalData);
+    });
 
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
-                });
+    addDanceabilityBarChart.addEventListener('click', function () {
+        var property = 'danceability'; // Replace with the desired property
+        var chartObject = myBarChart; // Replace with your actual chart object
 
-                addValenceScatterY.addEventListener('click', function () {
-                    var property = 'valence'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
 
+        updateBarChart(property, chartObject, originalData);
+    });
 
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
-                });
+    addInstrumentalnessBarChart.addEventListener('click', function () {
+        var property = 'instrumentalness'; // Replace with the desired property
+        var chartObject = myBarChart; // Replace with your actual chart object
 
-                addDanceabilityScatterY.addEventListener('click', function () {
-                    var property = 'danceability'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
 
+        updateBarChart(property, chartObject, originalData);
+    });
 
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
-                });
+    addLoudnessBarChart.addEventListener('click', function () {
+        var property = 'loudness'; // Replace with the desired property
+        var chartObject = myBarChart; // Replace with your actual chart object
 
-                addInstrumentalnessScatterY.addEventListener('click', function () {
-                    var property = 'instrumentalness'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
 
+        updateBarChart(property, chartObject, originalData);
+    });
 
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "y");
-                });
+    addValenceBarChart.addEventListener('click', function () {
+        var property = 'valence'; // Replace with the desired property
+        var chartObject = myBarChart; // Replace with your actual chart object
 
 
-                var addEnergyScatterX = document.getElementById('add-energy-scatter-x');
+        updateBarChart(property, chartObject, originalData);
+    });
 
-                var addValenceScatterX = document.getElementById('add-valence-scatter-x');
+    addSpeechinessBarChart.addEventListener('click', function () {
+        var property = 'speechiness'; // Replace with the desired property
+        var chartObject = myBarChart; // Replace with your actual chart object
 
-                var addDanceabilityScatterX = document.getElementById('add-danceability-scatter-x');
 
-                var addInstrumentalnessScatterX = document.getElementById('add-instrumentalness-scatter-x');
+        updateBarChart(property, chartObject, originalData);
+    });
 
+    const container = document.getElementById('table-container');
 
-                addEnergyScatterX.addEventListener('click', function () {
-                    var property = 'energy'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
+    // Append the created table to the container
 
+    var targetCluster = 'Cluster 2';
 
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
-                });
+    container.appendChild(createTable(trackData));
 
-                addValenceScatterX.addEventListener('click', function () {
-                    var property = 'valence'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
 
-
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
-                });
-
-                addDanceabilityScatterX.addEventListener('click', function () {
-                    var property = 'danceability'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
-
-
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
-                });
-
-                addInstrumentalnessScatterX.addEventListener('click', function () {
-                    var property = 'instrumentalness'; // Replace with the desired property
-                    var chartObject = myScatterChart; // Replace with your actual chart object
-
-
-                    updateScatter(property, chartObject, data['plots']['scatter_chart']['data'], axis = "x");
-                });
-
-
-
-
-                var addEnergyBarChart = document.getElementById('add-energy-bar');
-
-                var addTempoBarChart = document.getElementById('add-tempo-bar');
-
-                var addDanceabilityBarChart = document.getElementById('add-danceability-bar');
-
-                var addInstrumentalnessBarChart = document.getElementById('add-instrumentalness-bar');
-
-                var addLoudnessBarChart = document.getElementById('add-loudness-bar');
-
-                var addValenceBarChart = document.getElementById('add-valence-bar');
-
-                var addSpeechinessBarChart = document.getElementById('add-speechiness-bar');
-
-                addEnergyBarChart.addEventListener('click', function () {
-                    var property = 'energy'; // Replace with the desired property
-                    var chartObject = myBarChart; // Replace with your actual chart object
-
-
-                    updateBarChart(property, chartObject, originalData);
-                });
-
-                addTempoBarChart.addEventListener('click', function () {
-                    var property = 'tempo'; // Replace with the desired property
-                    var chartObject = myBarChart; // Replace with your actual chart object
-
-
-                    updateBarChart(property, chartObject, originalData);
-                });
-
-                addDanceabilityBarChart.addEventListener('click', function () {
-                    var property = 'danceability'; // Replace with the desired property
-                    var chartObject = myBarChart; // Replace with your actual chart object
-
-
-                    updateBarChart(property, chartObject, originalData);
-                });
-
-                addInstrumentalnessBarChart.addEventListener('click', function () {
-                    var property = 'instrumentalness'; // Replace with the desired property
-                    var chartObject = myBarChart; // Replace with your actual chart object
-
-
-                    updateBarChart(property, chartObject, originalData);
-                });
-
-                addLoudnessBarChart.addEventListener('click', function () {
-                    var property = 'loudness'; // Replace with the desired property
-                    var chartObject = myBarChart; // Replace with your actual chart object
-
-
-                    updateBarChart(property, chartObject, originalData);
-                });
-
-                addValenceBarChart.addEventListener('click', function () {
-                    var property = 'valence'; // Replace with the desired property
-                    var chartObject = myBarChart; // Replace with your actual chart object
-
-
-                    updateBarChart(property, chartObject, originalData);
-                });
-
-                addSpeechinessBarChart.addEventListener('click', function () {
-                    var property = 'speechiness'; // Replace with the desired property
-                    var chartObject = myBarChart; // Replace with your actual chart object
-
-
-                    updateBarChart(property, chartObject, originalData);
-                });
-
-                const container = document.getElementById('table-container');
-
-                // Append the created table to the container
-
-                var targetCluster = 'Cluster 2';
-
-                container.appendChild(createTable(trackData));
-
-
-
-
-
-
-
-
-            }
-            else {
-                fetchNow();
-            }
-        });
 }
 
+// var taskId = '{{task_id | safe}}'
 
+var fetchNow = function () {
+    var checkOldResults = function () {
+        return fetch('/get_old_result/' + taskId, {
+            headers: headers
+        })
+            .then(res => res.json())
+            .then(oldResults => {
+                if (oldResults && oldResults['plots']) {
+                    handleResults(oldResults);
+                    return true;
+                }
+                return false;
+            });
+    };
 
-
-
-
+    checkOldResults()
+        .then(oldResultsExist => {
+            if (!oldResultsExist) {
+                fetch('/status/' + taskId, {
+                    headers: headers
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data['plots']) {
+                            handleResults(data);
+                        } else {
+                            // If no results yet, continue fetching
+                            fetchNow();
+                        }
+                    });
+            }
+        });
+};
 fetchNow();
