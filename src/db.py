@@ -78,7 +78,6 @@ def select_results(task_id):
         results = session.exec(statement).all()
 
 
-    
 
     if results:
         data = {"plots": {}}
@@ -87,7 +86,7 @@ def select_results(task_id):
         return data
 
     
-    return None
+    return {"plots" : None}
 
     
 
