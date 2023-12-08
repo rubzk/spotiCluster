@@ -2,7 +2,6 @@ from sqlmodel import Session,create_engine,SQLModel, select
 from .db_models import TaskResults, TaskRuns, PlotTypes
 import os 
 from datetime import datetime, timedelta
-from plot import Plot,Plots
 
 def create_db_engine():
     try:
@@ -79,11 +78,14 @@ def select_results(task_id):
         results = session.exec(statement).all()
 
 
+    
+
     if results:
-        data = {}
+        data = {"plots": {}}
         for task_result, plot_type in results:
             data["plots"][plot_type.name] = task_result.result
         return data
+
     
     return None
 

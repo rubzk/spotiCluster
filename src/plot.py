@@ -63,7 +63,7 @@ class Plots(BaseModel):
     top_3_artist: Optional[Plot]
     saved_tracks_timeline: Optional[Plot]
     table_tracks: Optional[Plot]
-    user_model: UserData
+    user_model: Optional[UserData]
 
 
 def generate_radar_chart(user_data):

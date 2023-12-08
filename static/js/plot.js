@@ -711,6 +711,16 @@ function onLegendClick(clusterName) {
 var fetchNow = function () {
 
 
+    // Here do a quick check --> Fetch db: If 200 continue 
+    // /get_old_results + taskId
+    // if (results) {
+    //     return this 
+    // }  
+
+
+    // Otherwise do a constant check to the status task
+
+
     fetch('/status/' + taskId, {
         headers: headers
     })
