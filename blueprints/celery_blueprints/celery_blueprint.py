@@ -108,6 +108,11 @@ def get_task_status(celery_task_id):
 @celery_bp.route("/get_old_result/<task_id>", methods=["GET"])
 def get_old_results(task_id):
 
+    try:
+        uuid.UUID(task_id)
+    except ValueError:
+        return {"plots" : None}
+
     data = select_results(task_id)
 
     return data

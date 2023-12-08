@@ -71,7 +71,7 @@ def select_user_runs(user_id):
     if results:
         return results.task_id
     else:
-        return None
+        return False
     
 
 def select_results(task_id):
@@ -88,7 +88,7 @@ def select_results(task_id):
     if results:
         data = {"plots": {}}
         for task_result, plot_type in results:
-            data["plots"][plot_type.name] = task_result.result
+            data["plots"][plot_type.name] = {"data" :task_result.result}
         return data
 
     

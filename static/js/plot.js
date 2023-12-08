@@ -1,8 +1,6 @@
 
 var taskId = '{{ task_id }}'
 
-
-
 var colors = [
     'rgba(255, 99, 132, 0.2)',   // Red
     'rgba(54, 162, 235, 0.2)',    // Blue
@@ -1046,5 +1044,4 @@ var fetchNow = function () {
             }
         });
 };
-console.log(taskId)
 fetchNow();
